@@ -12,4 +12,4 @@ perfil no Instagram, no Facebook e no YouTube.
   podem ser revogadas a qualquer momento nas configurações da conta Google ou
   da Meta.
 
-Contato: vitaojn.andrade@gmail.com
+Contato: pelo Instagram @jasabiadisso.br.

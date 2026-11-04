@@ -1,0 +1,8 @@
+{
+  "youtube": {
+    "status": "erro",
+    "erro": "YouTube recusou o envio: 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Request had insufficient authentication scopes.\",\n    \"errors\": [\n      {\n        \"message\": \"Insufficient Permission\",\n        \"domain\": \"global\",\n        \"reason\": \"insufficientPermissions\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_SCOPE_INSUFFICIENT\",\n        \"domain\": \"googleapis.com\",\n        \"metadata\": {\n          \"service\": \"youtube.googleapis.com\",\n          \"method\": \"youtube.api.v3.V3DataVideoService.Insert\"\n        }\n      }\n    ]\n  }\n}\n",
+    "tentativas": 1,
+    "em": "2026-11-04T00:35:52.644030+00:00"
+  }
+}

@@ -157,7 +157,7 @@ def facebook():
         return saida
     d28 = {}
     for m in ["page_post_engagements", "page_views_total", "page_daily_follows_unique", "page_video_views",
-              "page_impressions_unique", "page_media_view"]:
+              "page_media_view"]:
         try:
             r = get(f"{pag}/insights", metric=m, period="days_28")
             vals = r.get("data", [{}])[0].get("values", [])

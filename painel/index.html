@@ -1629,7 +1629,7 @@ function desenharAnalises() {
       ${kpi("i-heart", "Curtidas na página", num(c.curtidas), "", "ok")}
       ${kpi("i-zap", "Engajamento em posts (28d)", num(d.page_post_engagements), "", "info")}
       ${kpi("i-eye", "Visualizações (28d)", num(d.page_media_view ?? d.page_video_views), "", "info")}
-      ${kpi("i-radar", "Pessoas alcançadas (28d)", num(d.page_impressions_unique))}
+      ${kpi("i-radar", "Novos seguidores (28d)", num(d.page_daily_follows_unique))}
       ${kpi("i-user", "Visitas à página (28d)", num(d.page_views_total))}
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Seguidores no Facebook</h3>${graficoLinha(serie("fb_seguidores"), "seguidores")}</div>

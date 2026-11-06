@@ -469,6 +469,19 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
   .trilha .et { width: 62px; font-size: 11px; }
   .contagem div { min-width: 0; flex: 1; }
 }
+/* celular: sem os efeitos caros (desfoque e brilho animado), para não travar */
+@media (max-width: 900px), (pointer: coarse) {
+  .aurora, .grain { display: none; }
+  body { background: radial-gradient(120% 60% at 20% 0%, var(--teal-glow), transparent 60%), var(--bg); }
+  .card, .side, .saude, .vid, .citem, .cdia { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .card { background: var(--surface-solid); }
+  .tabbar { backdrop-filter: none; background: var(--surface-solid); }
+  .card.spot::before { display: none; }
+  .logo .marca::after { animation: none; }
+  .vazio .bolha { animation: none; }
+  .vid .capa .tag, .vid .capa .play, .midia .tag { backdrop-filter: none; }
+  .veu { backdrop-filter: none; background: rgba(4,8,8,.65); }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

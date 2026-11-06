@@ -99,7 +99,7 @@ def ig_metricas_post(mid, tipo, erros):
 
 
 def instagram():
-    erros, saida = [], {"erros": erros}
+    erros = []; saida = {"erros": erros}
     try:
         conta = ig_id()
         info = get(conta, fields="username,followers_count,follows_count,media_count")
@@ -146,7 +146,7 @@ def instagram():
 # ---------------------------------------------------------------- Facebook
 
 def facebook():
-    erros, saida = [], {"erros": erros}
+    erros = []; saida = {"erros": erros}
     try:
         pag = pagina_id()
         info = get(pag, fields="name,followers_count,fan_count")
@@ -172,7 +172,7 @@ def facebook():
 # ---------------------------------------------------------------- YouTube
 
 def youtube():
-    erros, saida = [], {"erros": erros}
+    erros = []; saida = {"erros": erros}
     if not os.environ.get("YT_REFRESH_TOKEN"):
         erros.append("youtube: segredos não configurados")
         return saida

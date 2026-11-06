@@ -65,7 +65,10 @@ def ig_seguidores_por_dia(conta, erros):
         agora = dt.datetime.now(dt.timezone.utc)
         r = get(f"{conta}/insights", metric="follower_count", period="day",
                 since=int((agora - dt.timedelta(days=29)).timestamp()), until=int(agora.timestamp()))
-        valores = r.get("data", [{}])[0].get("values", [])
+        dados = r.get("data") or []
+        if not dados:  # a Meta só libera esse dado para contas com 100 seguidores ou mais
+            return []
+        valores = dados[0].get("values", [])
         return [{"dia": v["end_time"][:10], "novos": numero(v.get("value"))} for v in valores]
     except (ErroApi, IndexError, KeyError) as e:
         erros.append(f"instagram follower_count: {limpar(e)}")
@@ -166,7 +169,39 @@ def facebook():
         except (ErroApi, IndexError) as e:
             erros.append(f"facebook {m}: {limpar(e)}")
     saida["d28"] = d28
+    saida["posts"] = fb_posts(pag, erros)
     return saida
+
+
+def fb_posts(pag, erros):
+    posts = []
+    try:
+        r = get(f"{pag}/posts", limit=30, fields="id,message,created_time,permalink_url,full_picture,shares,"
+                                                  "reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)")
+    except ErroApi as e:
+        erros.append(f"facebook posts: {limpar(e)}")
+        return posts
+    aviso = False
+    for m in r.get("data", []):
+        reacoes = numero((m.get("reactions") or {}).get("summary", {}).get("total_count"))
+        coment = numero((m.get("comments") or {}).get("summary", {}).get("total_count"))
+        compart = numero((m.get("shares") or {}).get("count")) or 0
+        views = None
+        try:
+            ins = get(f"{m['id']}/insights", metric="post_media_view")
+            vals = (ins.get("data") or [{}])[0].get("values", [])
+            views = numero(vals[-1].get("value")) if vals else None
+        except (ErroApi, IndexError) as e:
+            if not aviso:
+                erros.append(f"facebook visualizações dos posts: {limpar(e)}")
+                aviso = True
+        posts.append({
+            "quando": m.get("created_time"), "legenda": (m.get("message") or "")[:160],
+            "link": m.get("permalink_url"), "imagem": m.get("full_picture"),
+            "visualizacoes": views, "reacoes": reacoes, "comentarios": coment, "compartilhamentos": compart,
+            "interacoes": (reacoes or 0) + (coment or 0) + compart,
+        })
+    return posts
 
 
 # ---------------------------------------------------------------- YouTube

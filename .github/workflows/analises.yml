@@ -1,0 +1,62 @@
+name: Atualizar análises
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: analises
+  cancel-in-progress: false
+
+jobs:
+  analises:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependência
+        run: pip install --quiet cryptography
+
+      - name: Coletar métricas
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          ANALISES_SENHA: ${{ secrets.ANALISES_SENHA }}
+        shell: bash
+        run: python publicador/analises.py 2>&1 | tee saida.txt
+
+      - name: Resultado para o painel
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          arq = Path("saida.txt")
+          texto = arq.read_text(errors="replace").strip() if arq.exists() else ""
+          texto = (texto or "Sem saída.")[-6000:]
+          texto = texto.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print(f"::notice title=Resultado do robô::{texto}")
+          PY
+
+      - name: Guardar as análises
+        run: |
+          git config user.name "publicador"
+          git config user.email "publicador@users.noreply.github.com"
+          git add dados
+          if ! git diff --cached --quiet; then
+            git commit -m "Análises: atualiza métricas do perfil"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi

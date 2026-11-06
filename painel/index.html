@@ -97,7 +97,10 @@ button { font: inherit; color: inherit; }
 .citem.st-publicado { opacity: .75; }
 .citem .l1 { display: flex; justify-content: space-between; align-items: center; gap: 4px 6px; flex-wrap: wrap; }
 .citem .fmt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
-.citem .chip { font-size: 10.5px; padding: 2px 7px; }
+.citem .chip { font-size: 10.5px; padding: 2px 7px; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.citem .l1 > * { min-width: 0; }
+.citem .tema { overflow-wrap: anywhere; }
+.cdia { min-width: 0; }
 .citem .tema { margin-top: 5px; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .citem .tema.vazio-t { color: var(--faint); font-style: italic; }
 .citem .mini { display: flex; gap: 4px; margin-top: 7px; color: var(--muted); align-items: center; }
@@ -2052,7 +2055,7 @@ async function agendarDaBiblioteca(b) {
 /* ================================================================ cronograma */
 const FORMATOS = { reel: "Reel", carrossel: "Carrossel", stories: "3 stories", story: "Story", imagem: "Imagem" };
 const REDES_CRONO = { instagram: ["Instagram", "i-ig"], facebook: ["Facebook", "i-fb"], youtube: ["YouTube", "i-yt"], tiktok: ["TikTok", "i-tt"] };
-const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pedido: ["Pedido ao Claude", "info"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
+const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pedido: ["Pedido", "info"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
 const MODELO_PADRAO = { "1": ["stories", "carrossel", "reel"], "2": ["reel"], "3": ["stories", "reel"], "4": ["reel"], "5": ["stories", "carrossel", "reel"], "6": ["reel"], "0": ["stories", "reel"] };
 const NOMES_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";

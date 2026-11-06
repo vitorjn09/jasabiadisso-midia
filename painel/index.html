@@ -87,7 +87,9 @@ button { font: inherit; color: inherit; }
 .citem:hover { transform: translateY(-2px); border-color: var(--border-strong); }
 .citem.arrastando { opacity: .4; }
 .citem::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--faint); }
-.citem.st-roteiro::before, .citem.st-agendado::before { background: var(--info); }
+.citem.st-roteiro::before, .citem.st-agendado::before, .citem.st-pedido::before { background: var(--info); }
+.citem .criar { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--teal); background: var(--teal-glow); color: var(--text); border-radius: 99px; padding: 5px 12px; font: 600 12px Inter, sans-serif; cursor: pointer; }
+.citem .criar .i { width: 14px; height: 14px; }
 .citem.st-producao::before { background: var(--warn); }
 .citem.st-pronto::before { background: var(--gold); }
 .citem.st-publicado::before { background: var(--ok); }
@@ -143,7 +145,7 @@ main { min-width: 0; }
 .pulso.ok { background: var(--ok); } .pulso.err { background: var(--err); } .pulso.run { background: var(--info); }
 .pulso.ok::after, .pulso.run::after, .pulso.err::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: onda 2s infinite; }
 @keyframes onda { to { transform: scale(2.8); opacity: 0; } }
-.linha-btns { display: flex; gap: 8px; }
+.linha-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
 main { padding: 28px clamp(16px, 4vw, 44px) 120px; max-width: 1180px; width: 100%; }
 .topo { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
@@ -690,6 +692,7 @@ html.travado, html.travado body { overflow: hidden; }
       <div class="topo">
         <div><h1>Cronograma</h1><p>O plano da semana. Sem horário fixo: a hora você escolhe ao agendar.</p></div>
         <div class="linha-btns">
+          <button class="btn" id="cRepete"><svg class="i"><use href="#i-layers"/></svg>Repetir semana</button>
           <button class="btn" id="cModelo"><svg class="i"><use href="#i-layers"/></svg>Preencher com o modelo</button>
           <button class="btn pri" id="cNovo"><svg class="i"><use href="#i-plus"/></svg>Item</button>
         </div>
@@ -2049,7 +2052,7 @@ async function agendarDaBiblioteca(b) {
 /* ================================================================ cronograma */
 const FORMATOS = { reel: "Reel", carrossel: "Carrossel", stories: "3 stories", story: "Story", imagem: "Imagem" };
 const REDES_CRONO = { instagram: ["Instagram", "i-ig"], facebook: ["Facebook", "i-fb"], youtube: ["YouTube", "i-yt"], tiktok: ["TikTok", "i-tt"] };
-const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
+const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pedido: ["Pedido ao Claude", "info"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
 const MODELO_PADRAO = { "1": ["stories", "carrossel", "reel"], "2": ["reel"], "3": ["stories", "reel"], "4": ["reel"], "5": ["stories", "carrossel", "reel"], "6": ["reel"], "0": ["stories", "reel"] };
 const NOMES_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";
@@ -2072,7 +2075,7 @@ async function carregarCronograma() {
 function statusItem(it) {
   if (it.biblioteca) {
     const b = BIB.find((y) => y.nome === it.biblioteca);
-    if (b) { const s = statusBib(b).s; if (s === "publicado" || s === "agendado") return s; if (["ideia", "roteiro", "producao"].includes(it.status)) return "pronto"; }
+    if (b) { const s = statusBib(b).s; if (s === "publicado" || s === "agendado") return s; if (["ideia", "roteiro", "producao", "pedido"].includes(it.status)) return "pronto"; }
   }
   return ST_CRONO[it.status] ? it.status : "ideia";
 }
@@ -2091,7 +2094,7 @@ function desenharCronograma() {
   const hoje = chaveDia(new Date());
   const daSemana = CRONO.itens.filter((x) => x.data >= SEMANA && x.data <= fim);
   const pub = daSemana.filter((x) => statusItem(x) === "publicado").length;
-  const vazios = daSemana.filter((x) => ["ideia", "roteiro", "producao"].includes(statusItem(x))).length;
+  const vazios = daSemana.filter((x) => ["ideia", "roteiro", "producao", "pedido"].includes(statusItem(x))).length;
   $("#cResumo").innerHTML = daSemana.length
     ? `<span><b style="color:var(--text)">${pub}</b> de ${daSemana.length} publicados</span><div class="barra"><i style="width:${Math.round(pub / daSemana.length * 100)}%"></i></div><span>${vazios ? `${vazios} ainda sem vídeo pronto` : "tudo pronto"}</span>`
     : `<span>Semana vazia. Use "Preencher com o modelo" ou adicione itens.</span>`;
@@ -2107,6 +2110,7 @@ function desenharCronograma() {
           <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
           <div class="mini">${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${b?.capaUrl ? `<span class="thumb" style="background-image:url('${esc(b.capaUrl)}')"></span>` : ""}</div>
+          ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
         </div>`;
       }).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
@@ -2118,6 +2122,7 @@ $("#cDepois").onclick = () => { SEMANA = somaDias(SEMANA, 7); desenharCronograma
 $("#cHoje").onclick = () => { SEMANA = segundaDe(chaveDia(new Date())); desenharCronograma(); };
 $("#cNovo").onclick = () => editarItem(null, chaveDia(new Date()) >= SEMANA && chaveDia(new Date()) <= somaDias(SEMANA, 6) ? chaveDia(new Date()) : SEMANA);
 $("#crono").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-criar]"); if (c) return pedirCriacao(CRONO.itens.find((x) => x.id === c.dataset.criar));
   const a = e.target.closest("[data-add]"); if (a) return editarItem(null, a.dataset.add);
   const it = e.target.closest("[data-item]"); if (it) editarItem(CRONO.itens.find((x) => x.id === it.dataset.item));
 });
@@ -2150,6 +2155,68 @@ $("#cModelo").onclick = async () => {
   CRONO.itens.push(...novos); desenharCronograma();
   if (!(await salvarCrono(`preenche a semana de ${SEMANA}`))) { CRONO.itens = CRONO.itens.filter((x) => !novos.includes(x)); desenharCronograma(); }
 };
+/* repetir a estrutura da semana (formato e redes de cada dia) nas semanas seguintes */
+$("#cRepete").onclick = async () => {
+  const fim = somaDias(SEMANA, 6), daSemana = CRONO.itens.filter((x) => x.data >= SEMANA && x.data <= fim);
+  if (!daSemana.length) return toast("info", "Esta semana está vazia", "Monte uma semana primeiro e depois repita.");
+  const ordem = Object.keys(FORMATOS), porDia = {};
+  for (let i = 0; i < 7; i++) { const k = somaDias(SEMANA, i); porDia[i] = daSemana.filter((x) => x.data === k).sort((a, b) => ordem.indexOf(a.formato) - ordem.indexOf(b.formato)).map((x) => ({ formato: x.formato, redes: [...(x.redes || redesPadrao(x.formato))] })); }
+  const linhas = [1, 2, 3, 4, 5, 6, 0].map((d) => { const i = (d + 6) % 7; return `<li><b>${NOMES_SEMANA[d]}</b>: ${porDia[i].length ? esc(porDia[i].map((x) => FORMATOS[x.formato] || x.formato).join(", ")) : "<span style='color:var(--faint)'>nada</span>"}</li>`; }).join("");
+  const m = $("#modal");
+  m.innerHTML = `<div class="ic-topo">${ic("i-layers", "i g")}</div><h2>Repetir esta semana</h2>
+    <p>Copio a estrutura (formato e redes de cada dia) com tema vazio e status Ideia. O que já existe nas outras semanas fica como está.</p>
+    <ul style="margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.7">${linhas}</ul>
+    <label class="campo">Para</label><div class="escolhas" id="rpQt"><button class="chip ok" data-v="1">Próxima semana</button><button class="chip" data-v="4">Próximas 4 semanas</button></div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:14px;cursor:pointer"><input type="checkbox" id="rpModelo"> Usar também como modelo padrão</label>
+    <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="rpOk">${ic("i-check")}Repetir</button></div>`;
+  abrirModal();
+  $("#rpQt").onclick = (e) => { const c = e.target.closest("[data-v]"); if (c) $$("#rpQt .chip").forEach((y) => y.classList.toggle("ok", y === c)); };
+  $("#rpOk").onclick = async () => {
+    const semanas = +($("#rpQt .chip.ok")?.dataset.v || 1), comoModelo = $("#rpModelo").checked, novos = [];
+    for (let w = 1; w <= semanas; w++) for (let i = 0; i < 7; i++) {
+      const k = somaDias(SEMANA, w * 7 + i), ja = CRONO.itens.filter((x) => x.data === k).map((x) => x.formato);
+      for (const slot of porDia[i]) { const j = ja.indexOf(slot.formato); if (j >= 0) { ja.splice(j, 1); continue; } novos.push({ id: novoId(), data: k, formato: slot.formato, tema: "", redes: [...slot.redes], status: "ideia" }); }
+    }
+    fecharModal();
+    if (!novos.length && !comoModelo) return toast("info", "Nada para copiar", "As semanas seguintes já têm essa estrutura.");
+    const modeloAntes = CRONO.modelo;
+    CRONO.itens.push(...novos);
+    if (comoModelo) { const md = {}; for (let i = 0; i < 7; i++) md[String((i + 1) % 7)] = porDia[i].map((x) => x.formato); CRONO.modelo = md; }
+    desenharCronograma();
+    const txt = `repete a semana de ${SEMANA} em ${semanas} semana(s)${comoModelo ? " e vira o modelo" : ""}`;
+    if (!(await salvarCrono(txt))) { CRONO.itens = CRONO.itens.filter((x) => !novos.includes(x)); CRONO.modelo = modeloAntes; desenharCronograma(); return; }
+    toast("ok", `${novos.length} vaga(s) criadas`, semanas === 1 ? "Na próxima semana." : `Nas próximas ${semanas} semanas.`);
+  };
+};
+
+/* pedir ao Claude para criar o conteúdo de um item sem vídeo */
+function podeCriar(it, hoje) { return !it.biblioteca && ["ideia", "roteiro"].includes(statusItem(it)) && it.data >= hoje; }
+function pedirCriacao(it) {
+  if (!it) return;
+  const dia = `${NOMES_SEMANA[dataDe(it.data).getUTCDay()].toLowerCase()}, ${dataDe(it.data).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
+  const m = $("#modal");
+  m.innerHTML = `<div class="ic-topo">${ic("i-zap", "i g")}</div><h2>Pedir para criar</h2>
+    <p><b>${esc(FORMATOS[it.formato] || it.formato)}</b> de ${esc(dia)}.</p>
+    <label class="campo">Tema</label><input class="input" id="pcTema" value="${esc(it.tema || "")}" placeholder="Deixe vazio para o Claude sugerir">
+    <label class="campo">Recado (opcional)</label><textarea class="input" id="pcNotas" rows="3" placeholder="Ex.: tom engraçado, falar da fonte…">${esc(it.notas || "")}</textarea>
+    <p class="dica">O item fica como “Pedido ao Claude” e a mensagem é copiada. Depois é só colar no chat com o Claude.</p>
+    <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="pcOk">${ic("i-check")}Pedir</button></div>`;
+  abrirModal();
+  $("#pcOk").onclick = async () => {
+    const tema = $("#pcTema").value.trim(), notas = $("#pcNotas").value.trim();
+    const redes = (it.redes || []).map((r) => REDES_CRONO[r]?.[0] || r).join(", ");
+    const msg = `Cria o ${(FORMATOS[it.formato] || it.formato).toLowerCase()} de ${dia}${tema ? ` sobre "${tema}"` : " (sugira o tema)"} para ${redes}.${notas ? ` Recado: ${notas}` : ""} (item ${it.id} do cronograma)`;
+    let copiou = false;
+    try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
+    fecharModal();
+    const antes = JSON.stringify(it);
+    Object.assign(it, { status: "pedido", pedido: new Date().toISOString() }); if (tema) it.tema = tema; if (notas) it.notas = notas;
+    desenharCronograma();
+    if (!(await salvarCrono(`pede ao Claude "${tema || FORMATOS[it.formato]}"`))) { Object.keys(it).forEach((k) => delete it[k]); Object.assign(it, JSON.parse(antes)); desenharCronograma(); }
+    if (copiou) toast("ok", "Mensagem copiada", "Cole no chat com o Claude.", 8000);
+    else { m.innerHTML = `<h2>Copie e cole no chat</h2><textarea class="input" rows="5" readonly onclick="this.select()">${esc(msg)}</textarea><div class="btns"><button class="btn pri" data-fecha>Pronto</button></div>`; abrirModal(); }
+  };
+}
 function editarItem(it, dataInicial) {
   const novo = !it;
   const x = it ? { ...it, redes: [...(it.redes || [])] } : { id: novoId(), data: dataInicial, formato: "reel", tema: "", redes: redesPadrao("reel"), status: "ideia", notas: "" };

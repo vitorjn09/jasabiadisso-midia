@@ -1,0 +1,62 @@
+name: Relógio do robô
+
+# Dorme até a hora exata do próximo post da agenda e chama o publicador.
+# Recomeça sozinho quando a agenda muda (push) e depois de cada post.
+# Só fica rodando enquanto houver post agendado.
+
+on:
+  push:
+    branches: [main]
+    paths: ["agenda/**", ".github/workflows/relogio.yml", "publicador/relogio.py"]
+  workflow_dispatch:
+  schedule:
+    - cron: "5 */4 * * *"
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: relogio
+  cancel-in-progress: true
+
+jobs:
+  relogio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ver a agenda
+        id: agenda
+        run: python publicador/relogio.py | tee -a "$GITHUB_OUTPUT"
+
+      - name: Publicar o que já passou da hora
+        if: steps.agenda.outputs.vencidos != '0' && github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publicar.yml --repo "$GITHUB_REPOSITORY" --ref main -f modo=publicar
+
+      - name: Esperar o próximo post
+        if: steps.agenda.outputs.espera != ''
+        env:
+          ESPERA: ${{ steps.agenda.outputs.espera }}
+          ALVO: ${{ steps.agenda.outputs.alvo }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Um job do GitHub dura no máximo 6 h: se faltar mais que isso, dorme 5h30 e recomeça.
+          LIMITE=19800
+          if [ "$ESPERA" -le "$LIMITE" ]; then
+            echo "Próximo post: $ALVO em $((ESPERA / 60)) min"
+            sleep "$ESPERA"
+            gh workflow run publicar.yml --repo "$GITHUB_REPOSITORY" --ref main -f modo=publicar
+            sleep 60
+          else
+            echo "Próximo post: $ALVO em $((ESPERA / 3600)) h. Dormindo 5h30 e recomeçando."
+            sleep "$LIMITE"
+          fi
+          gh workflow run relogio.yml --repo "$GITHUB_REPOSITORY" --ref main

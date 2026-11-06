@@ -32,6 +32,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 AGENDA = RAIZ / "agenda"
+BIBLIOTECA = RAIZ / "biblioteca"
 VERSAO = os.environ.get("GRAPH_VERSION", "v23.0")
 GRAPH = f"https://graph.facebook.com/{VERSAO}"
 RUPLOAD = "https://rupload.facebook.com"
@@ -293,6 +294,45 @@ def yt_publicar(p, pasta):
 PUBLICAR = {"instagram": ig_publicar, "facebook": fb_publicar, "youtube": yt_publicar}
 
 
+# ---------------------------------------------------------------- biblioteca
+
+def pasta_midias(p, pasta):
+    """Post da biblioteca usa as mídias de biblioteca/<nome>/; os outros, a própria pasta."""
+    nome = p.get("biblioteca") if p else None
+    return BIBLIOTECA / nome if nome else pasta
+
+
+def ler_ficha(nome):
+    arq = BIBLIOTECA / nome / "ficha.json"
+    return json.loads(arq.read_text(encoding="utf-8")) if arq.exists() else None
+
+
+def baixar_da_biblioteca(p):
+    """O vídeo fica na Release 'biblioteca' (fora do repositório); baixa na hora de postar."""
+    nome = p.get("biblioteca")
+    if not nome:
+        return
+    ficha = ler_ficha(nome) or {}
+    destino = BIBLIOTECA / nome / p["midias"][0]
+    if destino.exists():
+        return
+    url = ficha.get("video_url")
+    if not url:
+        raise ErroApi(f"a ficha de {nome} não tem video_url")
+    with urllib.request.urlopen(url, timeout=300) as resp:
+        destino.write_bytes(resp.read())
+
+
+def marcar_na_biblioteca(p, rede, ident, pasta):
+    nome = p.get("biblioteca")
+    ficha = ler_ficha(nome) if nome else None
+    if ficha is None:
+        return
+    ficha.setdefault("publicado", {})[rede] = {"id": ident, "em": agora().isoformat(), "post": pasta.name}
+    (BIBLIOTECA / nome / "ficha.json").write_text(
+        json.dumps(ficha, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 # ---------------------------------------------------------------- agenda
 
 def ler_posts():
@@ -322,8 +362,14 @@ def validar(p, pasta):
     midias = p.get("midias") or []
     if not midias:
         erros.append("'midias' vazio")
+    base = pasta_midias(p, pasta)
+    ficha = ler_ficha(p["biblioteca"]) if p.get("biblioteca") else None
+    if p.get("biblioteca") and ficha is None:
+        erros.append(f"vídeo '{p['biblioteca']}' não está na biblioteca")
     for m in midias + ([p["capa"]] if p.get("capa") else []):
-        arq = pasta / m
+        arq = base / m
+        if ficha is not None and m == midias[0] and ficha.get("video_url"):
+            continue  # vem da Release na hora de postar
         if not arq.exists():
             erros.append(f"arquivo não encontrado: {m}")
         elif arq.suffix.lower() not in EXT_VIDEO | EXT_IMAGEM:
@@ -333,7 +379,7 @@ def validar(p, pasta):
     tipo = p.get("tipo")
     if "youtube" in redes and tipo != "reel":
         erros.append("no YouTube só sai reel (Short)")
-    if tipo == "reel" and midias and not e_video(pasta / midias[0]):
+    if tipo == "reel" and midias and not e_video(base / midias[0]):
         erros.append("reel precisa de um vídeo")
     if tipo in ("reel", "story", "imagem") and len(midias) > 1:
         erros.append(f"{tipo} leva só uma mídia")
@@ -376,8 +422,10 @@ def publicar_pendentes():
                 print(f"[{nome}] {rede}: passou da hora há mais de 12h, não publicado")
                 continue
             try:
-                ident = PUBLICAR[rede](p, pasta)
+                baixar_da_biblioteca(p)
+                ident = PUBLICAR[rede](p, pasta_midias(p, pasta))
                 estado[rede] = {"status": "publicado", "id": ident, "em": agora().isoformat()}
+                marcar_na_biblioteca(p, rede, ident, pasta)
                 print(f"[{nome}] {rede}: publicado ({ident})")
             except Exception as e:  # qualquer falha fica registrada e o resto segue
                 tentativas = atual.get("tentativas", 0) + 1

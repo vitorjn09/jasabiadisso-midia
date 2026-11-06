@@ -36,3 +36,12 @@ Facebook e o canal do YouTube, e grava tudo cifrado em
 `dados/analises.cifrado.json`. Crie o segredo `ANALISES_SENHA` com uma senha
 e digite a mesma senha no painel (Conectar > Senha das análises). O token da
 Meta precisa das permissões `instagram_manage_insights` e `read_insights`.
+
+## Biblioteca e cronograma
+
+- `biblioteca/<nome>/`: ficha (`ficha.json`) e capa de cada vídeo pronto. O vídeo fica na Release
+  `biblioteca`, fora do repositório. Para incluir um vídeo, envie `biblioteca/<nome>/video.mp4`,
+  `capa.jpg` e `ficha.json` num ramo `entrada/<nome>`: o workflow `biblioteca.yml` sobe o vídeo
+  para a Release, leva a ficha e a capa para a `main` e apaga o ramo.
+- `cronograma/cronograma.json`: o plano de conteúdo, editado pela aba Cronograma do painel.
+- `relogio.yml`: faz o robô publicar na hora certa, sem depender do cron do GitHub.

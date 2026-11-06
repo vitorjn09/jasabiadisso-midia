@@ -42,6 +42,73 @@ a { color: var(--teal); }
 button { font: inherit; color: inherit; }
 ::selection { background: var(--teal-glow); }
 
+
+/* =============================================================== biblioteca */
+.chip.gold { background: var(--gold-glow); color: var(--gold); border-color: transparent; }
+.vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin-top: 20px; }
+.vid { padding: 0; cursor: pointer; transition: transform .35s var(--spring), border-color .25s, box-shadow .35s; }
+.vid:hover { transform: translateY(-5px); border-color: var(--border-strong); box-shadow: var(--shadow), 0 24px 50px -24px var(--teal-glow); }
+.vid .capa { position: relative; aspect-ratio: 9/16; background: var(--surface-2) center/cover no-repeat; overflow: hidden; }
+.vid .capa video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.vid .capa video.on { opacity: 1; }
+.vid .capa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.7)); pointer-events: none; }
+.vid .capa .tag { position: absolute; left: 10px; top: 10px; z-index: 1; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(0,0,0,.55); color: #fff; backdrop-filter: blur(8px); }
+.vid .capa .play { position: absolute; left: 50%; top: 50%; z-index: 1; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; display: grid; place-items: center; background: rgba(0,0,0,.45); color: #fff; backdrop-filter: blur(8px); transition: transform .35s var(--spring), opacity .3s; }
+.vid:hover .capa .play { transform: scale(.6); opacity: 0; }
+.vid .capa .dur { position: absolute; right: 10px; bottom: 10px; z-index: 1; color: #fff; font: 600 12px Inter; }
+.vid .info { padding: 12px 14px 14px; }
+.vid .info b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 600 15px/1.25 Fredoka; }
+.vid .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.vid.st-agendado { border-color: color-mix(in srgb, var(--info) 45%, transparent); }
+.vid.st-publicado .capa { filter: saturate(.55); }
+.det-video { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: start; }
+.det-video video { width: 100%; aspect-ratio: 9/16; object-fit: cover; border-radius: 14px; background: #000; display: block; }
+.ag-dias { display: flex; gap: 8px; flex-wrap: wrap; }
+.ag-dias .chip { cursor: pointer; padding: 8px 12px; }
+.tt-op { display: flex; gap: 8px; flex-wrap: wrap; }
+.tt-op .chip { cursor: pointer; padding: 8px 12px; }
+@media (max-width: 560px) { .vids { grid-template-columns: repeat(2, 1fr); gap: 10px; } .det-video { grid-template-columns: 120px 1fr; } }
+
+/* =============================================================== cronograma */
+.crono-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.crono-nav { display: flex; align-items: center; gap: 8px; }
+.crono-nav b { font: 600 18px Fredoka; min-width: 150px; text-align: center; }
+.crono-resumo { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 18px 0 6px; color: var(--muted); font-size: 13px; }
+.crono-resumo .barra { flex: 1; min-width: 160px; height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.crono-resumo .barra i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--ok)); transition: width .8s var(--ease); }
+.crono { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.cdia { border-radius: 16px; border: 1px solid var(--border); background: var(--surface); padding: 10px; min-height: 220px; display: flex; flex-direction: column; gap: 8px; transition: border-color .2s, background .2s; }
+.cdia.hoje { border-color: var(--teal); background: linear-gradient(180deg, var(--teal-glow), transparent 40%); }
+.cdia.alvo { border-color: var(--gold); background: var(--gold-glow); }
+.cdia .cab-d { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 4px 4px; }
+.cdia .cab-d small { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.cdia .cab-d b { font: 600 20px Fredoka; }
+.citem { position: relative; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-solid); padding: 9px 10px; cursor: grab; transition: transform .25s var(--spring), border-color .2s, opacity .2s; font-size: 13px; }
+.citem:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+.citem.arrastando { opacity: .4; }
+.citem::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--faint); }
+.citem.st-roteiro::before, .citem.st-agendado::before { background: var(--info); }
+.citem.st-producao::before { background: var(--warn); }
+.citem.st-pronto::before { background: var(--gold); }
+.citem.st-publicado::before { background: var(--ok); }
+.citem.st-pulado::before { background: var(--err); }
+.citem.st-publicado { opacity: .75; }
+.citem .l1 { display: flex; justify-content: space-between; align-items: center; gap: 4px 6px; flex-wrap: wrap; }
+.citem .fmt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.citem .chip { font-size: 10.5px; padding: 2px 7px; }
+.citem .tema { margin-top: 5px; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.citem .tema.vazio-t { color: var(--faint); font-style: italic; }
+.citem .mini { display: flex; gap: 4px; margin-top: 7px; color: var(--muted); align-items: center; }
+.citem .mini svg.i { width: 13px; height: 13px; }
+.citem .thumb { width: 22px; height: 30px; border-radius: 5px; background: var(--surface-2) center/cover; margin-left: auto; }
+.cdia .add { margin-top: auto; border: 1px dashed var(--border-strong); background: none; border-radius: 10px; padding: 6px; color: var(--faint); cursor: pointer; transition: color .2s, border-color .2s; }
+.cdia .add:hover { color: var(--teal); border-color: var(--teal); }
+.form-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.escolhas { display: flex; gap: 6px; flex-wrap: wrap; }
+.escolhas .chip { cursor: pointer; padding: 7px 11px; }
+@media (max-width: 1100px) { .crono { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .crono { grid-template-columns: 1fr; } .cdia { min-height: 0; } .crono-nav b { min-width: 0; } }
+
 /* =============================================================== fundo aurora */
 .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .aurora i { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; animation: flutua 22s var(--ease) infinite alternate; }
@@ -471,6 +538,8 @@ html.travado, html.travado body { overflow: hidden; }
       <div class="pilula" id="navPilula"></div>
       <button data-view="inicio" class="ativo"><svg class="i"><use href="#i-home"/></svg>Início</button>
       <button data-view="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda<span class="cont" id="navCont">0</span></button>
+      <button data-view="biblioteca"><svg class="i"><use href="#i-film"/></svg>Biblioteca<span class="cont" id="navBib">0</span></button>
+      <button data-view="cronograma"><svg class="i"><use href="#i-plan"/></svg>Cronograma</button>
       <button data-view="analises"><svg class="i"><use href="#i-chart"/></svg>Análises</button>
       <button data-view="novo"><svg class="i"><use href="#i-plus"/></svg>Novo post</button>
       <button data-view="robo"><svg class="i"><use href="#i-bot"/></svg>Robô</button>
@@ -543,6 +612,42 @@ html.travado, html.travado body { overflow: hidden; }
         <button data-f="problemas">Problemas <span data-c="problemas"></span></button>
       </div>
       <div id="lista"></div>
+    </section>
+
+    <!-- ============================================ biblioteca -->
+    <section class="view" id="v-biblioteca">
+      <div class="topo">
+        <div><h1>Biblioteca</h1><p>Vídeos prontos. Escolha um e agende para o robô postar no Instagram, Facebook e YouTube.</p></div>
+      </div>
+      <div class="segm" id="bibFiltros">
+        <div class="ind"></div>
+        <button data-bf="prontos" class="ativo">Prontos <span data-bc="prontos"></span></button>
+        <button data-bf="agendados">Agendados <span data-bc="agendados"></span></button>
+        <button data-bf="publicados">Publicados <span data-bc="publicados"></span></button>
+        <button data-bf="todos">Todos <span data-bc="todos"></span></button>
+      </div>
+      <div id="bibLista"></div>
+    </section>
+
+    <!-- ============================================ cronograma -->
+    <section class="view" id="v-cronograma">
+      <div class="topo">
+        <div><h1>Cronograma</h1><p>O plano da semana. Sem horário fixo: a hora você escolhe ao agendar.</p></div>
+        <div class="linha-btns">
+          <button class="btn" id="cModelo"><svg class="i"><use href="#i-layers"/></svg>Preencher com o modelo</button>
+          <button class="btn pri" id="cNovo"><svg class="i"><use href="#i-plus"/></svg>Item</button>
+        </div>
+      </div>
+      <div class="crono-topo">
+        <div class="crono-nav">
+          <button class="btn ico peq" id="cAntes" aria-label="Semana anterior"><svg class="i"><use href="#i-left"/></svg></button>
+          <b id="cSemana"></b>
+          <button class="btn ico peq" id="cDepois" aria-label="Próxima semana"><svg class="i"><use href="#i-right"/></svg></button>
+          <button class="btn fant peq" id="cHoje">Esta semana</button>
+        </div>
+      </div>
+      <div class="crono-resumo" id="cResumo"></div>
+      <div class="crono" id="crono"></div>
     </section>
 
     <!-- ============================================ novo post -->
@@ -695,7 +800,8 @@ html.travado, html.travado body { overflow: hidden; }
   <div class="ind" id="tabInd"></div>
   <button data-view="inicio" class="ativo"><svg class="i"><use href="#i-home"/></svg>Início</button>
   <button data-view="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
-  <button data-view="novo" class="mais" aria-label="Novo post"><span><svg class="i"><use href="#i-plus"/></svg></span></button>
+  <button data-view="biblioteca"><svg class="i"><use href="#i-film"/></svg>Vídeos</button>
+  <button data-view="cronograma"><svg class="i"><use href="#i-plan"/></svg>Plano</button>
   <button data-view="analises"><svg class="i"><use href="#i-chart"/></svg>Análises</button>
   <button data-view="robo"><svg class="i"><use href="#i-bot"/></svg>Robô</button>
 </nav>
@@ -756,6 +862,9 @@ html.travado, html.travado body { overflow: hidden; }
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 5"/></symbol>
   <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></symbol>
+  <symbol id="i-plan" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M9 9v12M15 9v12"/></symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
   <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
@@ -921,6 +1030,14 @@ async function carregarAgenda() {
       const nomes = arquivos.map((a) => a.name);
       let post = null, estado = {};
       try { post = JSON.parse(await gh(`${base}/post.json?ref=${RAMO}`, { raw: true })); } catch {}
+      if (post?.biblioteca) { // o vídeo e a capa ficam na biblioteca
+        const b = BIB.find((y) => y.nome === post.biblioteca);
+        if (b) {
+          const extra = [{ name: (post.midias || [])[0] || "video.mp4", download_url: b.videoUrl, size: b.ficha.tamanho || 0, path: "" }];
+          if (post.capa && b.capaUrl) extra.push({ name: post.capa, download_url: b.capaUrl, size: 0, path: "" });
+          arquivos.push(...extra); nomes.push(...extra.map((a) => a.name));
+        }
+      }
       if (nomes.includes("estado.json")) { try { estado = JSON.parse(await gh(`${base}/estado.json?ref=${RAMO}`, { raw: true })); } catch {} }
       return { pasta, arquivos, nomes, post, estado, erros: validar(post, nomes) };
     }));
@@ -1077,7 +1194,7 @@ function abrirGaveta(pasta, editar = false) {
       <label class="campo">Legenda</label><div class="texto-leg">${esc(p.legenda || "(sem legenda)")}</div>
       ${p.titulo_facebook ? `<label class="campo">Título no Facebook</label><div>${esc(p.titulo_facebook)}</div>` : ""}
       ${p.titulo_youtube ? `<label class="campo">Título no YouTube</label><div>${esc(p.titulo_youtube)}</div>` : ""}
-      <label class="campo">Arquivos</label><div class="redes">${x.arquivos.map((a) => `<a class="chip" href="${esc(a.download_url)}" target="_blank" rel="noopener">${esc(a.name)} · ${tamanho(a.size)}</a>`).join("")}</div>`;
+      <label class="campo">Arquivos</label><div class="redes">${x.arquivos.map((a) => `<a class="chip" href="${esc(a.download_url)}" target="_blank" rel="noopener">${esc(a.name)}${a.size ? " · " + tamanho(a.size) : ""}</a>`).join("")}</div>`;
     $("#gavPe").innerHTML = `<button class="btn perigo" id="gApaga">${ic("i-trash")}Apagar</button><button class="btn" id="gEdita">${ic("i-edit")}Editar</button>`;
     $("#gApaga").onclick = () => apagarPost(x);
     $("#gEdita").onclick = () => abrirGaveta(pasta, true);
@@ -1116,9 +1233,9 @@ async function salvarEdicao(x) {
 async function apagarPost(x) {
   const publicado = Object.values(x.estado).some((e) => e.status === "publicado");
   const ok = await confirmar({ titulo: "Apagar da agenda?", icone: "i-trash", perigo: true, rotulo: "Apagar",
-    texto: `<p>A pasta <b>${esc(x.pasta)}</b> e os ${x.arquivos.length} arquivo(s) dela saem da agenda.</p><p>${publicado ? "O que já foi publicado continua nas redes." : "Ele não vai ser publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>` });
+    texto: `<p>A pasta <b>${esc(x.pasta)}</b> sai da agenda.${x.post?.biblioteca ? " O vídeo continua na biblioteca." : ""}</p><p>${publicado ? "O que já foi publicado continua nas redes." : "Ele não vai ser publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>` });
   if (!ok) return;
-  try { toast("info", "Apagando…", x.pasta, 3000); await commit(`Painel: remove ${x.pasta} da agenda`, [], x.arquivos.map((a) => a.path)); toast("ok", "Post apagado", x.pasta); fecharGaveta(); carregarAgenda(); }
+  try { toast("info", "Apagando…", x.pasta, 3000); await commit(`Painel: remove ${x.pasta} da agenda`, [], x.arquivos.filter((a) => a.path).map((a) => a.path)); toast("ok", "Post apagado", x.pasta); fecharGaveta(); carregarAgenda(); }
   catch (e) { toast("err", "Não apagou", e.message); }
 }
 function isoParaLocal(iso) { const d = new Date(iso); return isNaN(d) ? "" : new Date(d.getTime() - 3 * 36e5).toISOString().slice(0, 16); }
@@ -1686,6 +1803,339 @@ $("#anCorpo").addEventListener("pointermove", (e) => {
 $("#anCorpo").addEventListener("pointerleave", () => { $$("#anCorpo .dica-g").forEach((d) => d.classList.remove("on")); $$("#anCorpo .ponto-h").forEach((c) => (c.style.opacity = 0)); }, true);
 $("#btnColetar").onclick = () => rodar("analises");
 
+
+/* ================================================================ biblioteca */
+let BIB = [], bibCarregou = false, bibErro = "", BIB_FILTRO = "prontos";
+async function carregarBiblioteca() {
+  try {
+    let itens = [];
+    try { itens = (await gh(`/contents/biblioteca?ref=${RAMO}`)) || []; } catch (e) { if (e.status !== 404) throw e; }
+    const pastas = itens.filter((i) => i.type === "dir").map((i) => i.name);
+    BIB = (await Promise.all(pastas.map(async (nome) => {
+      const base = `/contents/biblioteca/${encodeURIComponent(nome)}`;
+      const arquivos = (await gh(`${base}?ref=${RAMO}`)) || [];
+      let ficha = null;
+      try { ficha = JSON.parse(await gh(`${base}/ficha.json?ref=${RAMO}`, { raw: true })); } catch {}
+      if (!ficha) return null;
+      const capa = arquivos.find((a) => a.name === (ficha.capa || "capa.jpg"));
+      return { nome, ficha, arquivos, capaUrl: capa?.download_url || "", videoUrl: ficha.video_url || "" };
+    }))).filter(Boolean);
+    BIB.sort((a, b) => String(b.ficha.criado || "").localeCompare(String(a.ficha.criado || "")));
+    bibErro = "";
+  } catch (e) { bibErro = e.message; }
+  bibCarregou = true;
+  $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length;
+}
+function statusBib(b) {
+  const ags = POSTS.filter((x) => x.post?.biblioteca === b.nome);
+  const pend = ags.find((x) => situacao(x) !== "publicados");
+  if (pend) return { s: "agendado", quando: pend.post.quando, pasta: pend.pasta };
+  const pub = Object.keys(b.ficha.publicado || {});
+  if (pub.length) return { s: "publicado", redes: pub };
+  return { s: "pronto" };
+}
+function chipBib(st) {
+  if (st.s === "agendado") return `<span class="chip info"><span class="ponto"></span>${esc(F_COMPLETO.format(new Date(st.quando)))}</span>`;
+  if (st.s === "publicado") return `<span class="chip ok">${ic("i-check")}Publicado</span>`;
+  return `<span class="chip gold"><span class="ponto"></span>Pronto</span>`;
+}
+function chipTikTok(f) {
+  const s = f.tiktok?.status;
+  if (s === "postado") return `<span class="chip ok">${ic("i-tt")}TikTok</span>`;
+  if (s === "pedido") return `<span class="chip warn" title="Peça no chat para eu agendar no Metricool">${ic("i-tt")}TikTok pedido</span>`;
+  return "";
+}
+function duracao(s) { s = Math.round(+s || 0); return s ? (s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${s}s`) : ""; }
+function desenharBiblioteca() {
+  const alvo = $("#bibLista");
+  if (!bibCarregou) { alvo.innerHTML = `<div class="vids">${'<div class="skel" style="aspect-ratio:9/16"></div>'.repeat(4)}</div>`; return; }
+  if (bibErro) { alvo.innerHTML = vazio("i-alert", "Não consegui ler a biblioteca", esc(bibErro)); return; }
+  const grupo = { pronto: "prontos", agendado: "agendados", publicado: "publicados" };
+  const cont = { prontos: 0, agendados: 0, publicados: 0, todos: BIB.length };
+  BIB.forEach((b) => cont[grupo[statusBib(b).s]]++);
+  $$("[data-bc]").forEach((el) => (el.textContent = cont[el.dataset.bc]));
+  const lista = BIB.filter((b) => BIB_FILTRO === "todos" || grupo[statusBib(b).s] === BIB_FILTRO);
+  if (!lista.length) {
+    alvo.innerHTML = BIB.length ? vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.")
+      : vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.");
+    return;
+  }
+  alvo.innerHTML = `<div class="vids stagger">${lista.map((b) => {
+    const f = b.ficha, st = statusBib(b);
+    return `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
+      <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">
+        <span class="tag">${esc(NOMES_TIPO[f.tipo] || "Reel")}</span>
+        ${b.videoUrl ? `<video muted playsinline loop preload="none" data-src="${esc(b.videoUrl)}"></video><span class="play">${ic("i-play")}</span>` : ""}
+        <span class="dur">${esc(duracao(f.duracao))}</span>
+      </div>
+      <div class="info"><b>${esc(f.titulo || b.nome)}</b><div class="chips">${chipBib(st)}${chipTikTok(f)}</div></div>
+    </div>`;
+  }).join("")}</div>`;
+}
+$("#bibFiltros").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-bf]"); if (!b) return;
+  BIB_FILTRO = b.dataset.bf; $$("#bibFiltros [data-bf]").forEach((x) => x.classList.toggle("ativo", x === b));
+  moverIndicador($("#bibFiltros"), $("#bibFiltros .ind"), b); desenharBiblioteca();
+});
+// prévia: o vídeo toca quando o mouse passa por cima
+$("#bibLista").addEventListener("pointerover", (e) => {
+  const c = e.target.closest(".vid"); if (!c || reduzido || e.pointerType === "touch") return;
+  const v = $("video", c); if (!v || v.dataset.tocando) return;
+  if (!v.src) v.src = v.dataset.src;
+  v.dataset.tocando = "1"; v.play().then(() => v.classList.add("on")).catch(() => {});
+});
+$("#bibLista").addEventListener("pointerout", (e) => {
+  const c = e.target.closest(".vid"); if (!c || c.contains(e.relatedTarget)) return;
+  const v = $("video", c); if (!v) return;
+  delete v.dataset.tocando; v.classList.remove("on"); v.pause();
+});
+$("#bibLista").addEventListener("click", (e) => { const c = e.target.closest("[data-bib]"); if (c) abrirVideo(c.dataset.bib); });
+
+function abrirVideo(nome, agendar = false) {
+  const b = BIB.find((y) => y.nome === nome); if (!b) return;
+  const f = b.ficha, st = statusBib(b);
+  $("#gavRot").textContent = `${NOMES_TIPO[f.tipo] || "Reel"} · biblioteca`;
+  $("#gavTit").textContent = f.titulo || nome;
+  const player = `<video src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""} controls playsinline preload="metadata"></video>`;
+  if (agendar) {
+    const dias = []; for (let i = 0; i < 7; i++) dias.push(chaveDia(new Date(Date.now() + i * 864e5)));
+    $("#gavCorpo").innerHTML = `
+      <div class="det-video">${player}<div>
+        <label class="campo" style="margin-top:0">Dia</label>
+        <div class="ag-dias" id="agDias">${dias.map((k, i) => `<button class="chip" data-d="${k}">${i === 0 ? "Hoje" : i === 1 ? "Amanhã" : esc(F_CURTO.format(dataDe(k)))}</button>`).join("")}</div>
+        <input class="input" type="date" id="agData" style="margin-top:8px">
+        <label class="campo">Hora (Brasília)</label><input class="input" type="time" id="agHora">
+        <label class="campo">Redes</label>
+        <div class="redes" id="agRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ok" data-r="${r}" style="cursor:pointer;padding:8px 12px">${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
+        <div class="aviso-post" id="agErros" style="margin-top:12px"></div>
+      </div></div>
+      <label class="campo">Legenda</label><textarea class="input" id="agLeg" rows="6">${esc(f.legenda || "")}</textarea>
+      <label class="campo">Título no Facebook</label><input class="input" id="agFb" value="${esc(f.titulo_facebook || "")}">
+      <label class="campo">Título no YouTube</label><input class="input" id="agYt" maxlength="100" value="${esc(f.titulo_youtube || "")}">`;
+    const marca = () => $$("#agDias [data-d]").forEach((c) => c.classList.toggle("ok", c.dataset.d === $("#agData").value));
+    $("#agDias").onclick = (e) => { const c = e.target.closest("[data-d]"); if (c) { $("#agData").value = c.dataset.d; marca(); } };
+    $("#agData").oninput = marca;
+    $("#agRedes").onclick = (e) => { const c = e.target.closest("[data-r]"); if (c) c.classList.toggle("ok"); };
+    $("#gavPe").innerHTML = `<button class="btn fant" id="agVolta">Voltar</button><button class="btn pri" id="agOk">${ic("i-cal")}Agendar</button>`;
+    $("#agVolta").onclick = () => abrirVideo(nome);
+    $("#agOk").onclick = () => agendarDaBiblioteca(b);
+  } else {
+    const pub = f.publicado || {};
+    const linhas = Object.keys(NOMES_REDE).map((r) => {
+      const pr = pub[r];
+      const [cls, tit, sub] = pr ? ["ok", "Publicado", F_COMPLETO.format(new Date(pr.em))] : st.s === "agendado" ? ["info", "Agendado", F_COMPLETO.format(new Date(st.quando))] : ["", "Ainda não", "Escolha o dia e a hora em Agendar."];
+      return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span></div></div>`;
+    }).join("");
+    const tts = f.tiktok?.status || "";
+    $("#gavCorpo").innerHTML = `
+      <div class="det-video">${player}<div>${linhas}</div></div>
+      <label class="campo">TikTok (vai pelo Metricool)</label>
+      <div class="tt-op" id="ttOp">${[["", "Não vai"], ["pedido", "Quero no TikTok"], ["postado", "Já está no TikTok"]].map(([k, n]) => `<button class="chip ${tts === k ? (k === "postado" ? "ok" : k === "pedido" ? "warn" : "info") : ""}" data-tt="${k}">${ic("i-tt")}${n}</button>`).join("")}</div>
+      ${tts === "pedido" ? `<p class="dica">Peça no chat e eu agendo no Metricool.</p>` : ""}
+      <label class="campo">Legenda</label><div class="texto-leg">${esc(f.legenda || "(sem legenda)")}</div>
+      ${f.titulo_facebook ? `<label class="campo">Título no Facebook</label><div>${esc(f.titulo_facebook)}</div>` : ""}
+      ${f.titulo_youtube ? `<label class="campo">Título no YouTube</label><div>${esc(f.titulo_youtube)}</div>` : ""}
+      ${st.s === "agendado" ? `<div style="margin-top:16px"><button class="btn peq" data-abrir="${esc(st.pasta)}">Ver na agenda${ic("i-right")}</button></div>` : ""}`;
+    $("#ttOp").onclick = (e) => { const c = e.target.closest("[data-tt]"); if (c) marcarTikTok(b, c.dataset.tt); };
+    $("#gavPe").innerHTML = `<a class="btn fant" href="${esc(b.videoUrl)}" download>${ic("i-down")}Baixar</a><button class="btn pri" id="bAgenda">${ic("i-cal")}${st.s === "pronto" ? "Agendar" : "Agendar de novo"}</button>`;
+    $("#bAgenda").onclick = () => abrirVideo(nome, true);
+  }
+  $("#veu").classList.add("on"); $("#gaveta").classList.add("on"); $("#gaveta").setAttribute("aria-hidden", "false"); travar();
+}
+
+async function marcarTikTok(b, status) {
+  if (!TOKEN) return toast("err", "Conecte o painel primeiro", "Clique em Conectar.");
+  const ficha = { ...b.ficha };
+  if (status) ficha.tiktok = { status, em: new Date().toISOString() }; else delete ficha.tiktok;
+  try {
+    await commit(`Painel: TikTok de ${b.nome}`, [{ caminho: `biblioteca/${b.nome}/ficha.json`, base64: b64Texto(JSON.stringify(ficha, null, 2) + "\n") }]);
+    b.ficha = ficha; abrirVideo(b.nome); desenharBiblioteca(); if (VIEW === "cronograma") desenharCronograma();
+    toast("ok", status === "pedido" ? "Marcado para o TikTok" : status === "postado" ? "Marcado como postado no TikTok" : "TikTok desmarcado", status === "pedido" ? "Peça no chat e eu agendo no Metricool." : "");
+  } catch (e) { toast("err", "Não salvou", e.message); }
+}
+
+async function agendarDaBiblioteca(b) {
+  const f = b.ficha, data = $("#agData").value, hora = $("#agHora").value;
+  const redes = $$("#agRedes .chip.ok").map((c) => c.dataset.r);
+  const erros = [];
+  if (!TOKEN) erros.push("conecte o painel ao GitHub primeiro");
+  if (!data) erros.push("escolha o dia");
+  if (!hora) erros.push("escolha a hora");
+  if (!redes.length) erros.push("marque pelo menos uma rede");
+  const quando = data && hora ? `${data}T${hora}:00-03:00` : "";
+  if (quando && new Date(quando) < new Date()) erros.push("esse horário já passou");
+  if (!b.videoUrl) erros.push("o vídeo ainda não chegou na biblioteca");
+  if (erros.length) { $("#agErros").innerHTML = ic("i-alert") + `<span>${erros.map(esc).join(" · ")}</span>`; sacode($("#agOk")); return; }
+  const post = ordenar({ quando, tipo: f.tipo || "reel", redes, legenda: $("#agLeg").value.trim(), midias: ["video.mp4"], ...(b.capaUrl ? { capa: f.capa || "capa.jpg" } : {}),
+    ...($("#agFb").value.trim() ? { titulo_facebook: $("#agFb").value.trim() } : {}), ...($("#agYt").value.trim() ? { titulo_youtube: $("#agYt").value.trim() } : {}),
+    ...(f.ia ? { ia: true } : {}), biblioteca: b.nome });
+  let pasta = `${data}-${post.tipo}-${b.nome}`.slice(0, 80);
+  for (let i = 2; POSTS.some((x) => x.pasta === pasta); i++) pasta = `${data}-${post.tipo}-${b.nome}-${i}`.slice(0, 80);
+  const ok = await confirmar({ titulo: "Agendar este vídeo?", icone: "i-cal", rotulo: "Agendar",
+    texto: `<p><b>${esc(f.titulo || b.nome)}</b></p><p>${esc(nomeDia(new Date(quando)))}, <b>${esc(F_HORA.format(new Date(quando)))}</b> no ${esc(redes.map((r) => NOMES_REDE[r]).join(", "))}.</p><p>O robô publica sozinho nesse horário. O cronograma também é atualizado.</p>` });
+  if (!ok) return;
+  const btn = $("#agOk"); btn.disabled = true; btn.classList.add("gira"); btn.innerHTML = `${ic("i-refresh")}Agendando…`;
+  try {
+    ligarNoCronograma(b, data);
+    await commit(`Painel: agenda ${b.nome} para ${data}`, [
+      { caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") },
+      { caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") },
+    ]);
+    toast("ok", "Vídeo agendado", `${nomeDia(new Date(quando))}, ${F_HORA.format(new Date(quando))}`); confete();
+    fecharGaveta(); await carregarAgenda(); desenharBiblioteca();
+  } catch (e) {
+    toast("err", "Não agendou", e.message); btn.disabled = false; btn.classList.remove("gira"); btn.innerHTML = `${ic("i-cal")}Agendar`;
+    await carregarCronograma();
+  }
+}
+
+/* ================================================================ cronograma */
+const FORMATOS = { reel: "Reel", carrossel: "Carrossel", stories: "3 stories", story: "Story", imagem: "Imagem" };
+const REDES_CRONO = { instagram: ["Instagram", "i-ig"], facebook: ["Facebook", "i-fb"], youtube: ["YouTube", "i-yt"], tiktok: ["TikTok", "i-tt"] };
+const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
+const MODELO_PADRAO = { "1": ["stories", "carrossel", "reel"], "2": ["reel"], "3": ["stories", "reel"], "4": ["reel"], "5": ["stories", "carrossel", "reel"], "6": ["reel"], "0": ["stories", "reel"] };
+const NOMES_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";
+function dataDe(k) { return new Date(k + "T12:00:00-03:00"); }
+function somaDias(k, n) { return chaveDia(new Date(dataDe(k).getTime() + n * 864e5)); }
+function segundaDe(k) { return somaDias(k, -((dataDe(k).getUTCDay() + 6) % 7)); }
+let SEMANA = segundaDe(chaveDia(new Date()));
+function novoId() { return Math.random().toString(36).slice(2, 9); }
+function redesPadrao(fmt) { return fmt === "reel" ? ["instagram", "facebook", "youtube", "tiktok"] : fmt === "carrossel" ? ["instagram", "facebook", "tiktok"] : ["instagram", "facebook"]; }
+
+async function carregarCronograma() {
+  try {
+    CRONO = JSON.parse(await gh(`/contents/cronograma/cronograma.json?ref=${RAMO}`, { raw: true }));
+    cronoErro = "";
+  } catch (e) { if (e.status === 404) { CRONO = { itens: [] }; cronoErro = ""; } else cronoErro = e.message; }
+  CRONO.itens = CRONO.itens || []; CRONO.modelo = CRONO.modelo || MODELO_PADRAO;
+  cronoCarregou = true;
+  if (VIEW === "cronograma") desenharCronograma();
+}
+function statusItem(it) {
+  if (it.biblioteca) {
+    const b = BIB.find((y) => y.nome === it.biblioteca);
+    if (b) { const s = statusBib(b).s; if (s === "publicado" || s === "agendado") return s; if (["ideia", "roteiro", "producao"].includes(it.status)) return "pronto"; }
+  }
+  return ST_CRONO[it.status] ? it.status : "ideia";
+}
+function ligarNoCronograma(b, data) {
+  let it = CRONO.itens.find((x) => x.biblioteca === b.nome);
+  if (!it) it = CRONO.itens.find((x) => x.data === data && x.formato === (b.ficha.tipo || "reel") && !x.biblioteca && x.status !== "publicado");
+  if (!it) { it = { id: novoId(), formato: b.ficha.tipo || "reel", redes: redesPadrao("reel") }; CRONO.itens.push(it); }
+  it.data = data; it.biblioteca = b.nome; it.status = "agendado";
+  if (!it.tema) it.tema = b.ficha.titulo || b.nome;
+}
+function desenharCronograma() {
+  const fim = somaDias(SEMANA, 6);
+  $("#cSemana").textContent = `${dataDe(SEMANA).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })} a ${dataDe(fim).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
+  if (!cronoCarregou) { $("#crono").innerHTML = '<div class="skel" style="height:220px"></div>'.repeat(7); return; }
+  if (cronoErro) { $("#crono").innerHTML = vazio("i-alert", "Não consegui ler o cronograma", esc(cronoErro)); return; }
+  const hoje = chaveDia(new Date());
+  const daSemana = CRONO.itens.filter((x) => x.data >= SEMANA && x.data <= fim);
+  const pub = daSemana.filter((x) => statusItem(x) === "publicado").length;
+  const vazios = daSemana.filter((x) => ["ideia", "roteiro", "producao"].includes(statusItem(x))).length;
+  $("#cResumo").innerHTML = daSemana.length
+    ? `<span><b style="color:var(--text)">${pub}</b> de ${daSemana.length} publicados</span><div class="barra"><i style="width:${Math.round(pub / daSemana.length * 100)}%"></i></div><span>${vazios ? `${vazios} ainda sem vídeo pronto` : "tudo pronto"}</span>`
+    : `<span>Semana vazia. Use "Preencher com o modelo" ou adicione itens.</span>`;
+  const dias = []; for (let i = 0; i < 7; i++) dias.push(somaDias(SEMANA, i));
+  const ordem = Object.keys(FORMATOS);
+  $("#crono").innerHTML = dias.map((k) => {
+    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
+    return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
+      <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
+      ${itens.map((it) => {
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], b = it.biblioteca ? BIB.find((y) => y.nome === it.biblioteca) : null;
+        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
+          <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
+          <div class="mini">${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${b?.capaUrl ? `<span class="thumb" style="background-image:url('${esc(b.capaUrl)}')"></span>` : ""}</div>
+        </div>`;
+      }).join("")}
+      <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
+    </div>`;
+  }).join("");
+}
+$("#cAntes").onclick = () => { SEMANA = somaDias(SEMANA, -7); desenharCronograma(); };
+$("#cDepois").onclick = () => { SEMANA = somaDias(SEMANA, 7); desenharCronograma(); };
+$("#cHoje").onclick = () => { SEMANA = segundaDe(chaveDia(new Date())); desenharCronograma(); };
+$("#cNovo").onclick = () => editarItem(null, chaveDia(new Date()) >= SEMANA && chaveDia(new Date()) <= somaDias(SEMANA, 6) ? chaveDia(new Date()) : SEMANA);
+$("#crono").addEventListener("click", (e) => {
+  const a = e.target.closest("[data-add]"); if (a) return editarItem(null, a.dataset.add);
+  const it = e.target.closest("[data-item]"); if (it) editarItem(CRONO.itens.find((x) => x.id === it.dataset.item));
+});
+// arrastar um item para outro dia
+let itemArrastado = null;
+$("#crono").addEventListener("dragstart", (e) => { const it = e.target.closest("[data-item]"); if (!it) return; itemArrastado = it.dataset.item; it.classList.add("arrastando"); e.dataTransfer.effectAllowed = "move"; });
+$("#crono").addEventListener("dragend", () => { itemArrastado = null; $$("#crono .arrastando, #crono .alvo").forEach((x) => x.classList.remove("arrastando", "alvo")); });
+$("#crono").addEventListener("dragover", (e) => { const d = e.target.closest("[data-cdia]"); if (!d || !itemArrastado) return; e.preventDefault(); $$("#crono .alvo").forEach((x) => x !== d && x.classList.remove("alvo")); d.classList.add("alvo"); });
+$("#crono").addEventListener("drop", async (e) => {
+  const d = e.target.closest("[data-cdia]"); if (!d || !itemArrastado) return; e.preventDefault();
+  const it = CRONO.itens.find((x) => x.id === itemArrastado); if (!it || it.data === d.dataset.cdia) return;
+  const antes = it.data; it.data = d.dataset.cdia; desenharCronograma();
+  if (!(await salvarCrono(`move "${it.tema || FORMATOS[it.formato]}" para ${it.data}`))) { it.data = antes; desenharCronograma(); }
+});
+async function salvarCrono(msg) {
+  if (!TOKEN) { toast("err", "Conecte o painel primeiro", "Clique em Conectar."); return false; }
+  try { await commit(`Painel: cronograma, ${msg}`, [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }]); toast("ok", "Cronograma salvo", msg); return true; }
+  catch (e) { toast("err", "Não salvou", e.message); return false; }
+}
+$("#cModelo").onclick = async () => {
+  const novos = [];
+  for (let i = 0; i < 7; i++) {
+    const k = somaDias(SEMANA, i), fmts = CRONO.modelo[String(dataDe(k).getUTCDay())] || [];
+    for (const fmt of fmts) if (!CRONO.itens.some((x) => x.data === k && x.formato === fmt)) novos.push({ id: novoId(), data: k, formato: fmt, tema: "", redes: redesPadrao(fmt), status: "ideia" });
+  }
+  if (!novos.length) return toast("info", "A semana já segue o modelo", "Nada para acrescentar.");
+  const resumo = Object.entries(novos.reduce((a, x) => ((a[x.formato] = (a[x.formato] || 0) + 1), a), {})).map(([f, n]) => `${n} ${FORMATOS[f].toLowerCase()}`).join(", ");
+  const ok = await confirmar({ titulo: "Preencher a semana?", icone: "i-layers", rotulo: "Preencher", texto: `<p>Vou criar ${novos.length} vaga(s) vazias seguindo o modelo: ${esc(resumo)}.</p><p>O que já está na semana fica como está.</p>` });
+  if (!ok) return;
+  CRONO.itens.push(...novos); desenharCronograma();
+  if (!(await salvarCrono(`preenche a semana de ${SEMANA}`))) { CRONO.itens = CRONO.itens.filter((x) => !novos.includes(x)); desenharCronograma(); }
+};
+function editarItem(it, dataInicial) {
+  const novo = !it;
+  const x = it ? { ...it, redes: [...(it.redes || [])] } : { id: novoId(), data: dataInicial, formato: "reel", tema: "", redes: redesPadrao("reel"), status: "ideia", notas: "" };
+  const m = $("#modal");
+  const opcoesBib = BIB.map((b) => `<option value="${esc(b.nome)}" ${x.biblioteca === b.nome ? "selected" : ""}>${esc(b.ficha.titulo || b.nome)}</option>`).join("");
+  m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>${novo ? "Novo item" : "Editar item"}</h2>
+    <div class="form-grade"><div><label class="campo" style="margin-top:0">Dia</label><input class="input" type="date" id="ciData" value="${esc(x.data)}"></div>
+    <div><label class="campo" style="margin-top:0">Vídeo da biblioteca</label><select class="input" id="ciBib"><option value="">Nenhum</option>${opcoesBib}</select></div></div>
+    <label class="campo">Formato</label><div class="escolhas" id="ciFmt">${Object.entries(FORMATOS).map(([k, n]) => `<button class="chip ${x.formato === k ? "ok" : ""}" data-v="${k}">${n}</button>`).join("")}</div>
+    <label class="campo">Tema</label><input class="input" id="ciTema" value="${esc(x.tema || "")}" placeholder="Ex.: Cleópatra e as pirâmides">
+    <label class="campo">Redes</label><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div>
+    <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
+    ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
+    <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
+    <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}Salvar</button></div>`;
+  abrirModal();
+  $("#ciFmt").onclick = (e) => { const c = e.target.closest("[data-v]"); if (!c) return; $$("#ciFmt .chip").forEach((y) => y.classList.toggle("ok", y === c)); };
+  $("#ciRedes").onclick = (e) => { const c = e.target.closest("[data-v]"); if (c) c.classList.toggle("ok"); };
+  let stEscolhido = x.status;
+  $("#ciSt").onclick = (e) => { const c = e.target.closest("[data-v]"); if (!c) return; stEscolhido = c.dataset.v; $$("#ciSt .chip").forEach((y) => { y.className = "chip" + (y === c ? " " + y.dataset.c : ""); }); };
+  $("#ciBib").onchange = () => { const b = BIB.find((y) => y.nome === $("#ciBib").value); if (b && !$("#ciTema").value) $("#ciTema").value = b.ficha.titulo || b.nome; };
+  $("#ciSalva").onclick = async () => {
+    const data = $("#ciData").value; if (!data) return sacode($("#ciData"));
+    Object.assign(x, { data, formato: $("#ciFmt .chip.ok")?.dataset.v || x.formato, tema: $("#ciTema").value.trim(), redes: $$("#ciRedes .chip.ok").map((c) => c.dataset.v),
+      status: stEscolhido, notas: $("#ciNotas").value.trim() });
+    const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
+    if (!x.notas) delete x.notas;
+    const antes = JSON.stringify(CRONO.itens);
+    if (novo) CRONO.itens.push(x); else Object.assign(it, x);
+    fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);
+    desenharCronograma();
+    if (!(await salvarCrono(`${novo ? "novo item" : "edita"} "${x.tema || FORMATOS[x.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); }
+  };
+  $("#ciApaga")?.addEventListener("click", async () => {
+    fecharModal();
+    const ok = await confirmar({ titulo: "Tirar do cronograma?", icone: "i-trash", perigo: true, rotulo: "Tirar", texto: `<p><b>${esc(it.tema || FORMATOS[it.formato])}</b> sai do plano. Nada é apagado da agenda nem da biblioteca.</p>` });
+    if (!ok) return;
+    const antes = JSON.stringify(CRONO.itens);
+    CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); desenharCronograma();
+    if (!(await salvarCrono(`tira "${it.tema || FORMATOS[it.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); }
+  });
+}
+
 /* ================================================================ navegação */
 let VIEW = "inicio";
 function irPara(v) {
@@ -1695,6 +2145,8 @@ function irPara(v) {
   if (v === "agenda") { desenharAgenda(); requestAnimationFrame(() => moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo"))); }
   if (v === "novo" && NOVO.etapa === ETAPAS) resetarNovo();
   if (v === "analises") { if (AN) { desenharAnalises(); } else carregarAnalises(); }
+  if (v === "biblioteca") { desenharBiblioteca(); requestAnimationFrame(() => moverIndicador($("#bibFiltros"), $("#bibFiltros .ind"), $("#bibFiltros .ativo"))); }
+  if (v === "cronograma") desenharCronograma();
   fecharGaveta();
 }
 function posicionarNav() {
@@ -1725,7 +2177,7 @@ document.addEventListener("pointermove", (e) => {
   const c = e.target.closest?.(".spot"); if (!c) return;
   const r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px");
 });
-addEventListener("resize", () => { posicionarNav(); if (VIEW === "agenda") moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo")); });
+addEventListener("resize", () => { posicionarNav(); if (VIEW === "agenda") moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo")); if (VIEW === "biblioteca") moverIndicador($("#bibFiltros"), $("#bibFiltros .ind"), $("#bibFiltros .ativo")); });
 
 /* ================================================================ tema */
 function aplicarTema(t) {
@@ -1740,10 +2192,14 @@ $("#btnTema").onclick = () => {
 aplicarTema(local.get("painel-robo-tema") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
 
 /* ================================================================ início */
-function desenharTudo() { desenharInicio(); if (VIEW === "agenda") desenharAgenda(); }
+function desenharTudo() {
+  desenharInicio(); if (VIEW === "agenda") desenharAgenda();
+  if (bibCarregou) $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length;
+  if (VIEW === "biblioteca") desenharBiblioteca(); if (VIEW === "cronograma") desenharCronograma();
+}
 function atualizar() {
   const b = $("#btnAtualizar"); b.classList.add("gira");
-  Promise.allSettled([carregarAgenda(), carregarRuns()]).then(() => setTimeout(() => b.classList.remove("gira"), 400));
+  Promise.allSettled([carregarBiblioteca().then(carregarAgenda), carregarCronograma(), carregarRuns()]).then(() => setTimeout(() => b.classList.remove("gira"), 400));
 }
 $("#btnAtualizar").onclick = atualizar;
 $("#btnAtualizarRuns").onclick = carregarRuns;

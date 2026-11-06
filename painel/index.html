@@ -191,7 +191,7 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .gaveta.on { transform: none; }
 .gaveta:not(.on) { visibility: hidden; transition: transform .55s var(--ease), visibility 0s .55s; }
 .gaveta .cab { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-.gaveta .corpo { padding: 18px; overflow-y: auto; flex: 1; }
+.gaveta .corpo { padding: 18px; overflow-y: auto; flex: 1; overscroll-behavior: contain; }
 .gaveta .pe { padding: 14px 18px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
 .det-midia { display: grid; grid-template-columns: 170px 1fr; gap: 16px; }
 .carrossel-mini { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; border-radius: 14px; }
@@ -345,7 +345,7 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .faixa { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(227,189,120,.35); background: linear-gradient(90deg, var(--gold-glow), transparent); margin-bottom: 18px; flex-wrap: wrap; }
 .faixa .ic { color: var(--gold); }
 .faixa p { flex: 1; margin: 0; font-size: 14px; min-width: 200px; }
-.modal { position: fixed; z-index: 60; left: 50%; top: 50%; width: min(480px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; transform: translate(-50%, -46%) scale(.96); opacity: 0; pointer-events: none; transition: all .4s var(--spring); background: var(--surface-solid); border: 1px solid var(--border); border-radius: 22px; padding: 24px; box-shadow: 0 40px 100px -20px rgba(0,0,0,.7); }
+.modal { position: fixed; z-index: 60; left: 50%; top: 50%; width: min(480px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; transform: translate(-50%, -46%) scale(.96); opacity: 0; pointer-events: none; transition: all .4s var(--spring); background: var(--surface-solid); border: 1px solid var(--border); border-radius: 22px; padding: 24px; box-shadow: 0 40px 100px -20px rgba(0,0,0,.7); overscroll-behavior: contain; }
 .modal.on { opacity: 1; transform: translate(-50%, -50%); pointer-events: auto; }
 .modal .ic-topo { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--teal-glow); color: var(--teal); margin-bottom: 14px; }
 .modal .ic-topo.perigo { background: var(--err-bg); color: var(--err); }
@@ -450,6 +450,8 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .cadeado .bolha { margin-bottom: 16px; }
 .lado { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-top: 16px; }
 @media (max-width: 900px) { .lado { grid-template-columns: 1fr; } .topo-mob { display: inline-flex !important; } }
+html.travado, html.travado body { overflow: hidden; }
+.veu { touch-action: none; }
 .oculto { display: none !important; }
 .topo-mob { display: none !important; }
 </style>
@@ -1080,9 +1082,11 @@ function abrirGaveta(pasta, editar = false) {
     $("#gApaga").onclick = () => apagarPost(x);
     $("#gEdita").onclick = () => abrirGaveta(pasta, true);
   }
-  $("#veu").classList.add("on"); $("#gaveta").classList.add("on"); $("#gaveta").setAttribute("aria-hidden", "false");
+  $("#veu").classList.add("on"); $("#gaveta").classList.add("on"); $("#gaveta").setAttribute("aria-hidden", "false"); travar();
 }
-function fecharGaveta() { $("#veu").classList.remove("on"); $("#gaveta").classList.remove("on"); $("#gaveta").setAttribute("aria-hidden", "true"); $$("#gaveta video").forEach((v) => v.pause()); }
+// Com gaveta ou diálogo aberto, a página de trás não rola.
+function travar() { document.documentElement.classList.toggle("travado", !!($("#gaveta.on") || $("#modal.on"))); }
+function fecharGaveta() { $("#veu").classList.remove("on"); $("#gaveta").classList.remove("on"); $("#gaveta").setAttribute("aria-hidden", "true"); $$("#gaveta video").forEach((v) => v.pause()); travar(); }
 $("#veu").onclick = fecharGaveta; $("#gavFechar").onclick = fecharGaveta;
 
 async function salvarEdicao(x) {
@@ -1465,8 +1469,8 @@ function blocoSenha() {
 
 /* ================================================================ diálogo, toasts, confete */
 let fechaModalCb = null;
-function abrirModal() { $("#veuModal").classList.add("on"); $("#modal").classList.add("on"); }
-function fecharModal(v = false) { $("#veuModal").classList.remove("on"); $("#modal").classList.remove("on"); const cb = fechaModalCb; fechaModalCb = null; cb && cb(v); }
+function abrirModal() { $("#veuModal").classList.add("on"); $("#modal").classList.add("on"); travar(); }
+function fecharModal(v = false) { $("#veuModal").classList.remove("on"); $("#modal").classList.remove("on"); travar(); const cb = fechaModalCb; fechaModalCb = null; cb && cb(v); }
 $("#veuModal").onclick = () => fecharModal(false);
 $("#modal").addEventListener("click", (e) => { if (e.target.closest("[data-fecha]")) fecharModal(false); });
 function confirmar({ titulo, texto, rotulo = "Confirmar", icone = "i-check", perigo = false }) {

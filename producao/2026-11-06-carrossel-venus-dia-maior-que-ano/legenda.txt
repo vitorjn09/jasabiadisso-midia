@@ -1,0 +1,14 @@
+CARROSSEL · SEXTA 06/11/2026 · CURIOSIDADE DO DIA · O DIA MAIOR QUE O ANO
+4 slides em 1080×1350 (4:5). Postar na ordem 06-11-slide-01 a 06-11-slide-04 (a capa é o 01).
+Ordem do dia: este carrossel sai ANTES do Reel de hoje ("Em Vênus, o dia é maior que o ano"). Ele é o esquenta do vídeo e guarda o "Sol nasce do lado errado" para o Reel.
+Sem horário fixo. Não publicado nem agendado.
+
+Legenda:
+Em Vênus, uma volta do planeta em si mesmo leva 243 dias da Terra. E a volta no Sol? Arrasta pra ver por que lá o dia é maior que o ano 🪐 E tem coisa ainda mais estranha: o vídeo completo sai hoje no perfil. Você já sabia disso? 👇
+
+Hashtags (máximo de 5):
+#curiosidades #venus #astronomia #sistemasolar #jasabiadisso
+
+Fatos: os mesmos do roteiro checado do Reel (produção/venus-dia-maior-que-ano/roteiro-venus-dia-maior-que-ano.txt): rotação de 243 dias e volta no Sol de 224,7 dias (NASA Science, ESA); rotação ao contrário (NASA Science).
+Ressalva: o "dia" aqui é o dia sideral (uma volta no próprio eixo). O dia solar de Vênus dura cerca de 117 dias.
+Ilustrações recortadas do próprio Reel de Vênus. Para refazer: abrir carrossel.html e tirar print de cada <section> em 1080×1350.

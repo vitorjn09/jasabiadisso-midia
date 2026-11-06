@@ -1,0 +1,14 @@
+STORIES DE SEXTA · 06/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+
+Ordem e horário sugerido (o Reel de Vênus saiu às 18:16):
+1) story-1-manha.png · 9:30 (já passou: se for postar hoje ainda, suba antes do 2)
+   O que sai hoje: o planeta onde o dia é maior que o ano (carrossel e vídeo).
+2) story-2-antes-do-reel.png · 17:30 (antes do Reel)
+   Curiosidade extra, já respondida: a "Estrela d'Alva" não é estrela, é o planeta Vênus, o que mais brilha no céu da noite depois da Lua.
+3) story-3-depois-do-reel.png · 20:15 (cerca de 2 h depois do Reel)
+   Teaser de amanhã (sábado 07/11): "o que tem a ver a Cleópatra, as pirâmides e a Lua?" Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): "Estrela d'Alva" / "Estrela da Manhã" é o nome popular de Vênus visto ao amanhecer; Vênus é o objeto natural mais brilhante do céu noturno depois da Lua (NASA Science, Venus Facts: https://science.nasa.gov/venus/venus-facts/).
+Ilustrações recortadas dos Reels de Vênus e da Cleópatra. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

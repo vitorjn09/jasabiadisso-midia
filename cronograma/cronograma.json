@@ -117,26 +117,26 @@
       "id": "s2h",
       "data": "2026-11-06",
       "formato": "stories",
-      "tema": "",
+      "tema": "Vênus (Estrela d'Alva) e teaser da Cleópatra",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-06T16:05:08.636Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-06-stories-venus-e-teaser-cleopatra"
     },
     {
       "id": "s2i",
       "data": "2026-11-06",
       "formato": "carrossel",
-      "tema": "",
+      "tema": "Em Vênus, o dia é maior que o ano (esquenta do Reel)",
       "redes": [
         "instagram",
         "facebook",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-06T16:04:56.125Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-06-carrossel-venus-dia-maior-que-ano"
     },
     {
       "id": "s2j",

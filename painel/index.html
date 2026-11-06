@@ -1506,7 +1506,7 @@ function confete() {
 
 /* ================================================================ análises */
 let SENHA_AN = local.get("painel-robo-senha-analises");
-let AN = null, AN_REDE = "instagram", AN_PER = "d7", AN_ORDEM = "visualizacoes", anCarregando = false;
+let AN = null, AN_REDE = "instagram", AN_PER = "d7", AN_ORDEM = "visualizacoes", AN_ORDEM_FB = "visualizacoes", anCarregando = false;
 const N = new Intl.NumberFormat("pt-BR");
 const NC = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
 const num = (v) => (v === null || v === undefined ? "—" : Math.abs(v) >= 10000 ? NC.format(v) : N.format(v));
@@ -1543,6 +1543,13 @@ function delta(atual, antes) {
   if (atual == null || antes == null) return "";
   const d = atual - antes, cls = d > 0 ? "sobe" : d < 0 ? "desce" : "igual";
   return `<span class="delta ${cls}">${d > 0 ? "▲" : d < 0 ? "▼" : "•"} ${d > 0 ? "+" : ""}${num(d)} <span style="color:var(--faint);font-weight:500">em 7 dias</span></span>`;
+}
+// Novos seguidores por dia: vem da Meta (contas com 100+ seguidores) ou da diferença entre as coletas diárias.
+function novosPorDia(ig) {
+  let pts = (ig.seguidores_por_dia || []).map((x) => ({ x: x.dia, y: x.novos || 0 }));
+  if (!pts.length) { const s = serie("ig_seguidores"); pts = s.slice(1).map((p, i) => ({ x: p.x, y: Math.max(0, p.y - s[i].y) })).slice(-30); }
+  if (!pts.length) return `<div class="vazio">Aparece a partir de amanhã, com a segunda coleta. A Meta só manda o número dia a dia para contas com 100 seguidores ou mais, então até lá o painel calcula comparando as coletas.</div>`;
+  return graficoBarras(pts, "novos");
 }
 function serie(chave) { return (AN.historico || []).filter((h) => h[chave] != null).map((h) => ({ x: h.dia, y: h[chave] })); }
 function valorHa(chave, dias) {
@@ -1614,7 +1621,7 @@ function desenharAnalises() {
       <div class="card"><h3>${ic("i-chart")}Seguidores no Instagram</h3>${graficoLinha(serie("ig_seguidores"), "seguidores")}</div>
       <div class="card"><h3>${ic("i-heart")}Interações · ${AN_PER === "ontem" ? "ontem" : AN_PER === "d7" ? "7 dias" : "28 dias"}</h3><div style="margin-top:14px">${rosca([{ n: "Curtidas", v: p.likes, cor: "#ff6b8b" }, { n: "Comentários", v: p.comments, cor: "#7fb2ff" }, { n: "Compartilhamentos", v: p.shares, cor: "#e3bd78" }, { n: "Salvos", v: p.saves, cor: "#5fb3a6" }])}</div></div>
     </div>
-    <div class="card" style="margin-top:16px"><h3>${ic("i-users")}Seguidores novos por dia (30 dias)</h3>${graficoBarras((ig.seguidores_por_dia || []).map((x) => ({ x: x.dia, y: x.novos || 0 })), "novos")}</div>
+    <div class="card" style="margin-top:16px"><h3>${ic("i-users")}Seguidores novos por dia (30 dias)</h3>${novosPorDia(ig)}</div>
     <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
       <div class="segm" id="anOrdem"><div class="ind"></div>${[["visualizacoes", "Views"], ["alcance", "Alcance"], ["interacoes", "Interações"], ["salvos", "Salvos"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-ano="${k}" class="${AN_ORDEM === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
       <div class="tops stagger">${(ig.posts || []).slice().sort((a, b) => (b[AN_ORDEM] ?? -1) - (a[AN_ORDEM] ?? -1)).slice(0, 8).map((x, i) => `
@@ -1633,6 +1640,12 @@ function desenharAnalises() {
       ${kpi("i-user", "Visitas à página (28d)", num(d.page_views_total))}
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Seguidores no Facebook</h3>${graficoLinha(serie("fb_seguidores"), "seguidores")}</div>
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
+      <div class="segm" id="anOrdemFb"><div class="ind"></div>${[["visualizacoes", "Views"], ["interacoes", "Interações"], ["reacoes", "Reações"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-anf="${k}" class="${AN_ORDEM_FB === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${(fb.posts || []).slice().sort((a, b) => (b[AN_ORDEM_FB] ?? -1) - (a[AN_ORDEM_FB] ?? -1)).slice(0, 8).map((x, i) => `
+        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[AN_ORDEM_FB])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[AN_ORDEM_FB])}</small></div></div>
+        <div class="mets"><div><b>${num(x.reacoes)}</b>reações</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.compartilhamentos)}</b>compart.</div></div>
+        <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.legenda ? " · " + esc(x.legenda) : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
     ${avisos(fb.erros)}`;
   } else {
     const yt = AN.youtube || {}, c = yt.conta || {};
@@ -1650,13 +1663,14 @@ function desenharAnalises() {
   }
   $("#anCorpo").innerHTML = segm + html;
   requestAnimationFrame(() => {
-    ["#anRedes", "#anPer", "#anOrdem"].forEach((s) => { const c = $(s); if (c) moverIndicador(c, $(".ind", c), $(".ativo", c)); });
+    ["#anRedes", "#anPer", "#anOrdem", "#anOrdemFb"].forEach((s) => { const c = $(s); if (c) moverIndicador(c, $(".ind", c), $(".ativo", c)); });
     $$("#anCorpo .linha.desenha").forEach((p) => p.style.setProperty("--len", p.getTotalLength() + 1));
     setTimeout(() => $$("#anCorpo .rosca circle[data-d]").forEach((c) => c.setAttribute("stroke-dasharray", c.dataset.d)), 60);
   });
 }
 $("#anCorpo").addEventListener("click", (e) => {
-  const r = e.target.closest("[data-anr]"), p = e.target.closest("[data-anp]"), o = e.target.closest("[data-ano]");
+  const r = e.target.closest("[data-anr]"), p = e.target.closest("[data-anp]"), o = e.target.closest("[data-ano]"), f = e.target.closest("[data-anf]");
+  if (f) { AN_ORDEM_FB = f.dataset.anf; desenharAnalises(); }
   if (r) { AN_REDE = r.dataset.anr; desenharAnalises(); } if (p) { AN_PER = p.dataset.anp; desenharAnalises(); } if (o) { AN_ORDEM = o.dataset.ano; desenharAnalises(); }
 });
 $("#anCorpo").addEventListener("pointermove", (e) => {

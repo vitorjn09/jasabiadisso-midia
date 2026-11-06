@@ -1,0 +1,16 @@
+STORIES DE SEGUNDA · 09/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+
+Atenção: o Reel de 09/11 ainda está como "ideia" no cronograma, com o tema "A Universidade de Oxford é mais antiga que o Império Asteca" (escolhido agora pela rotina). Os stories anunciam esse tema, então o Reel precisa ser pedido e feito até lá.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: a universidade que é mais velha que os astecas.
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: a Cidade do México foi feita em cima de um lago; ali ficava Tenochtitlan, a capital asteca, fundada numa ilha do lago Texcoco por volta de 1325.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (terça 10/11): "o que esse bichinho tem quase igual a você?" (coala; a resposta, a impressão digital, fica para o vídeo). Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): Britannica, "Tenochtitlán" (fundada c. 1325 numa ilha do lago Texcoco; a Cidade do México foi construída sobre as ruínas) e "Lake Texcoco" (o lago foi drenado e aterrado ao longo dos séculos).
+Desenhos próprios. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

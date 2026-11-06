@@ -169,33 +169,33 @@
       "id": "s2l",
       "data": "2026-11-08",
       "formato": "stories",
-      "tema": "",
+      "tema": "Flamingo numa perna só e teaser de Oxford x astecas",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-06T16:13:35.909Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-08-stories-flamingo-e-teaser-oxford"
     },
     {
       "id": "s2m",
       "data": "2026-11-08",
       "formato": "reel",
-      "tema": "",
+      "tema": "Por que o flamingo é rosa? (a cor vem da comida)",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-06T16:13:32.543Z"
+      "status": "pronto",
+      "biblioteca": "flamingo-rosa-comida"
     },
     {
       "id": "qte2ajw",
       "data": "2026-11-09",
       "formato": "reel",
-      "tema": "",
+      "tema": "A Universidade de Oxford é mais antiga que o Império Asteca",
       "redes": [
         "instagram",
         "facebook",
@@ -220,19 +220,19 @@
       "id": "oebclj9",
       "data": "2026-11-09",
       "formato": "stories",
-      "tema": "",
+      "tema": "Tenochtitlan no lago e teaser do coala",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-06T19:26:15.365Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-09-stories-tenochtitlan-e-teaser-coala"
     },
     {
       "id": "kporbd1",
       "data": "2026-11-10",
       "formato": "reel",
-      "tema": "",
+      "tema": "O coala tem impressão digital quase igual à humana",
       "redes": [
         "instagram",
         "facebook",

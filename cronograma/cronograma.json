@@ -1,26 +1,819 @@
 {
   "modelo": {
-    "1": ["stories", "carrossel", "reel"],
-    "2": ["reel"],
-    "3": ["stories", "reel"],
-    "4": ["reel"],
-    "5": ["stories", "carrossel", "reel"],
-    "6": ["reel"],
-    "0": ["stories", "reel"]
+    "0": [
+      "reel",
+      "stories"
+    ],
+    "1": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2": [
+      "reel",
+      "stories"
+    ],
+    "3": [
+      "stories"
+    ],
+    "4": [
+      "reel"
+    ],
+    "5": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "6": [
+      "reel"
+    ]
   },
   "itens": [
-    { "id": "s2a", "data": "2026-11-02", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "pulado" },
-    { "id": "s2b", "data": "2026-11-02", "formato": "carrossel", "tema": "", "redes": ["instagram", "facebook", "tiktok"], "status": "pulado" },
-    { "id": "s2c", "data": "2026-11-02", "formato": "reel", "tema": "Bebê pelo correio", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
-    { "id": "s2d", "data": "2026-11-03", "formato": "stories", "tema": "Toy Story 2 e teaser do idiota", "redes": ["instagram", "facebook"], "status": "publicado" },
-    { "id": "s2e", "data": "2026-11-03", "formato": "reel", "tema": "Toy Story 2 apagado", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
-    { "id": "s2f", "data": "2026-11-04", "formato": "stories", "tema": "Hoje no perfil, você sabia, teaser de Vênus", "redes": ["instagram", "facebook"], "status": "publicado" },
-    { "id": "s2g", "data": "2026-11-05", "formato": "reel", "tema": "Idiota já foi o cidadão comum", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
-    { "id": "s2h", "data": "2026-11-06", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "ideia" },
-    { "id": "s2i", "data": "2026-11-06", "formato": "carrossel", "tema": "", "redes": ["instagram", "facebook", "tiktok"], "status": "ideia" },
-    { "id": "s2j", "data": "2026-11-06", "formato": "reel", "tema": "Em Vênus, o dia é maior que o ano", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "agendado" },
-    { "id": "s2k", "data": "2026-11-07", "formato": "reel", "tema": "A Cleópatra e as pirâmides", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "pronto", "biblioteca": "cleopatra-piramides" },
-    { "id": "s2l", "data": "2026-11-08", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "ideia" },
-    { "id": "s2m", "data": "2026-11-08", "formato": "reel", "tema": "", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "ideia" }
+    {
+      "id": "s2a",
+      "data": "2026-11-02",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "pulado"
+    },
+    {
+      "id": "s2b",
+      "data": "2026-11-02",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "pulado"
+    },
+    {
+      "id": "s2c",
+      "data": "2026-11-02",
+      "formato": "reel",
+      "tema": "Bebê pelo correio",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "publicado"
+    },
+    {
+      "id": "s2d",
+      "data": "2026-11-03",
+      "formato": "stories",
+      "tema": "Toy Story 2 e teaser do idiota",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "publicado"
+    },
+    {
+      "id": "s2e",
+      "data": "2026-11-03",
+      "formato": "reel",
+      "tema": "Toy Story 2 apagado",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "publicado"
+    },
+    {
+      "id": "s2f",
+      "data": "2026-11-04",
+      "formato": "stories",
+      "tema": "Hoje no perfil, você sabia, teaser de Vênus",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "publicado"
+    },
+    {
+      "id": "s2g",
+      "data": "2026-11-05",
+      "formato": "reel",
+      "tema": "Idiota já foi o cidadão comum",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "publicado"
+    },
+    {
+      "id": "s2h",
+      "data": "2026-11-06",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "s2i",
+      "data": "2026-11-06",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "s2j",
+      "data": "2026-11-06",
+      "formato": "reel",
+      "tema": "Em Vênus, o dia é maior que o ano",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "agendado"
+    },
+    {
+      "id": "s2k",
+      "data": "2026-11-07",
+      "formato": "reel",
+      "tema": "A Cleópatra e as pirâmides",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "pronto",
+      "biblioteca": "cleopatra-piramides"
+    },
+    {
+      "id": "s2l",
+      "data": "2026-11-08",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "s2m",
+      "data": "2026-11-08",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "qte2ajw",
+      "data": "2026-11-09",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "rcyhpjr",
+      "data": "2026-11-09",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "oebclj9",
+      "data": "2026-11-09",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "kporbd1",
+      "data": "2026-11-10",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "kciqvuh",
+      "data": "2026-11-10",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "mk0s5a4",
+      "data": "2026-11-11",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "vb95nw9",
+      "data": "2026-11-12",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "783vzsy",
+      "data": "2026-11-13",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "gq3tgva",
+      "data": "2026-11-13",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "c34mrjt",
+      "data": "2026-11-13",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "4y22q7w",
+      "data": "2026-11-14",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "fk0ecfv",
+      "data": "2026-11-15",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "p8xlhoh",
+      "data": "2026-11-15",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "3br2k0b",
+      "data": "2026-11-16",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "t5nps92",
+      "data": "2026-11-16",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "ad32wau",
+      "data": "2026-11-16",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "kl83jgc",
+      "data": "2026-11-17",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "ispd0tq",
+      "data": "2026-11-17",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "ld2ff28",
+      "data": "2026-11-18",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "fmq17a7",
+      "data": "2026-11-19",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "lh2j9o3",
+      "data": "2026-11-20",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "bw3ans6",
+      "data": "2026-11-20",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "hmnwv9r",
+      "data": "2026-11-20",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "m6sytee",
+      "data": "2026-11-21",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "beguqeo",
+      "data": "2026-11-22",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "o31afsf",
+      "data": "2026-11-22",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "xhgu4cb",
+      "data": "2026-11-23",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "gv5615n",
+      "data": "2026-11-23",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "bvis8t5",
+      "data": "2026-11-23",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "5otvibi",
+      "data": "2026-11-24",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "g2r04ek",
+      "data": "2026-11-24",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "sykeoau",
+      "data": "2026-11-25",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "ubc7xzy",
+      "data": "2026-11-26",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "exj3qhg",
+      "data": "2026-11-27",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "8w5jvi9",
+      "data": "2026-11-27",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "rw9uywt",
+      "data": "2026-11-27",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "z7klhq2",
+      "data": "2026-11-28",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "8h9i1f8",
+      "data": "2026-11-29",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "j9gn34p",
+      "data": "2026-11-29",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "5zww0ya",
+      "data": "2026-11-30",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "b1lphki",
+      "data": "2026-11-30",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "ize4a1f",
+      "data": "2026-11-30",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "mrekfwu",
+      "data": "2026-12-01",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "bwlso5r",
+      "data": "2026-12-01",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "7cy4epn",
+      "data": "2026-12-02",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "yf6i806",
+      "data": "2026-12-03",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "3nvfjhe",
+      "data": "2026-12-04",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "iz61191",
+      "data": "2026-12-04",
+      "formato": "carrossel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "g30c4lx",
+      "data": "2026-12-04",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "vqf5jc7",
+      "data": "2026-12-05",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "awsyie9",
+      "data": "2026-12-06",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "ideia"
+    },
+    {
+      "id": "s4ui34y",
+      "data": "2026-12-06",
+      "formato": "stories",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook"
+      ],
+      "status": "ideia"
+    }
   ]
 }

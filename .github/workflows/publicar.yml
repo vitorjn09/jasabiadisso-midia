@@ -7,6 +7,8 @@ on:
     inputs:
       modo:
         description: "publicar, verificar ou conexao"
+        type: choice
+        options: [publicar, verificar, conexao]
         default: publicar
 
 permissions:
@@ -36,12 +38,28 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           MODO: ${{ inputs.modo || 'publicar' }}
+        shell: bash
         run: |
-          case "$MODO" in
-            verificar) python publicador/publicar.py --verificar ;;
-            conexao)   python publicador/publicar.py --conexao ;;
-            *)         python publicador/publicar.py ;;
-          esac
+          # A saída também vai para saida.txt e vira uma anotação que o painel (painel/index.html) lê.
+          {
+            case "$MODO" in
+              verificar) python publicador/publicar.py --verificar ;;
+              conexao)   python publicador/publicar.py --conexao ;;
+              *)         python publicador/publicar.py ;;
+            esac
+          } 2>&1 | tee saida.txt
+
+      - name: Resultado para o painel
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          arq = Path("saida.txt")
+          texto = arq.read_text(errors="replace").strip() if arq.exists() else ""
+          texto = (texto or "Nada para publicar agora.")[-6000:]
+          texto = texto.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print(f"::notice title=Resultado do robô::{texto}")
+          PY
 
       - name: Guardar o resultado
         if: always()

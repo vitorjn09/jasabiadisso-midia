@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do robô</title>
+<style>
+:root {
+  --bg: #f5f6f8; --card: #ffffff; --text: #1b1f24; --muted: #5f6b7a; --line: #dde2e8;
+  --brand: #6b3fd4; --brand-text: #ffffff; --ok: #1f8a4c; --warn: #b26a00; --err: #c62828; --info: #2563eb;
+  --ok-bg: #e5f5ec; --warn-bg: #fff3dc; --err-bg: #fde8e8; --info-bg: #e6eefc; --gray-bg: #eef1f4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418; --card: #1b2027; --text: #e8ecf1; --muted: #9aa6b4; --line: #2c333d;
+    --brand: #9b7bff; --brand-text: #111418; --ok: #4cc485; --warn: #f0a63a; --err: #ff6b6b; --info: #6ea0ff;
+    --ok-bg: #173527; --warn-bg: #3a2c12; --err-bg: #3d1c1c; --info-bg: #1a2742; --gray-bg: #252b34;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 920px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 4px 0 2px; }
+h2 { font-size: 17px; margin: 0 0 10px; }
+p { margin: 6px 0; }
+.sub { color: var(--muted); font-size: 13px; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 14px 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.spread { justify-content: space-between; }
+button, .btn { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; padding: 8px 12px; cursor: pointer; text-decoration: none; display: inline-block; }
+button.primary { background: var(--brand); color: var(--brand-text); border-color: var(--brand); font-weight: 600; }
+button.danger { color: var(--err); border-color: var(--err); }
+button:disabled { opacity: .5; cursor: default; }
+input, select, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; }
+textarea { min-height: 110px; resize: vertical; }
+label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+.check { display: inline-flex; gap: 6px; align-items: center; color: var(--text); font-size: 15px; margin-right: 14px; }
+.check input { width: auto; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+@media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+.badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--gray-bg); color: var(--muted); white-space: nowrap; }
+.b-ok { background: var(--ok-bg); color: var(--ok); } .b-warn { background: var(--warn-bg); color: var(--warn); }
+.b-err { background: var(--err-bg); color: var(--err); } .b-info { background: var(--info-bg); color: var(--info); }
+.post { display: flex; gap: 12px; border-top: 1px solid var(--line); padding: 12px 0; }
+.post:first-of-type { border-top: 0; }
+.thumb { width: 72px; height: 128px; flex: none; border-radius: 8px; background: var(--gray-bg) center/cover no-repeat; }
+.post .body { flex: 1; min-width: 0; }
+.post .leg { color: var(--muted); font-size: 13px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.erros { color: var(--err); font-size: 13px; margin: 4px 0; }
+.run { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); font-size: 14px; flex-wrap: wrap; }
+.run:first-child { border-top: 0; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; white-space: pre-wrap; word-break: break-word; font-size: 13px; margin: 8px 0 0; }
+.aviso { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.hidden { display: none !important; }
+dialog { border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--text); max-width: min(520px, calc(100vw - 32px)); padding: 18px; }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+#toast { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 14px; border-radius: 8px; font-size: 14px; max-width: calc(100vw - 32px); z-index: 10; }
+details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="row spread">
+    <div>
+      <h1>Painel do robô</h1>
+      <div class="sub">Já Sabia Disso? · agenda e publicação no Instagram, Facebook e YouTube</div>
+    </div>
+    <button id="btnAtualizar">Atualizar</button>
+  </div>
+
+  <!-- Acesso -->
+  <section id="secAcesso">
+    <h2>Acesso ao GitHub</h2>
+    <div id="acessoSem">
+      <p>Para ver a agenda basta abrir esta página. Para <b>adicionar, editar, apagar posts</b> ou <b>rodar o robô</b>, cole aqui um token do GitHub. Ele fica guardado só neste navegador.</p>
+      <details>
+        <summary>Como criar o token (uma vez só)</summary>
+        <ol class="sub">
+          <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+          <li>Nome: "painel do robô". Validade: a que preferir.</li>
+          <li>Repository access: <b>Only select repositories</b> → <code>jasabiadisso-midia</code>.</li>
+          <li>Permissions → Repository: <b>Contents: Read and write</b> e <b>Actions: Read and write</b>.</li>
+          <li>Generate token, copie e cole abaixo.</li>
+        </ol>
+      </details>
+      <div class="row" style="margin-top:8px">
+        <input id="tokenInput" type="password" placeholder="github_pat_..." autocomplete="off" style="flex:1;min-width:200px">
+        <button class="primary" id="btnSalvarToken">Salvar</button>
+      </div>
+    </div>
+    <div id="acessoCom" class="row spread hidden">
+      <span><span class="badge b-ok">Conectado</span> <span id="acessoQuem" class="sub"></span></span>
+      <button id="btnEsquecer">Esquecer token</button>
+    </div>
+  </section>
+
+  <!-- Ações -->
+  <section>
+    <h2>Rodar o robô</h2>
+    <p class="sub">O robô roda sozinho de tempos em tempos, mas o GitHub costuma atrasar. Use os botões para rodar agora. Cada botão pede confirmação.</p>
+    <div class="row" style="margin-top:8px">
+      <button data-modo="conexao" class="acao">Testar conexão</button>
+      <button data-modo="verificar" class="acao">Verificar posts</button>
+      <button data-modo="publicar" class="acao primary">Publicar o que já passou da hora</button>
+    </div>
+    <div id="acaoStatus" class="hidden" style="margin-top:12px"></div>
+    <h2 style="margin-top:18px">Últimas execuções</h2>
+    <div id="runs" class="sub">Carregando…</div>
+  </section>
+
+  <!-- Agenda -->
+  <section>
+    <div class="row spread">
+      <h2 style="margin:0">Agenda</h2>
+      <button class="primary" id="btnNovo">+ Novo post</button>
+    </div>
+    <div id="agenda" class="sub" style="margin-top:8px">Carregando…</div>
+  </section>
+
+  <!-- Formulário -->
+  <section id="secForm" class="hidden">
+    <h2 id="formTitulo">Novo post</h2>
+    <form id="form">
+      <div class="grid2">
+        <div>
+          <label for="fTipo">Tipo</label>
+          <select id="fTipo">
+            <option value="reel">Reel (vídeo)</option>
+            <option value="story">Story (1 imagem ou vídeo)</option>
+            <option value="carrossel">Carrossel (2 a 10 imagens)</option>
+            <option value="imagem">Imagem</option>
+          </select>
+        </div>
+        <div>
+          <label for="fQuando">Data e hora (horário de Brasília)</label>
+          <input id="fQuando" type="datetime-local" required>
+        </div>
+      </div>
+      <label>Redes</label>
+      <div>
+        <span class="check"><input type="checkbox" name="rede" value="instagram" checked> Instagram</span>
+        <span class="check"><input type="checkbox" name="rede" value="facebook" checked> Facebook</span>
+        <span class="check" id="chkYt"><input type="checkbox" name="rede" value="youtube" checked> YouTube</span>
+      </div>
+      <div id="campoAssunto">
+        <label for="fAssunto">Assunto (vira o nome da pasta)</label>
+        <input id="fAssunto" placeholder="ex.: venus" required>
+      </div>
+      <label for="fLegenda">Legenda</label>
+      <textarea id="fLegenda" placeholder="Texto com #hashtags"></textarea>
+      <div class="grid2" id="campoTitulos">
+        <div>
+          <label for="fTitFb">Título no Facebook (opcional)</label>
+          <input id="fTitFb">
+        </div>
+        <div>
+          <label for="fTitYt">Título no YouTube (opcional)</label>
+          <input id="fTitYt" placeholder="... #shorts">
+        </div>
+      </div>
+      <div id="campoArquivos">
+        <label for="fMidias" id="lblMidias">Vídeo</label>
+        <input id="fMidias" type="file" accept="video/mp4,video/quicktime,image/jpeg,image/png">
+        <div id="campoCapa">
+          <label for="fCapa">Capa (opcional, imagem)</label>
+          <input id="fCapa" type="file" accept="image/jpeg,image/png">
+        </div>
+        <p class="sub">Imagens PNG viram JPG automaticamente (o Instagram só aceita JPG).</p>
+      </div>
+      <p><span class="check"><input type="checkbox" id="fIa"> Conteúdo gerado por IA</span></p>
+      <p class="aviso">Story com enquete ou quiz não entra no robô: a figurinha não pode ser posta pela API. Post com mais de 12 horas de atraso não sai.</p>
+      <div id="formErros" class="erros"></div>
+      <div class="row" style="margin-top:10px">
+        <button type="submit" class="primary" id="btnSalvarPost">Salvar na agenda</button>
+        <button type="button" id="btnCancelar">Cancelar</button>
+      </div>
+    </form>
+  </section>
+
+  <p class="sub">Repositório: <a href="https://github.com/vitorjn09/jasabiadisso-midia" target="_blank" rel="noopener">vitorjn09/jasabiadisso-midia</a>. Esta página não guarda nenhum segredo do robô; os tokens da Meta e do YouTube ficam nos segredos do repositório.</p>
+</main>
+
+<dialog id="dlg">
+  <h2 id="dlgTitulo">Confirmar</h2>
+  <div id="dlgTexto"></div>
+  <div class="row" style="margin-top:14px;justify-content:flex-end">
+    <button id="dlgNao">Cancelar</button>
+    <button id="dlgSim" class="primary">Confirmar</button>
+  </div>
+</dialog>
+<div id="toast" class="hidden"></div>
+
+<script>
+"use strict";
+const DONO = "vitorjn09", REPO = "jasabiadisso-midia", RAMO = "main", WORKFLOW = "publicar.yml";
+const API = `https://api.github.com/repos/${DONO}/${REPO}`;
+const CHAVE_TOKEN = "painel-robo-token";
+const $ = (s) => document.querySelector(s);
+const NOMES_REDE = { instagram: "Instagram", facebook: "Facebook", youtube: "YouTube" };
+const NOMES_MODO = { conexao: "Testar conexão", verificar: "Verificar posts", publicar: "Publicar o que já passou da hora" };
+
+// ------------------------------------------------------------ token
+function lerToken() { try { return localStorage.getItem(CHAVE_TOKEN) || ""; } catch { return ""; } }
+function gravarToken(t) { try { t ? localStorage.setItem(CHAVE_TOKEN, t) : localStorage.removeItem(CHAVE_TOKEN); } catch {} }
+let TOKEN = lerToken();
+
+// ------------------------------------------------------------ utilidades
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+// Esconde números longos (ids de página, de conta e de post) no que aparece na tela.
+function mascarar(s) { return String(s ?? "").replace(/\d{8,}(_\d+)?/g, "•••"); }
+function toast(msg, ms = 4000) { const t = $("#toast"); t.textContent = msg; t.classList.remove("hidden"); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.add("hidden"), ms); }
+const FMT = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+function dataBr(iso) { const d = new Date(iso); return isNaN(d) ? String(iso) : FMT.format(d); }
+function slug(s) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40); }
+function b64Texto(texto) { return b64Bytes(new TextEncoder().encode(texto)); }
+function b64Bytes(bytes) { let s = ""; const n = 0x8000; for (let i = 0; i < bytes.length; i += n) s += String.fromCharCode.apply(null, bytes.subarray(i, i + n)); return btoa(s); }
+function extensao(nome) { const m = /\.[^.]+$/.exec(nome); return m ? m[0].toLowerCase() : ""; }
+const EXT_VIDEO = [".mp4", ".mov"], EXT_IMAGEM = [".jpg", ".jpeg", ".png"];
+
+function confirmar(titulo, html, rotulo = "Confirmar") {
+  return new Promise((ok) => {
+    const d = $("#dlg");
+    $("#dlgTitulo").textContent = titulo; $("#dlgTexto").innerHTML = html; $("#dlgSim").textContent = rotulo;
+    const fim = (v) => { d.close(); $("#dlgSim").onclick = $("#dlgNao").onclick = null; ok(v); };
+    $("#dlgSim").onclick = () => fim(true); $("#dlgNao").onclick = () => fim(false);
+    d.oncancel = () => fim(false);
+    d.showModal();
+  });
+}
+
+// ------------------------------------------------------------ GitHub
+async function gh(caminho, op = {}) {
+  const cab = { Accept: op.raw ? "application/vnd.github.raw" : "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  if (TOKEN) cab.Authorization = `Bearer ${TOKEN}`;
+  if (op.corpo) cab["Content-Type"] = "application/json";
+  const url = caminho.startsWith("http") ? caminho : API + caminho;
+  const r = await fetch(url, { method: op.metodo || "GET", headers: cab, body: op.corpo ? JSON.stringify(op.corpo) : undefined, cache: "no-store" });
+  if (op.permitir404 && r.status === 404) return null;
+  if (!r.ok) {
+    let msg = r.statusText; try { msg = (await r.json()).message || msg; } catch {}
+    if (r.status === 401) msg = "token inválido ou vencido";
+    if (r.status === 403 && /rate limit/i.test(msg)) msg = "limite de consultas do GitHub atingido; salve um token para ter mais";
+    if (r.status === 403 && /Resource not accessible/i.test(msg)) msg = "o token não tem a permissão necessária (veja Contents e Actions: Read and write)";
+    const e = new Error(`GitHub ${r.status}: ${msg}`); e.status = r.status; throw e;
+  }
+  if (r.status === 204) return null;
+  return op.raw ? r.text() : r.json();
+}
+
+// Grava vários arquivos (e apaga outros) em um único commit no ramo principal.
+async function commit(mensagem, arquivos, apagar = []) {
+  if (!TOKEN) throw new Error("salve um token do GitHub primeiro");
+  const entradas = [];
+  for (const a of arquivos) {
+    const blob = await gh("/git/blobs", { metodo: "POST", corpo: { content: a.base64, encoding: "base64" } });
+    entradas.push({ path: a.caminho, mode: "100644", type: "blob", sha: blob.sha });
+  }
+  for (const c of apagar) entradas.push({ path: c, mode: "100644", type: "blob", sha: null });
+  for (let tentativa = 1; ; tentativa++) {
+    const ref = await gh(`/git/ref/heads/${RAMO}`);
+    const base = await gh(`/git/commits/${ref.object.sha}`);
+    const arvore = await gh("/git/trees", { metodo: "POST", corpo: { base_tree: base.tree.sha, tree: entradas } });
+    const novo = await gh("/git/commits", { metodo: "POST", corpo: { message: mensagem, tree: arvore.sha, parents: [ref.object.sha] } });
+    try {
+      await gh(`/git/refs/heads/${RAMO}`, { metodo: "PATCH", corpo: { sha: novo.sha } });
+      return novo.sha;
+    } catch (e) {
+      // O robô pode ter gravado algo no meio do caminho: tenta de novo sobre o commit mais novo.
+      if (e.status === 422 && tentativa < 3) continue;
+      throw e;
+    }
+  }
+}
+
+// ------------------------------------------------------------ validação (igual à do publicar.py)
+function validar(p, nomesArquivos) {
+  const erros = [];
+  if (!p) return ["post.json inválido"];
+  if (!p.quando || isNaN(new Date(p.quando)) || !/([+-]\d\d:\d\d|Z)$/.test(p.quando)) erros.push("data e hora ausentes ou sem fuso");
+  if (!["reel", "carrossel", "imagem", "story"].includes(p.tipo)) erros.push("tipo inválido");
+  const redes = p.redes || [];
+  if (!redes.length || redes.some((r) => !NOMES_REDE[r])) erros.push("redes inválidas");
+  const midias = p.midias || [];
+  if (!midias.length) erros.push("nenhuma mídia");
+  for (const m of midias.concat(p.capa ? [p.capa] : [])) {
+    const ext = extensao(m);
+    if (!nomesArquivos.includes(m)) erros.push(`arquivo não encontrado: ${m}`);
+    else if (!EXT_VIDEO.includes(ext) && !EXT_IMAGEM.includes(ext)) erros.push(`formato não aceito: ${m}`);
+    else if (redes.includes("instagram") && ext === ".png") erros.push(`Instagram só aceita JPG: ${m}`);
+  }
+  if (redes.includes("youtube") && p.tipo !== "reel") erros.push("no YouTube só sai reel");
+  if (p.tipo === "reel" && midias.length && !EXT_VIDEO.includes(extensao(midias[0]))) erros.push("reel precisa de um vídeo");
+  if (["reel", "story", "imagem"].includes(p.tipo) && midias.length > 1) erros.push(`${p.tipo} leva só uma mídia`);
+  if (p.tipo === "carrossel" && !(midias.length >= 2 && midias.length <= 10)) erros.push("carrossel leva de 2 a 10 imagens");
+  return erros;
+}
+
+// ------------------------------------------------------------ agenda
+let POSTS = [];
+
+function badgeEstado(rede, est, quando) {
+  const nome = NOMES_REDE[rede] || rede;
+  const s = est?.status;
+  if (s === "publicado") return `<span class="badge b-ok" title="${esc(dataBr(est.em))}">${nome}: publicado</span>`;
+  if (s === "erro") return `<span class="badge b-warn" title="${esc(mascarar(est.erro))}">${nome}: erro (tenta de novo)</span>`;
+  if (s === "falhou") return `<span class="badge b-err" title="${esc(mascarar(est.erro))}">${nome}: falhou</span>`;
+  if (s === "atrasado") return `<span class="badge b-err">${nome}: perdeu a hora</span>`;
+  const passou = new Date(quando) <= new Date();
+  return `<span class="badge ${passou ? "b-info" : ""}">${nome}: ${passou ? "na fila" : "aguardando"}</span>`;
+}
+
+async function carregarAgenda() {
+  const alvo = $("#agenda");
+  try {
+    const itens = (await gh(`/contents/agenda?ref=${RAMO}`)) || [];
+    const pastas = itens.filter((i) => i.type === "dir").map((i) => i.name).sort();
+    POSTS = await Promise.all(pastas.map(async (pasta) => {
+      const arquivos = (await gh(`/contents/agenda/${encodeURIComponent(pasta)}?ref=${RAMO}`)) || [];
+      const nomes = arquivos.map((a) => a.name);
+      let post = null, estado = {};
+      try { post = JSON.parse(await gh(`/contents/agenda/${encodeURIComponent(pasta)}/post.json?ref=${RAMO}`, { raw: true })); } catch {}
+      if (nomes.includes("estado.json")) {
+        try { estado = JSON.parse(await gh(`/contents/agenda/${encodeURIComponent(pasta)}/estado.json?ref=${RAMO}`, { raw: true })); } catch {}
+      }
+      return { pasta, arquivos, nomes, post, estado, erros: validar(post, nomes) };
+    }));
+    POSTS.sort((a, b) => String(a.post?.quando).localeCompare(String(b.post?.quando)));
+    desenharAgenda();
+  } catch (e) {
+    alvo.innerHTML = `<span class="erros">Não consegui ler a agenda: ${esc(e.message)}</span>`;
+  }
+}
+
+function desenharAgenda() {
+  const alvo = $("#agenda");
+  if (!POSTS.length) { alvo.innerHTML = "A agenda está vazia. Use “+ Novo post” para colocar um."; return; }
+  alvo.innerHTML = POSTS.map((x, i) => {
+    const p = x.post || {};
+    const img = [p.capa, ...(p.midias || [])].find((m) => m && EXT_IMAGEM.includes(extensao(m)));
+    const arqImg = img && x.arquivos.find((a) => a.name === img);
+    const thumb = arqImg ? `style="background-image:url('${esc(arqImg.download_url)}')"` : "";
+    const redes = (p.redes || []).map((r) => badgeEstado(r, x.estado[r], p.quando)).join(" ");
+    return `<div class="post">
+      <div class="thumb" ${thumb}></div>
+      <div class="body">
+        <div class="row spread"><b>${esc(p.quando ? dataBr(p.quando) : "sem data")}</b> <span class="badge">${esc(p.tipo || "?")}</span></div>
+        <div class="sub">${esc(x.pasta)}</div>
+        <div class="row" style="margin:6px 0">${redes}</div>
+        ${x.erros.length ? `<div class="erros">⚠ ${x.erros.map(esc).join(" · ")}</div>` : ""}
+        <div class="leg">${esc(p.legenda || "")}</div>
+        <div class="row" style="margin-top:8px">
+          <button data-editar="${i}">Editar</button>
+          <button class="danger" data-apagar="${i}">Apagar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+$("#agenda").addEventListener("click", async (ev) => {
+  const ed = ev.target.closest("[data-editar]"), ap = ev.target.closest("[data-apagar]");
+  if (ed) abrirForm(POSTS[+ed.dataset.editar]);
+  if (ap) apagarPost(POSTS[+ap.dataset.apagar]);
+});
+
+async function apagarPost(x) {
+  const publicado = Object.values(x.estado).some((e) => e.status === "publicado");
+  const ok = await confirmar("Apagar da agenda?",
+    `<p>A pasta <b>${esc(x.pasta)}</b> (${esc(x.post?.tipo || "")}, ${esc(x.post?.quando ? dataBr(x.post.quando) : "")}) e os ${x.arquivos.length} arquivo(s) dela saem da agenda.</p>
+     <p class="sub">${publicado ? "O que já foi publicado continua nas redes." : "Ele não será publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>`, "Apagar");
+  if (!ok) return;
+  try {
+    toast("Apagando…", 20000);
+    await commit(`Painel: remove ${x.pasta} da agenda`, [], x.arquivos.map((a) => a.path));
+    toast("Post apagado da agenda.");
+    carregarAgenda();
+  } catch (e) { toast("Erro: " + e.message, 8000); }
+}
+
+// ------------------------------------------------------------ formulário
+let EDITANDO = null;
+
+function redesMarcadas() { return [...document.querySelectorAll("input[name=rede]:checked")].map((c) => c.value); }
+
+function ajustarForm() {
+  const tipo = $("#fTipo").value, novo = !EDITANDO;
+  const yt = document.querySelector("input[name=rede][value=youtube]");
+  if (tipo !== "reel") yt.checked = false;
+  yt.disabled = tipo !== "reel";
+  $("#chkYt").style.opacity = tipo === "reel" ? 1 : .5;
+  $("#campoArquivos").classList.toggle("hidden", !novo);
+  $("#campoAssunto").classList.toggle("hidden", !novo);
+  $("#fAssunto").required = novo;
+  $("#campoTitulos").classList.toggle("hidden", tipo !== "reel");
+  $("#campoCapa").classList.toggle("hidden", tipo !== "reel");
+  const m = $("#fMidias");
+  m.multiple = tipo === "carrossel";
+  m.accept = tipo === "reel" ? "video/mp4,video/quicktime" : tipo === "story" ? "video/mp4,video/quicktime,image/jpeg,image/png" : "image/jpeg,image/png";
+  $("#lblMidias").textContent = { reel: "Vídeo", story: "Imagem ou vídeo", carrossel: "Imagens (2 a 10, na ordem dos slides)", imagem: "Imagem" }[tipo];
+}
+$("#fTipo").addEventListener("change", ajustarForm);
+
+function abrirForm(x) {
+  EDITANDO = x || null;
+  const p = x?.post || {};
+  $("#form").reset();
+  $("#formErros").textContent = "";
+  $("#formTitulo").textContent = x ? `Editar ${x.pasta}` : "Novo post";
+  $("#fTipo").value = p.tipo || "reel";
+  $("#fTipo").disabled = !!x;
+  // Sem horário padrão: a hora é sempre escolhida na hora de agendar.
+  $("#fQuando").value = p.quando ? isoParaLocal(p.quando) : "";
+  document.querySelectorAll("input[name=rede]").forEach((c) => { c.checked = x ? (p.redes || []).includes(c.value) : true; });
+  $("#fLegenda").value = p.legenda || "";
+  $("#fTitFb").value = p.titulo_facebook || "";
+  $("#fTitYt").value = p.titulo_youtube || "";
+  $("#fIa").checked = !!p.ia;
+  ajustarForm();
+  $("#secForm").classList.remove("hidden");
+  $("#secForm").scrollIntoView({ behavior: "smooth" });
+}
+$("#btnNovo").onclick = () => abrirForm(null);
+$("#btnCancelar").onclick = () => { $("#secForm").classList.add("hidden"); EDITANDO = null; };
+
+// "2026-11-06T18:00:00-03:00" -> "2026-11-06T18:00" no horário de Brasília
+function isoParaLocal(iso) {
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const br = new Date(d.getTime() - 3 * 3600e3);
+  return br.toISOString().slice(0, 16);
+}
+function localParaIso(v) { return `${v}:00-03:00`; } // Brasília não tem horário de verão desde 2019
+
+async function pngParaJpg(arquivo) {
+  const bmp = await createImageBitmap(arquivo);
+  const c = document.createElement("canvas"); c.width = bmp.width; c.height = bmp.height;
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(bmp, 0, 0);
+  return new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.92));
+}
+async function prepararArquivo(arquivo, nomeBase) {
+  let ext = extensao(arquivo.name), blob = arquivo;
+  if (ext === ".png") { blob = await pngParaJpg(arquivo); ext = ".jpg"; }
+  if (ext === ".jpeg") ext = ".jpg";
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  return { nome: nomeBase + ext, base64: b64Bytes(bytes), tamanho: bytes.length };
+}
+
+$("#form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const erros = [];
+  const tipo = $("#fTipo").value, redes = redesMarcadas(), quandoLocal = $("#fQuando").value;
+  if (!quandoLocal) erros.push("escolha a data e a hora");
+  if (!redes.length) erros.push("marque pelo menos uma rede");
+  if (!TOKEN) erros.push("salve um token do GitHub lá em cima primeiro");
+  const quando = quandoLocal ? localParaIso(quandoLocal) : "";
+  if (quando && new Date(quando) < new Date(Date.now() - 12 * 3600e3)) erros.push("essa hora já passou há mais de 12 horas: o robô não publicaria");
+
+  const post = EDITANDO ? { ...EDITANDO.post } : { tipo };
+  post.quando = quando; post.redes = redes; post.legenda = $("#fLegenda").value.trim();
+  for (const [chave, campo] of [["titulo_facebook", "#fTitFb"], ["titulo_youtube", "#fTitYt"]]) {
+    const v = tipo === "reel" ? $(campo).value.trim() : "";
+    if (v) post[chave] = v; else delete post[chave];
+  }
+  if ($("#fIa").checked) post.ia = true; else delete post.ia;
+
+  let pasta, arquivos = [];
+  if (EDITANDO) {
+    pasta = EDITANDO.pasta;
+    erros.push(...validar(post, EDITANDO.nomes));
+  } else {
+    const assunto = slug($("#fAssunto").value);
+    if (!assunto) erros.push("escreva o assunto");
+    const midias = [...$("#fMidias").files];
+    if (!midias.length) erros.push("escolha o arquivo do post");
+    if (tipo === "carrossel" && !(midias.length >= 2 && midias.length <= 10)) erros.push("carrossel leva de 2 a 10 imagens");
+    if (tipo === "reel" && midias[0] && !EXT_VIDEO.includes(extensao(midias[0].name))) erros.push("reel precisa de um vídeo .mp4 ou .mov");
+    pasta = `${quandoLocal.slice(0, 10)}-${tipo}-${assunto}`;
+    if (POSTS.some((x) => x.pasta === pasta)) erros.push(`já existe a pasta ${pasta}`);
+    if (!erros.length) {
+      $("#btnSalvarPost").disabled = true; $("#btnSalvarPost").textContent = "Preparando arquivos…";
+      try {
+        const nomesBase = tipo === "carrossel" ? midias.map((_, i) => `slide-${String(i + 1).padStart(2, "0")}`) : [tipo === "reel" ? "video" : tipo];
+        const preparados = await Promise.all(midias.map((m, i) => prepararArquivo(m, nomesBase[i])));
+        post.midias = preparados.map((a) => a.nome);
+        arquivos = preparados;
+        const capa = tipo === "reel" && $("#fCapa").files[0];
+        if (capa) { const c = await prepararArquivo(capa, "capa"); post.capa = c.nome; arquivos.push(c); }
+        const grande = arquivos.find((a) => a.tamanho > 95 * 1024 * 1024);
+        if (grande) erros.push(`${grande.nome} passa de 95 MB, o GitHub não aceita`);
+        // Mantém a ordem das chaves igual à dos posts antigos.
+        const ordem = ["quando", "tipo", "redes", "legenda", "midias", "capa", "titulo_facebook", "titulo_youtube", "ia"];
+        const ordenado = {}; for (const k of ordem) if (k in post) ordenado[k] = post[k];
+        Object.assign(post, ordenado);
+        erros.push(...validar(ordenado, arquivos.map((a) => a.nome)));
+      } catch (e) { erros.push("não consegui ler os arquivos: " + e.message); }
+      $("#btnSalvarPost").disabled = false; $("#btnSalvarPost").textContent = "Salvar na agenda";
+    }
+  }
+  if (erros.length) { $("#formErros").innerHTML = "⚠ " + erros.map(esc).join("<br>⚠ "); return; }
+  $("#formErros").textContent = "";
+
+  const ordem = ["quando", "tipo", "redes", "legenda", "midias", "capa", "titulo_facebook", "titulo_youtube", "ia"];
+  const final = {}; for (const k of ordem) if (k in post) final[k] = post[k];
+  for (const k in post) if (!(k in final)) final[k] = post[k];
+  const passou = new Date(quando) <= new Date();
+  const ok = await confirmar(EDITANDO ? "Salvar as mudanças?" : "Colocar na agenda?",
+    `<p><b>${esc(tipo)}</b> em <b>${esc(dataBr(quando))}</b> no ${esc(redes.map((r) => NOMES_REDE[r]).join(", "))}.</p>
+     <p class="sub">Pasta: ${esc(pasta)}${arquivos.length ? ` · ${arquivos.length} arquivo(s)` : ""}</p>
+     ${passou ? `<p class="aviso">Essa hora já passou: o robô publica na próxima vez que rodar.</p>` : `<p class="sub">O robô publica sozinho quando chegar a hora (o GitHub pode atrasar; dá para usar “Publicar o que já passou da hora” depois).</p>`}`,
+    EDITANDO ? "Salvar" : "Agendar");
+  if (!ok) return;
+
+  $("#btnSalvarPost").disabled = true; $("#btnSalvarPost").textContent = "Enviando…";
+  try {
+    const lista = arquivos.map((a) => ({ caminho: `agenda/${pasta}/${a.nome}`, base64: a.base64 }));
+    lista.push({ caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(final, null, 2) + "\n") });
+    await commit(EDITANDO ? `Painel: edita ${pasta}` : `Painel: agenda ${pasta}`, lista);
+    toast(EDITANDO ? "Mudanças salvas." : "Post colocado na agenda.");
+    $("#secForm").classList.add("hidden"); EDITANDO = null;
+    carregarAgenda();
+  } catch (e) {
+    $("#formErros").textContent = "⚠ Não salvou: " + e.message;
+  }
+  $("#btnSalvarPost").disabled = false; $("#btnSalvarPost").textContent = "Salvar na agenda";
+});
+
+// ------------------------------------------------------------ execuções do robô
+function badgeRun(r) {
+  if (r.status !== "completed") return `<span class="badge b-info">rodando</span>`;
+  if (r.conclusion === "success") return `<span class="badge b-ok">ok</span>`;
+  if (r.conclusion === "cancelled" || r.conclusion === "skipped") return `<span class="badge">${esc(r.conclusion)}</span>`;
+  return `<span class="badge b-err">com erro</span>`;
+}
+
+async function carregarRuns() {
+  try {
+    const d = await gh(`/actions/workflows/${WORKFLOW}/runs?per_page=5`);
+    const runs = d.workflow_runs || [];
+    $("#runs").innerHTML = runs.length ? runs.map((r) => `<div class="run">
+        ${badgeRun(r)}
+        <span>${esc(dataBr(r.created_at))}</span>
+        <span class="sub">${r.event === "schedule" ? "automático" : r.event === "workflow_dispatch" ? "pelo botão" : esc(r.event)}</span>
+        <button class="btn" data-run="${r.id}" style="padding:3px 8px;font-size:13px">Ver resultado</button>
+        <a class="sub" href="${esc(r.html_url)}" target="_blank" rel="noopener">abrir no GitHub</a>
+      </div>`).join("") : "Nenhuma execução ainda.";
+  } catch (e) { $("#runs").innerHTML = `<span class="erros">${esc(e.message)}</span>`; }
+}
+
+// O workflow grava a saída do robô como uma anotação do job; aqui ela é lida.
+async function resultadoDoRun(runId) {
+  const jobs = (await gh(`/actions/runs/${runId}/jobs`)).jobs || [];
+  const textos = [];
+  for (const j of jobs) {
+    const anots = (await gh(`/check-runs/${j.id}/annotations`)) || [];
+    for (const a of anots) if (a.title === "Resultado do robô" || a.annotation_level === "failure") textos.push(a.message);
+    const falhou = (j.steps || []).filter((s) => s.conclusion === "failure").map((s) => s.name);
+    if (falhou.length) textos.push("Etapa com erro: " + falhou.join(", "));
+  }
+  return mascarar(textos.join("\n\n") || "Sem resultado registrado (execuções antigas não guardavam o resultado). Abra no GitHub para ver o log.");
+}
+
+$("#runs").addEventListener("click", async (ev) => {
+  const b = ev.target.closest("[data-run]"); if (!b) return;
+  const st = $("#acaoStatus"); st.classList.remove("hidden");
+  st.innerHTML = "Lendo o resultado…";
+  try { st.innerHTML = `<b>Resultado</b><pre>${esc(await resultadoDoRun(b.dataset.run))}</pre>`; }
+  catch (e) { st.innerHTML = `<span class="erros">${esc(e.message)}</span>`; }
+});
+
+async function rodar(modo) {
+  if (!TOKEN) { toast("Salve um token do GitHub primeiro (seção Acesso).", 6000); return; }
+  const futuros = POSTS.filter((x) => x.post && new Date(x.post.quando) <= new Date() && (x.post.redes || []).some((r) => !["publicado", "atrasado", "falhou"].includes(x.estado[r]?.status)));
+  const extra = modo === "publicar"
+    ? (futuros.length ? `<p>Vai publicar agora: <b>${futuros.map((x) => esc(x.pasta)).join(", ")}</b>.</p>` : `<p>Nenhum post passou da hora ainda, então nada deve sair agora.</p>`) + `<p class="sub">Posts com hora no futuro continuam esperando.</p>`
+    : modo === "conexao" ? `<p>Confere os acessos ao Facebook, Instagram e YouTube. Não publica nada.</p>`
+    : `<p>Confere os posts da agenda. Não publica nada.</p>`;
+  if (!(await confirmar(NOMES_MODO[modo] + "?", extra, "Rodar agora"))) return;
+  const st = $("#acaoStatus"); st.classList.remove("hidden");
+  document.querySelectorAll(".acao").forEach((b) => (b.disabled = true));
+  const inicio = new Date(Date.now() - 5000);
+  try {
+    st.innerHTML = `<span class="badge b-info">${esc(NOMES_MODO[modo])}</span> pedindo ao GitHub…`;
+    await gh(`/actions/workflows/${WORKFLOW}/dispatches`, { metodo: "POST", corpo: { ref: RAMO, inputs: { modo } } });
+    let run = null;
+    for (let i = 0; i < 100; i++) {
+      await new Promise((ok) => setTimeout(ok, i < 5 ? 3000 : 6000));
+      if (!run) {
+        const d = await gh(`/actions/workflows/${WORKFLOW}/runs?event=workflow_dispatch&per_page=5`);
+        run = (d.workflow_runs || []).find((r) => new Date(r.created_at) >= inicio) || null;
+        if (run) carregarRuns();
+      } else {
+        run = await gh(`/actions/runs/${run.id}`);
+      }
+      st.innerHTML = `<span class="badge b-info">${esc(NOMES_MODO[modo])}</span> ${run ? (run.status === "completed" ? "terminou" : "rodando…") : "esperando o GitHub começar…"}`;
+      if (run && run.status === "completed") break;
+    }
+    if (!run || run.status !== "completed") { st.innerHTML += `<p class="sub">Está demorando. Veja em “Últimas execuções” daqui a pouco.</p>`; return; }
+    const texto = await resultadoDoRun(run.id);
+    st.innerHTML = `${badgeRun(run)} <b>${esc(NOMES_MODO[modo])}</b> · <a href="${esc(run.html_url)}" target="_blank" rel="noopener">abrir no GitHub</a><pre>${esc(texto)}</pre>`;
+    carregarRuns();
+    if (modo === "publicar") setTimeout(carregarAgenda, 3000);
+  } catch (e) {
+    st.innerHTML = `<span class="erros">Não rodou: ${esc(e.message)}</span>`;
+  } finally {
+    document.querySelectorAll(".acao").forEach((b) => (b.disabled = false));
+  }
+}
+document.querySelectorAll(".acao").forEach((b) => (b.onclick = () => rodar(b.dataset.modo)));
+
+// ------------------------------------------------------------ acesso
+async function mostrarAcesso() {
+  $("#acessoSem").classList.toggle("hidden", !!TOKEN);
+  $("#acessoCom").classList.toggle("hidden", !TOKEN);
+  if (TOKEN) {
+    try { const u = await gh("https://api.github.com/user"); $("#acessoQuem").textContent = "como @" + u.login; }
+    catch (e) { $("#acessoQuem").textContent = e.status === 401 ? "(token inválido ou vencido)" : ""; }
+  }
+}
+$("#btnSalvarToken").onclick = () => {
+  const t = $("#tokenInput").value.trim(); if (!t) return;
+  TOKEN = t; gravarToken(t); $("#tokenInput").value = "";
+  mostrarAcesso(); atualizar();
+};
+$("#btnEsquecer").onclick = () => { TOKEN = ""; gravarToken(""); mostrarAcesso(); };
+
+function atualizar() { carregarAgenda(); carregarRuns(); }
+$("#btnAtualizar").onclick = atualizar;
+mostrarAcesso();
+atualizar();
+</script>
+</body>
+</html>

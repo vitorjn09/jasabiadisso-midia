@@ -482,7 +482,19 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
   .vazio .bolha { animation: none; }
   .vid .capa .tag, .vid .capa .play, .midia .tag { backdrop-filter: none; }
   .veu { backdrop-filter: none; background: rgba(4,8,8,.65); }
+  /* sem desfoque nas transições, sombras leves e sem animações sem fim */
+  .view.ativa { animation: entra-leve .25s ease-out both; }
+  .stagger > * { animation: none; }
+  .hero::after { display: none; }
+  .card, .post, .vid, .tipo, .cdia, .citem { box-shadow: none !important; }
+  .tabbar { box-shadow: 0 6px 18px -8px rgba(0,0,0,.5); }
+  .pulso::after, .vazio .bolha, .skel { animation: none !important; }
+  .card:hover, .post:hover, .vid:hover, .tipo:hover, .stat:hover, .saude:hover { transform: none !important; }
+  .post, .vid, .tipo, .stat { transition: none; }
+  .contagem b.tick { animation: none; }
+  main { contain: layout style; }
 }
+@keyframes entra-leve { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -556,6 +568,10 @@ main { max-width: 1440px; margin-inline: auto; }
   .tipo .ic { width: 40px; height: 40px; margin-bottom: 10px; }
   .tipo b { font-size: 16px; }
   .tipo span { font-size: 12px; }
+  .hero { grid-template-columns: clamp(88px, 28%, 120px) minmax(0, 1fr); gap: 14px; padding: 16px; }
+  .contagem { flex-wrap: nowrap; gap: 6px; }
+  .contagem div { flex: 1 1 0; min-width: 0; padding: 8px 2px; }
+  .contagem b { font-size: 20px; }
 }
 html.travado, html.travado body { overflow: hidden; }
 .veu { touch-action: none; }
@@ -1143,10 +1159,11 @@ function tickContagem(forcar) {
   if (forcar || !el.children.length) { el.innerHTML = Object.keys(v).map((k) => `<div><b data-k="${k}">0</b><small>${k}</small></div>`).join(""); ultimoValores = {}; }
   for (const k in v) {
     const b = $(`[data-k="${k}"]`, el); const txt = String(v[k]).padStart(2, "0");
-    if (ultimoValores[k] !== txt) { b.textContent = txt; if (!forcar) { b.classList.remove("tick"); void b.offsetWidth; b.classList.add("tick"); } ultimoValores[k] = txt; }
+    if (ultimoValores[k] !== txt) { b.textContent = txt; if (!forcar && !TOQUE) { b.classList.remove("tick"); void b.offsetWidth; b.classList.add("tick"); } ultimoValores[k] = txt; }
   }
 }
-setInterval(() => tickContagem(false), 1000);
+const TOQUE = matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+setInterval(() => { if (!document.hidden) tickContagem(false); }, 1000);
 function contar(el, alvo) {
   const ini = +el.textContent || 0; if (ini === alvo || reduzido) { el.textContent = alvo; return; }
   const t0 = performance.now(), dur = 700;
@@ -2243,8 +2260,8 @@ function atualizar() {
 }
 $("#btnAtualizar").onclick = atualizar;
 $("#btnAtualizarRuns").onclick = carregarRuns;
-// Atualiza sozinho a cada 2 minutos enquanto a página está aberta.
-setInterval(() => { if (!document.hidden && !rodando) atualizar(); }, 120000);
+// Atualiza sozinho enquanto a página está aberta (no celular, a cada 5 minutos).
+setInterval(() => { if (!document.hidden && !rodando) atualizar(); }, TOQUE ? 300000 : 120000);
 faixaToken(); desenharInicio(); irEtapa(0); requestAnimationFrame(posicionarNav);
 checarLogin(); atualizar();
 </script>

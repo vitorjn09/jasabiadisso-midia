@@ -1,0 +1,26 @@
+{
+  "modelo": {
+    "1": ["stories", "carrossel", "reel"],
+    "2": ["reel"],
+    "3": ["stories", "reel"],
+    "4": ["reel"],
+    "5": ["stories", "carrossel", "reel"],
+    "6": ["reel"],
+    "0": ["stories", "reel"]
+  },
+  "itens": [
+    { "id": "s2a", "data": "2026-11-02", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "pulado" },
+    { "id": "s2b", "data": "2026-11-02", "formato": "carrossel", "tema": "", "redes": ["instagram", "facebook", "tiktok"], "status": "pulado" },
+    { "id": "s2c", "data": "2026-11-02", "formato": "reel", "tema": "Bebê pelo correio", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
+    { "id": "s2d", "data": "2026-11-03", "formato": "stories", "tema": "Toy Story 2 e teaser do idiota", "redes": ["instagram", "facebook"], "status": "publicado" },
+    { "id": "s2e", "data": "2026-11-03", "formato": "reel", "tema": "Toy Story 2 apagado", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
+    { "id": "s2f", "data": "2026-11-04", "formato": "stories", "tema": "Hoje no perfil, você sabia, teaser de Vênus", "redes": ["instagram", "facebook"], "status": "publicado" },
+    { "id": "s2g", "data": "2026-11-05", "formato": "reel", "tema": "Idiota já foi o cidadão comum", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "publicado" },
+    { "id": "s2h", "data": "2026-11-06", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "ideia" },
+    { "id": "s2i", "data": "2026-11-06", "formato": "carrossel", "tema": "", "redes": ["instagram", "facebook", "tiktok"], "status": "ideia" },
+    { "id": "s2j", "data": "2026-11-06", "formato": "reel", "tema": "Em Vênus, o dia é maior que o ano", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "agendado" },
+    { "id": "s2k", "data": "2026-11-07", "formato": "reel", "tema": "A Cleópatra e as pirâmides", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "pronto", "biblioteca": "cleopatra-piramides" },
+    { "id": "s2l", "data": "2026-11-08", "formato": "stories", "tema": "", "redes": ["instagram", "facebook"], "status": "ideia" },
+    { "id": "s2m", "data": "2026-11-08", "formato": "reel", "tema": "", "redes": ["instagram", "facebook", "youtube", "tiktok"], "status": "ideia" }
+  ]
+}

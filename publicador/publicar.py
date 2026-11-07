@@ -162,8 +162,32 @@ def ig_esperar(container, limite=900):
 def ig_video(conta, arquivo, **params):
     """Cria o container de vídeo e envia o arquivo direto (sem depender de URL)."""
     c = post(f"{conta}/media", upload_type="resumable", **params)
-    enviar_binario(c["uri"], arquivo)
-    return c["id"]
+    try:
+        enviar_binario(c["uri"], arquivo)
+        return c["id"]
+    except ErroApi as e:
+        # O envio direto ao rupload às vezes falha com ProcessingFailedError (problema da Meta,
+        # visto em out-nov/2026). Plano B: o Instagram baixa o vídeo de um link público.
+        if "ProcessingFailedError" not in str(e):
+            raise
+        url = url_do_video(arquivo)
+        print(f"  envio direto falhou ({e}); tentando pelo link público")
+        return post(f"{conta}/media", video_url=url, **params)["id"]
+
+
+def url_do_video(arquivo):
+    """Link público do vídeo: o da Release (biblioteca) já resolvido, ou o do repositório."""
+    try:
+        rel = arquivo.relative_to(BIBLIOTECA)
+        ficha = ler_ficha(rel.parts[0]) or {}
+        if ficha.get("video_url"):
+            # a Release redireciona para um link assinado; o Instagram recebe o final
+            req = urllib.request.Request(ficha["video_url"], headers={"Range": "bytes=0-0"})
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return resp.geturl()
+    except ValueError:
+        pass
+    return url_publica(arquivo)
 
 
 def ig_publicar(p, pasta):

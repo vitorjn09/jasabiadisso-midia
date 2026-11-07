@@ -2101,10 +2101,17 @@ const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao:
 const MODELO_PADRAO = { "1": ["stories", "carrossel", "reel"], "2": ["reel"], "3": ["stories", "reel"], "4": ["reel"], "5": ["stories", "carrossel", "reel"], "6": ["reel"], "0": ["stories", "reel"] };
 const NOMES_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 /* hora do item: a própria, se tiver; senão o horário padrão do dia da semana */
+/* horários padrão são por formato: reel, carrossel e stories, 1º, 2º e 3º do dia; repetem toda semana */
+const HORA_FORMATOS = ["reel", "carrossel", "stories"];
+function horaPadrao(data, formato, id) {
+  const mesmo = CRONO.itens.filter((x) => x.data === data && x.formato === formato);
+  let idx = mesmo.findIndex((x) => x.id === id); if (idx < 0) idx = mesmo.length;
+  return ((CRONO.horarios || {})[formato] || [])[idx] || "";
+}
 function horaDo(it) {
   if (!it) return "";
   if (it.hora) return it.hora;
-  return (CRONO.horarios || {})[String(dataDe(it.data).getUTCDay())] || "";
+  return horaPadrao(it.data, it.formato, it.id);
 }
 let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";
 function dataDe(k) { return new Date(k + "T12:00:00-03:00"); }
@@ -2175,7 +2182,7 @@ function desenharCronograma() {
   const dias = []; for (let i = 0; i < 7; i++) dias.push(somaDias(SEMANA, i));
   const ordem = Object.keys(FORMATOS);
   $("#crono").innerHTML = dias.map((k) => {
-    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
+    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horaDo(a) || "99:99").localeCompare(horaDo(b) || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
       ${itens.map((it) => {
@@ -2265,15 +2272,16 @@ $("#cRepete").onclick = async () => {
 
 /* horário padrão de cada dia da semana */
 $("#cHoras").onclick = () => {
-  const m = $("#modal");
+  const m = $("#modal"), nomeF = { reel: "Reel", carrossel: "Carrossel", stories: "3 stories" };
+  const linhas = HORA_FORMATOS.map((f) => `<label class="campo">${nomeF[f]}</label><div style="display:flex;gap:8px">${[0, 1, 2].map((i) => `<input class="input" type="time" data-f="${f}" data-i="${i}" value="${esc(((CRONO.horarios || {})[f] || [])[i] || "")}" aria-label="${nomeF[f]} ${i + 1}º">`).join("")}</div>`).join("");
   m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>Horários padrão</h2>
-    <p>Cada dia sai nesse horário, a não ser que o item tenha hora própria.</p>
-    ${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label class="campo" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><span>${NOMES_SEMANA[d]}</span><input class="input" type="time" data-dia="${d}" value="${esc((CRONO.horarios || {})[String(d)] || "")}" style="width:auto"></label>`).join("")}
+    <p>Cada formato sai na ordem: 1º, 2º e 3º do dia. Vale para toda semana. Um item com hora própria não usa o padrão.</p>
+    ${linhas}
     <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="hrOk">${ic("i-check")}Salvar</button></div>`;
   abrirModal();
   $("#hrOk").onclick = async () => {
     const antes = CRONO.horarios, novo = {};
-    m.querySelectorAll("[data-dia]").forEach((i) => { if (i.value) novo[i.dataset.dia] = i.value; });
+    HORA_FORMATOS.forEach((f) => { const l = [0, 1, 2].map((i) => m.querySelector(`[data-f="${f}"][data-i="${i}"]`).value); if (l.some(Boolean)) novo[f] = l; });
     CRONO.horarios = novo; fecharModal(); desenharCronograma();
     if (!(await salvarCrono("horários padrão da semana"))) { CRONO.horarios = antes; desenharCronograma(); }
   };
@@ -2335,7 +2343,7 @@ function editarItem(it, dataInicial) {
     <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
     ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
     <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(horaDo(x))}">
-    <p class="dica" style="margin:6px 0 0">Vazio ou igual ao padrão do dia: usa o horário padrão da semana.</p>
+    <p class="dica" style="margin:6px 0 0">Vazio ou igual ao horário padrão do formato: usa o padrão da semana.</p>
     <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
     <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}Salvar</button></div>`;
   abrirModal();
@@ -2350,8 +2358,8 @@ function editarItem(it, dataInicial) {
       status: stEscolhido, notas: $("#ciNotas").value.trim() });
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
     if (!x.notas) delete x.notas;
-    const hr = $("#ciHora").value, padraoDia = (CRONO.horarios || {})[String(dataDe(data).getUTCDay())] || "";
-    x.hora = hr && hr !== padraoDia ? hr : undefined;
+    const hr = $("#ciHora").value, padrao = horaPadrao(x.data, x.formato, x.id);
+    x.hora = hr && hr !== padrao ? hr : undefined;
     const antes = JSON.stringify(CRONO.itens);
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);

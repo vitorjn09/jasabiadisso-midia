@@ -1993,6 +1993,7 @@ function pecasBib() {
 function chipPeca(p) {
   if (p.s === "agendado") return `<span class="chip info">${esc(horaDo(p.it) || "Agendado")}</span>`;
   if (p.s === "publicado") return `<span class="chip ok">${ic("i-check")}Publicado</span>`;
+  if (p.s === "pulado") return `<span class="chip">Pulado</span>`;
   return `<span class="chip gold"><span class="ponto"></span>Pronto</span>`;
 }
 function statusBib(b) {
@@ -2031,8 +2032,9 @@ function desenharBiblioteca() {
   const cont = { prontos: 0, agendados: 0, publicados: 0, todos: BIB.length };
   BIB.forEach((b) => cont[grupo[statusBib(b).s]]++);
   const pecas = pecasBib();
-  pecas.forEach((p) => { if (p.g) cont[p.g]++; });
-  cont.todos += pecas.filter((p) => p.g).length;
+  /* conta cada arte (um story ou slide é um cartão), para o número bater com o que aparece */
+  const nArtes = (p) => Math.max(1, (PRODUCAO?.[(p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1]] || []).length);
+  pecas.forEach((p) => { if (p.g) cont[p.g] += nArtes(p); cont.todos += nArtes(p); });
   $$("[data-bc]").forEach((el) => (el.textContent = cont[el.dataset.bc]));
   const passa = (cat, q) => (BIB_CAT === "todas" || cat === BIB_CAT) && (BIB_DIA === "todos" || diaDaSemana(q) === +BIB_DIA);
   /* vídeos e artes na mesma lista: os filtros e a ordem valem para os dois */
@@ -2053,7 +2055,7 @@ function desenharBiblioteca() {
   });
   /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
   pecas.forEach((p) => {
-    if (!p.g || (BIB_FILTRO !== "todos" && p.g !== BIB_FILTRO)) return;
+    if (BIB_FILTRO !== "todos" && p.g !== BIB_FILTRO) return;
     const cat = p.it.formato === "stories" ? "story" : p.it.formato;
     if (!passa(cat, p.it.data)) return;
     const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];

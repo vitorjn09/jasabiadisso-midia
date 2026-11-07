@@ -251,6 +251,9 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .segm button.ativo { color: var(--text); }
 .segm button span { font-size: 11px; opacity: .7; }
 .segm .ind { position: absolute; top: 4px; bottom: 4px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border-strong); transition: transform .4s var(--spring), width .4s var(--spring); }
+.bib-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
+.bib-filtros label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.bib-filtros select { font: inherit; font-size: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; }
 .grupo { margin-top: 26px; }
 .grupo-tit { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font: 600 15px Fredoka; }
 .grupo-tit::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); }
@@ -717,6 +720,17 @@ button, a, [role="button"] { min-height: 44px; }
         <button data-bf="agendados">Agendados <span data-bc="agendados"></span></button>
         <button data-bf="publicados">Publicados <span data-bc="publicados"></span></button>
         <button data-bf="todos">Todos <span data-bc="todos"></span></button>
+      </div>
+      <div class="bib-filtros">
+        <label>Categoria <select id="bibCat">
+          <option value="todas">Todas</option><option value="reel">Reels</option><option value="carrossel">Carrosséis</option><option value="story">Stories</option>
+        </select></label>
+        <label>Dia <select id="bibDia">
+          <option value="todos">Todos</option><option value="1">Segunda</option><option value="2">Terça</option><option value="3">Quarta</option><option value="4">Quinta</option><option value="5">Sexta</option><option value="6">Sábado</option><option value="0">Domingo</option>
+        </select></label>
+        <label>Ordem <select id="bibOrdem">
+          <option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option>
+        </select></label>
       </div>
       <div id="bibLista"></div>
     </section>
@@ -1815,6 +1829,13 @@ function avisos(erros) {
   if (!erros?.length) return "";
   return `<details class="card" style="margin-top:16px"><summary style="cursor:pointer;color:var(--muted);font-size:13px">${ic("i-alert")} ${erros.length} métrica(s) não vieram (falta de permissão ou métrica que a rede aposentou)</summary><pre class="erro-txt" style="white-space:pre-wrap;margin-top:10px">${esc(mascarar(erros.join("\n")))}</pre></details>`;
 }
+/* ordena os posts: por data (mais recentes ou mais antigos) ou por uma métrica (maior primeiro) */
+function ordenarPosts(lista, ordem) {
+  const data = (x) => new Date(x.quando || 0).getTime() || 0;
+  if (ordem === "recentes" || ordem === "antigos") return (lista || []).slice().sort((a, b) => ordem === "antigos" ? data(a) - data(b) : data(b) - data(a));
+  return (lista || []).slice().sort((a, b) => (b[ordem] ?? -1) - (a[ordem] ?? -1));
+}
+const metricaDeOrdem = (k) => (k === "recentes" || k === "antigos") ? "visualizacoes" : k;
 function desenharAnalises() {
   if (!AN) return;
   const segm = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-bottom:16px">
@@ -1837,10 +1858,10 @@ function desenharAnalises() {
       <div class="card"><h3>${ic("i-heart")}Interações · ${AN_PER === "ontem" ? "ontem" : AN_PER === "d7" ? "7 dias" : "28 dias"}</h3><div style="margin-top:14px">${rosca([{ n: "Curtidas", v: p.likes, cor: "#ff6b8b" }, { n: "Comentários", v: p.comments, cor: "#7fb2ff" }, { n: "Compartilhamentos", v: p.shares, cor: "#e3bd78" }, { n: "Salvos", v: p.saves, cor: "#5fb3a6" }])}</div></div>
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-users")}Seguidores novos por dia (30 dias)</h3>${novosPorDia(ig)}</div>
-    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
-      <div class="segm" id="anOrdem"><div class="ind"></div>${[["visualizacoes", "Views"], ["alcance", "Alcance"], ["interacoes", "Interações"], ["salvos", "Salvos"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-ano="${k}" class="${AN_ORDEM === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
-      <div class="tops stagger">${(ig.posts || []).slice().sort((a, b) => (b[AN_ORDEM] ?? -1) - (a[AN_ORDEM] ?? -1)).slice(0, 8).map((x, i) => `
-        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[AN_ORDEM])}</b><small>${esc({ visualizacoes: "visualizações", alcance: "contas alcançadas", interacoes: "interações", salvos: "salvos", compartilhamentos: "compartilhamentos" }[AN_ORDEM])}</small></div></div>
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Posts</h3>
+      <div class="segm" id="anOrdem"><div class="ind"></div>${[["recentes", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["alcance", "Alcance"], ["interacoes", "Interações"], ["salvos", "Salvos"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-ano="${k}" class="${AN_ORDEM === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${ordenarPosts(ig.posts, AN_ORDEM).map((x, i) => `
+        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM)])}</b><small>${esc({ visualizacoes: "visualizações", alcance: "contas alcançadas", interacoes: "interações", salvos: "salvos", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM)])}</small></div></div>
         <div class="mets"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.salvos)}</b>salvos</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint)">${esc(NOMES_TIPO[x.tipo] || x.tipo)} · ${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.tempo_medio_ms ? ` · ${(x.tempo_medio_ms / 1000).toFixed(1).replace(".", ",")}s assistidos` : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
     ${avisos(ig.erros)}`;
@@ -1855,19 +1876,16 @@ function desenharAnalises() {
       ${kpi("i-user", "Visitas à página (28d)", num(d.page_views_total))}
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Seguidores no Facebook</h3>${graficoLinha(serie("fb_seguidores"), "seguidores")}</div>
-    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
-      <div class="segm" id="anOrdemFb"><div class="ind"></div>${[["visualizacoes", "Views"], ["interacoes", "Interações"], ["reacoes", "Reações"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-anf="${k}" class="${AN_ORDEM_FB === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
-      <div class="tops stagger">${(fb.posts || []).slice().sort((a, b) => (b[AN_ORDEM_FB] ?? -1) - (a[AN_ORDEM_FB] ?? -1)).slice(0, 8).map((x, i) => `
-        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[AN_ORDEM_FB])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[AN_ORDEM_FB])}</small></div></div>
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Posts</h3>
+      <div class="segm" id="anOrdemFb"><div class="ind"></div>${[["recentes", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["interacoes", "Interações"], ["reacoes", "Reações"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-anf="${k}" class="${AN_ORDEM_FB === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${ordenarPosts(fb.posts, AN_ORDEM_FB).map((x, i) => `
+        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM_FB)])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM_FB)])}</small></div></div>
         <div class="mets"><div><b>${num(x.reacoes)}</b>reações</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.compartilhamentos)}</b>compart.</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.legenda ? " · " + esc(x.legenda) : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
     ${avisos(fb.erros)}`;
   } else {
     const yt = AN.youtube || {}, c = yt.conta || {};
-    const chaveYt = { visualizacoes: "visualizacoes", curtidas: "curtidas", comentarios: "comentarios" };
-    const ytLista = (yt.videos || []).slice().sort((a, b) => AN_ORDEM_YT === "ordem"
-      ? new Date(b.quando || 0) - new Date(a.quando || 0)
-      : (b[chaveYt[AN_ORDEM_YT]] ?? -1) - (a[chaveYt[AN_ORDEM_YT]] ?? -1));
+    const ytLista = ordenarPosts(yt.videos, AN_ORDEM_YT === "ordem" ? "recentes" : AN_ORDEM_YT);
     html += `<div class="kpis stagger">
       ${kpi("i-users", "Inscritos", num(c.inscritos), delta(c.inscritos, valorHa("yt_inscritos", 7)) + sparkline(serie("yt_inscritos").slice(-30)), "gold")}
       ${kpi("i-eye", "Visualizações totais", num(c.visualizacoes), delta(c.visualizacoes, valorHa("yt_visualizacoes", 7)), "info")}
@@ -1875,7 +1893,7 @@ function desenharAnalises() {
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Visualizações do canal</h3>${graficoLinha(serie("yt_visualizacoes"), "visualizações")}</div>
     <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Shorts</h3>
-      <div class="segm" id="anOrdemYt"><div class="ind"></div>${[["ordem", "Ordem no canal"], ["visualizacoes", "Views"], ["curtidas", "Curtidas"], ["comentarios", "Comentários"]].map(([k, n]) => `<button data-anyt="${k}" class="${AN_ORDEM_YT === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="segm" id="anOrdemYt"><div class="ind"></div>${[["ordem", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["curtidas", "Curtidas"], ["comentarios", "Comentários"]].map(([k, n]) => `<button data-anyt="${k}" class="${AN_ORDEM_YT === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
       <div class="tops stagger">${ytLista.map((x, i) => `
       <a class="top" href="${esc(x.link)}" target="_blank" rel="noopener"><div class="img" style="aspect-ratio:16/10;background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x.visualizacoes)}</b><small>visualizações</small></div></div>
       <div class="mets" style="grid-template-columns:1fr 1fr"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div></div>
@@ -1910,7 +1928,7 @@ $("#btnColetar").onclick = () => rodar("analises");
 
 
 /* ================================================================ biblioteca */
-let BIB = [], bibCarregou = false, bibErro = "", BIB_FILTRO = "prontos";
+let BIB = [], bibCarregou = false, bibErro = "", BIB_FILTRO = "prontos", BIB_CAT = "todas", BIB_DIA = "todos", BIB_ORDEM = "recentes";
 async function carregarBiblioteca() {
   try {
     let itens = [];
@@ -1962,6 +1980,14 @@ function chipTikTok(f) {
   return "";
 }
 function duracao(s) { s = Math.round(+s || 0); return s ? (s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${s}s`) : ""; }
+function bibCategoriaDe(b) { return b.ficha.tipo || "reel"; }
+function quandoBib(b) { const st = statusBib(b); return st.s === "agendado" ? st.quando : b.ficha.criado; }
+function tempoDe(q) {
+  if (!q) return 0;
+  const t = new Date(/^\d{4}-\d{2}-\d{2}$/.test(q) ? q + "T12:00:00" : q).getTime();
+  return isNaN(t) ? 0 : t;
+}
+function diaDaSemana(q) { const t = tempoDe(q); return t ? new Date(t).getDay() : null; }
 function desenharBiblioteca() {
   const alvo = $("#bibLista");
   if (!bibCarregou) { alvo.innerHTML = `<div class="vids">${'<div class="skel" style="aspect-ratio:9/16"></div>'.repeat(4)}</div>`; return; }
@@ -1973,34 +1999,58 @@ function desenharBiblioteca() {
   pecas.forEach((p) => { if (p.g) cont[p.g]++; });
   cont.todos += pecas.filter((p) => p.g).length;
   $$("[data-bc]").forEach((el) => (el.textContent = cont[el.dataset.bc]));
-  const lista = BIB.filter((b) => BIB_FILTRO === "todos" || grupo[statusBib(b).s] === BIB_FILTRO);
-  const listaPecas = pecas.filter((p) => p.g && (BIB_FILTRO === "todos" || p.g === BIB_FILTRO));
-  if (!lista.length && !listaPecas.length) {
-    alvo.innerHTML = BIB.length ? vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.")
-      : vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.");
-    return;
-  }
-  /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
-  const cartoesPecas = listaPecas.flatMap((p) => {
-    const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
-    const arqs = (PRODUCAO?.[pasta] || []);
-    return (arqs.length ? arqs : [null]).map((arq, i, todas) => `<div class="card vid st-${p.s}">
-      <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
-      <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
-    </div>`);
-  });
-  alvo.innerHTML = `<div class="vids stagger">${cartoesPecas.join("")}${lista.map((b) => {
+  const passa = (cat, q) => (BIB_CAT === "todas" || cat === BIB_CAT) && (BIB_DIA === "todos" || diaDaSemana(q) === +BIB_DIA);
+  /* vídeos e artes na mesma lista: os filtros e a ordem valem para os dois */
+  const itens = [];
+  BIB.forEach((b) => {
+    if (BIB_FILTRO !== "todos" && grupo[statusBib(b).s] !== BIB_FILTRO) return;
+    const q = quandoBib(b);
+    if (!passa(bibCategoriaDe(b), q)) return;
     const f = b.ficha, st = statusBib(b);
-    return `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
+    itens.push({ q, html: `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">
         <span class="tag">${esc(NOMES_TIPO[f.tipo] || "Reel")}</span>
         ${b.videoUrl ? `<video muted playsinline loop preload="none" data-src="${esc(b.videoUrl)}"></video><span class="play">${ic("i-play")}</span>` : ""}
         <span class="dur">${esc(duracao(f.duracao))}</span>
       </div>
       <div class="info"><b>${esc(f.titulo || b.nome)}</b><div class="chips">${chipBib(st)}${chipTikTok(f)}</div></div>
-    </div>`;
-  }).join("")}</div>`;
+    </div>` });
+  });
+  /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
+  pecas.forEach((p) => {
+    if (!p.g || (BIB_FILTRO !== "todos" && p.g !== BIB_FILTRO)) return;
+    const cat = p.it.formato === "stories" ? "story" : p.it.formato;
+    if (!passa(cat, p.it.data)) return;
+    const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
+    const arqs = (PRODUCAO?.[pasta] || []);
+    (arqs.length ? arqs : [null]).forEach((arq, i, todas) => itens.push({ q: p.it.data, html: `<div class="card vid st-${p.s}">
+      <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
+      <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
+    </div>` }));
+  });
+  /* sem data vai sempre para o fim; com data, a ordem escolhida */
+  itens.sort((a, b) => {
+    const ta = tempoDe(a.q), tb = tempoDe(b.q);
+    if (!ta || !tb) return (!ta) - (!tb);
+    return BIB_ORDEM === "antigos" ? ta - tb : tb - ta;
+  });
+  if (!itens.length) {
+    const filtrado = BIB_CAT !== "todas" || BIB_DIA !== "todos";
+    alvo.innerHTML = !BIB.length && !pecas.length ? vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.")
+      : filtrado ? vazio("i-film", "Nada com esses filtros", "Tente outra categoria ou outro dia da semana.")
+      : vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.");
+    return;
+  }
+  alvo.innerHTML = `<div class="vids stagger">${itens.map((i) => i.html).join("")}</div>`;
 }
+$(".bib-filtros").addEventListener("change", (e) => {
+  const s = e.target;
+  if (s.id === "bibCat") BIB_CAT = s.value;
+  else if (s.id === "bibDia") BIB_DIA = s.value;
+  else if (s.id === "bibOrdem") BIB_ORDEM = s.value;
+  else return;
+  desenharBiblioteca();
+});
 $("#bibFiltros").addEventListener("click", (e) => {
   const b = e.target.closest("[data-bf]"); if (!b) return;
   BIB_FILTRO = b.dataset.bf; $$("#bibFiltros [data-bf]").forEach((x) => x.classList.toggle("ativo", x === b));
@@ -2210,18 +2260,21 @@ function desenharCronograma() {
   const dias = []; for (let i = 0; i < 7; i++) dias.push(somaDias(SEMANA, i));
   const ordem = Object.keys(FORMATOS);
   $("#crono").innerHTML = dias.map((k) => {
-    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horasDo(a)[0] || "99:99").localeCompare(horasDo(b)[0] || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
+    /* um cartão por horário (item com vários horários vira vários cartões), ordenados pela hora de cada cartão */
+    const cartoes = daSemana.filter((x) => x.data === k).flatMap((it) => {
+      const hs = horasDo(it);
+      return (hs.length > 1 ? hs : [hs[0] || null]).map((h, i, todos) => ({ it, h, i, n: todos.length }));
+    }).sort((a, b) => (a.h || "99:99").localeCompare(b.h || "99:99") || ordem.indexOf(a.it.formato) - ordem.indexOf(b.it.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${itens.flatMap((it) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it), hs = horasDo(it);
-        /* um item com vários horários (ex.: 3 stories) vira um cartão por horário, na ordem do dia */
-        return (hs.length > 1 ? hs : [null]).map((h, i, todos) => `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${todos.length > 1 ? ` ${i + 1}/${todos.length}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
+      ${cartoes.map(({ it, h, i, n }) => {
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
+        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${(h || horaDo(it)) ? `<span class="hora-c">${esc(h || horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+          <div class="mini">${h ? `<span class="hora-c">${esc(h)}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
-        </div>`);
+        </div>`;
       }).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;

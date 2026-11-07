@@ -32,6 +32,15 @@ DIAS_HISTORICO = 120
 ITERACOES = 200_000
 
 
+def paginar(r, maximo=300):
+    """Junta as páginas da Graph API (segue paging.next) para pegar todos os posts."""
+    itens = list(r.get("data", []))
+    while len(itens) < maximo and (r.get("paging") or {}).get("next"):
+        r = _pedir("GET", r["paging"]["next"])
+        itens += r.get("data", [])
+    return itens
+
+
 def limpar(msg):
     return str(msg)[:300]
 
@@ -122,9 +131,9 @@ def instagram():
 
     posts = []
     try:
-        r = get(f"{conta}/media", limit=30, fields="id,caption,media_type,media_product_type,timestamp,permalink,"
+        r = get(f"{conta}/media", limit=100, fields="id,caption,media_type,media_product_type,timestamp,permalink,"
                                                   "thumbnail_url,media_url,like_count,comments_count")
-        for m in r.get("data", []):
+        for m in paginar(r):
             tipo = m.get("media_product_type") or m.get("media_type")
             met = ig_metricas_post(m["id"], tipo, erros) if tipo != "STORY" else {}
             posts.append({
@@ -176,13 +185,13 @@ def facebook():
 def fb_posts(pag, erros):
     posts = []
     try:
-        r = get(f"{pag}/posts", limit=30, fields="id,message,created_time,permalink_url,full_picture,shares,"
+        r = get(f"{pag}/posts", limit=100, fields="id,message,created_time,permalink_url,full_picture,shares,"
                                                   "reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)")
     except ErroApi as e:
         erros.append(f"facebook posts: {limpar(e)}")
         return posts
     aviso = False
-    for m in r.get("data", []):
+    for m in paginar(r):
         reacoes = numero((m.get("reactions") or {}).get("summary", {}).get("total_count"))
         coment = numero((m.get("comments") or {}).get("summary", {}).get("total_count"))
         compart = numero((m.get("shares") or {}).get("count")) or 0
@@ -222,11 +231,22 @@ def youtube():
         uploads = item.get("contentDetails", {}).get("relatedPlaylists", {}).get("uploads")
         videos = []
         if uploads:
-            lista = _pedir("GET", f"{api}/playlistItems", {"part": "contentDetails", "playlistId": uploads, "maxResults": "25"}, cabecalhos=cab)
-            ids = ",".join(i["contentDetails"]["videoId"] for i in lista.get("items", []))
-            if ids:
-                det = _pedir("GET", f"{api}/videos", {"part": "snippet,statistics", "id": ids}, cabecalhos=cab)
-                for v in det.get("items", []):
+            ids_todos, pag_token = [], None
+            while len(ids_todos) < 500:
+                params = {"part": "contentDetails", "playlistId": uploads, "maxResults": "50"}
+                if pag_token:
+                    params["pageToken"] = pag_token
+                lista = _pedir("GET", f"{api}/playlistItems", params, cabecalhos=cab)
+                ids_todos += [i["contentDetails"]["videoId"] for i in lista.get("items", [])]
+                pag_token = lista.get("nextPageToken")
+                if not pag_token:
+                    break
+            itens_det = []
+            for k in range(0, len(ids_todos), 50):
+                det = _pedir("GET", f"{api}/videos", {"part": "snippet,statistics", "id": ",".join(ids_todos[k:k + 50])}, cabecalhos=cab)
+                itens_det += det.get("items", [])
+            if ids_todos:
+                for v in itens_det:
                     s, sn = v.get("statistics", {}), v.get("snippet", {})
                     videos.append({"titulo": sn.get("title"), "quando": sn.get("publishedAt"),
                                    "link": f"https://youtube.com/shorts/{v['id']}",

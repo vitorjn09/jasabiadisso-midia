@@ -2213,14 +2213,15 @@ function desenharCronograma() {
     const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horasDo(a)[0] || "99:99").localeCompare(horasDo(b)[0] || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${itens.map((it) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
-        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
+      ${itens.flatMap((it) => {
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it), hs = horasDo(it);
+        /* um item com vários horários (ex.: 3 stories) vira um cartão por horário, na ordem do dia */
+        return (hs.length > 1 ? hs : [null]).map((h, i, todos) => `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${todos.length > 1 ? ` ${i + 1}/${todos.length}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${horaDo(it) ? `<span class="hora-c">${esc(horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+          <div class="mini">${(h || horaDo(it)) ? `<span class="hora-c">${esc(h || horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
-        </div>`;
+        </div>`);
       }).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;

@@ -254,6 +254,14 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .bib-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
 .bib-filtros label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
 .bib-filtros select { font: inherit; font-size: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; }
+.arte-vista { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.arte-vista[hidden] { display: none; }
+.arte-vista img { max-width: 100%; max-height: 86vh; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }
+.arte-vista button { position: absolute; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--surface-solid); color: var(--text); font-size: 24px; cursor: pointer; }
+.arte-vista .fecha { top: 14px; right: 14px; }
+.arte-vista .ant { left: 12px; top: 50%; transform: translateY(-50%); }
+.arte-vista .prox { right: 12px; top: 50%; transform: translateY(-50%); }
+.arte-vista .cont { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; font-weight: 600; }
 .grupo { margin-top: 26px; }
 .grupo-tit { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font: 600 15px Fredoka; }
 .grupo-tit::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); }
@@ -733,6 +741,13 @@ button, a, [role="button"] { min-height: 44px; }
         </select></label>
       </div>
       <div id="bibLista"></div>
+      <div class="arte-vista" id="arteVista" hidden>
+        <button class="fecha" data-arte-fecha aria-label="Fechar">×</button>
+        <button class="ant" data-arte-ant id="artePrev" aria-label="Arte anterior">‹</button>
+        <img id="arteImg" alt="">
+        <button class="prox" data-arte-prox id="arteProx" aria-label="Próxima arte">›</button>
+        <span class="cont" id="arteCont"></span>
+      </div>
     </section>
 
     <!-- ============================================ cronograma -->
@@ -2023,7 +2038,7 @@ function desenharBiblioteca() {
     if (!passa(cat, p.it.data)) return;
     const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
     const arqs = (PRODUCAO?.[pasta] || []);
-    (arqs.length ? arqs : [null]).forEach((arq, i, todas) => itens.push({ q: p.it.data, html: `<div class="card vid st-${p.s}">
+    (arqs.length ? arqs : [null]).forEach((arq, i, todas) => itens.push({ q: p.it.data, html: `<div class="card vid st-${p.s}" data-peca="${esc(pasta || "")}" data-idx="${i}">
       <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
       <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
     </div>` }));
@@ -2068,7 +2083,27 @@ $("#bibLista").addEventListener("pointerout", (e) => {
   const v = $("video", c); if (!v) return;
   delete v.dataset.tocando; v.classList.remove("on"); v.pause();
 });
-$("#bibLista").addEventListener("click", (e) => { const c = e.target.closest("[data-bib]"); if (c) abrirVideo(c.dataset.bib); });
+$("#bibLista").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-bib]"); if (c) return abrirVideo(c.dataset.bib);
+  const a = e.target.closest("[data-peca]"); if (a) abrirArte(a.dataset.peca, +a.dataset.idx);
+});
+/* visualização de arte (stories e carrosséis) em tela cheia, com setas entre as artes da pasta */
+let ARTE_LISTA = [], ARTE_ATUAL = 0;
+function abrirArte(pasta, i) {
+  ARTE_LISTA = PRODUCAO?.[pasta] || []; if (!ARTE_LISTA.length) return;
+  ARTE_ATUAL = i || 0; mostrarArte(); $("#arteVista").hidden = false;
+}
+function mostrarArte() {
+  $("#arteImg").src = ARTE_LISTA[ARTE_ATUAL].download_url;
+  $("#arteCont").textContent = `${ARTE_ATUAL + 1} / ${ARTE_LISTA.length}`;
+  $("#artePrev").hidden = ARTE_ATUAL === 0;
+  $("#arteProx").hidden = ARTE_ATUAL >= ARTE_LISTA.length - 1;
+}
+$("#arteVista").addEventListener("click", (e) => {
+  if (e.target.closest("[data-arte-fecha]") || e.target === $("#arteVista")) { $("#arteVista").hidden = true; return; }
+  if (e.target.closest("[data-arte-prox]")) { ARTE_ATUAL++; mostrarArte(); }
+  else if (e.target.closest("[data-arte-ant]")) { ARTE_ATUAL--; mostrarArte(); }
+});
 
 function abrirVideo(nome, agendar = false) {
   const b = BIB.find((y) => y.nome === nome); if (!b) return;

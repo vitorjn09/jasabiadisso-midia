@@ -1928,8 +1928,19 @@ async function carregarBiblioteca() {
     BIB.sort((a, b) => String(b.ficha.criado || "").localeCompare(String(a.ficha.criado || "")));
     bibErro = "";
   } catch (e) { bibErro = e.message; }
+  if (!cronoCarregou) await carregarCronograma();
   bibCarregou = true;
-  $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length;
+  $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length + pecasBib().filter((p) => p.s === "pronto").length;
+}
+/* stories e carrosséis que têm arte pronta em producao/ (ainda sem vídeo na biblioteca) */
+function pecasBib() {
+  return (CRONO.itens || []).filter((x) => ["stories", "carrossel"].includes(x.formato) && !x.biblioteca && /^producao\//.test(x.notas || ""))
+    .map((it) => { const s = statusItem(it); return { it, s, g: { pronto: "prontos", agendado: "agendados", publicado: "publicados" }[s] || null }; });
+}
+function chipPeca(p) {
+  if (p.s === "agendado") return `<span class="chip info">${esc(horaDo(p.it) || "Agendado")}</span>`;
+  if (p.s === "publicado") return `<span class="chip ok">${ic("i-check")}Publicado</span>`;
+  return `<span class="chip gold"><span class="ponto"></span>Pronto</span>`;
 }
 function statusBib(b) {
   const ags = POSTS.filter((x) => x.post?.biblioteca === b.nome);
@@ -1958,14 +1969,27 @@ function desenharBiblioteca() {
   const grupo = { pronto: "prontos", agendado: "agendados", publicado: "publicados" };
   const cont = { prontos: 0, agendados: 0, publicados: 0, todos: BIB.length };
   BIB.forEach((b) => cont[grupo[statusBib(b).s]]++);
+  const pecas = pecasBib();
+  pecas.forEach((p) => { if (p.g) cont[p.g]++; });
+  cont.todos += pecas.filter((p) => p.g).length;
   $$("[data-bc]").forEach((el) => (el.textContent = cont[el.dataset.bc]));
   const lista = BIB.filter((b) => BIB_FILTRO === "todos" || grupo[statusBib(b).s] === BIB_FILTRO);
-  if (!lista.length) {
+  const listaPecas = pecas.filter((p) => p.g && (BIB_FILTRO === "todos" || p.g === BIB_FILTRO));
+  if (!lista.length && !listaPecas.length) {
     alvo.innerHTML = BIB.length ? vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.")
       : vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.");
     return;
   }
-  alvo.innerHTML = `<div class="vids stagger">${lista.map((b) => {
+  /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
+  const cartoesPecas = listaPecas.flatMap((p) => {
+    const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
+    const arqs = (PRODUCAO?.[pasta] || []);
+    return (arqs.length ? arqs : [null]).map((arq, i, todas) => `<div class="card vid st-${p.s}">
+      <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
+      <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
+    </div>`);
+  });
+  alvo.innerHTML = `<div class="vids stagger">${cartoesPecas.join("")}${lista.map((b) => {
     const f = b.ficha, st = statusBib(b);
     return `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">
@@ -2189,14 +2213,15 @@ function desenharCronograma() {
     const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horasDo(a)[0] || "99:99").localeCompare(horasDo(b)[0] || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${itens.map((it) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
-        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
+      ${itens.flatMap((it) => {
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it), hs = horasDo(it);
+        /* um item com vários horários (ex.: 3 stories) vira um cartão por horário, na ordem do dia */
+        return (hs.length > 1 ? hs : [null]).map((h, i, todos) => `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${todos.length > 1 ? ` ${i + 1}/${todos.length}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${horaDo(it) ? `<span class="hora-c">${esc(horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+          <div class="mini">${(h || horaDo(it)) ? `<span class="hora-c">${esc(h || horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
-        </div>`;
+        </div>`);
       }).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;

@@ -1,10 +1,4 @@
 {
-  "instagram": {
-    "status": "erro",
-    "erro": "POST https://rupload.facebook.com/ig-api-upload/v27.0/18203899495381522 -> 400: {\"debug_info\":{\"retriable\":false,\"type\":\"ProcessingFailedError\",\"message\":\"Request processing failed\"}}",
-    "tentativas": 1,
-    "em": "2026-11-07T21:13:02.445384+00:00"
-  },
   "facebook": {
     "status": "publicado",
     "id": "122108725905520992",
@@ -14,5 +8,10 @@
     "status": "publicado",
     "id": "Uza10ykBCkA",
     "em": "2026-11-07T21:13:12.464985+00:00"
+  },
+  "instagram": {
+    "status": "publicado",
+    "id": "18011426798997441",
+    "em": "2026-11-07T21:44:23.179494+00:00"
   }
 }

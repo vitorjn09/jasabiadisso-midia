@@ -287,6 +287,9 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .linha-rede .info b { display: block; font-size: 14px; }
 .linha-rede .info span { color: var(--muted); }
 .erro-txt { margin-top: 6px; font: 12px/1.45 "JetBrains Mono", monospace; color: var(--err); word-break: break-word; }
+.erro-txt[hidden] { display: none; }
+.erro-bloco { margin-top: 8px; }
+.erro-btn { color: var(--err); }
 .texto-leg { white-space: pre-wrap; font-size: 14px; line-height: 1.6; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
 
 /* =============================================================== assistente */
@@ -1279,7 +1282,7 @@ function abrirGaveta(pasta, editar = false) {
     $("#gavCorpo").innerHTML = `
       <div class="det-midia">${midia}
         <div>${(p.redes || []).map((r) => { const [cls, tit, sub] = textoEstado(x.estado[r], p.quando); const est = x.estado[r];
-          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-txt">${esc(mascarar(est.erro).slice(0, 400))}</div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}</div></div>`; }).join("")}</div>
+          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-bloco"><button class="btn peq erro-btn" data-erro>${ic("i-alert")}? Ver erro</button><div class="erro-txt" hidden>${esc(mascarar(est.erro).slice(0, 400))}</div></div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}</div></div>`; }).join("")}</div>
       </div>
       ${x.erros.length ? `<div class="aviso-post" style="margin-top:14px">${ic("i-alert")}<span><b>O robô vai ignorar este post:</b> ${x.erros.map(esc).join(" · ")}</span></div>` : ""}
       <label class="campo">Legenda</label><div class="texto-leg">${esc(p.legenda || "(sem legenda)")}</div>
@@ -2355,6 +2358,7 @@ document.addEventListener("click", (e) => {
   const ab = b.closest("[data-abrir]"); if (ab) { abrirGaveta(ab.dataset.abrir); return; }
   const ro = b.closest("[data-rodar]"); if (ro) { rodar(ro.dataset.rodar); return; }
   const re = b.closest("[data-reenviar]"); if (re) { rodar("publicar", re.dataset.reenviar); return; }
+  const eb = b.closest("[data-erro]"); if (eb) { const d = eb.parentElement.querySelector(".erro-txt"); if (d) d.hidden = !d.hidden; return; }
   const fi = b.closest("[data-filtro]"); if (fi) { aplicarFiltro(fi.dataset.filtro); return; }
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }

@@ -1980,10 +1980,16 @@ function desenharBiblioteca() {
       : vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.");
     return;
   }
-  alvo.innerHTML = `<div class="vids stagger">${listaPecas.map((p) => `<div class="card vid st-${p.s}">
-      <div class="capa" style="background-image:url('${esc(capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}</span></div>
+  /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
+  const cartoesPecas = listaPecas.flatMap((p) => {
+    const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
+    const arqs = (PRODUCAO?.[pasta] || []);
+    return (arqs.length ? arqs : [null]).map((arq, i, todas) => `<div class="card vid st-${p.s}">
+      <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
       <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
-    </div>`).join("")}${lista.map((b) => {
+    </div>`);
+  });
+  alvo.innerHTML = `<div class="vids stagger">${cartoesPecas.join("")}${lista.map((b) => {
     const f = b.ficha, st = statusBib(b);
     return `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">

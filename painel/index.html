@@ -114,6 +114,7 @@ button { font: inherit; color: inherit; }
 .citem .mini { display: flex; gap: 4px; margin-top: 7px; color: var(--muted); align-items: center; }
 .citem .mini svg.i { width: 13px; height: 13px; }
 .citem .thumb { width: 22px; height: 30px; border-radius: 5px; background: var(--surface-2) center/cover; margin-left: auto; }
+.capa-edit { display: block; width: 100%; max-height: 260px; object-fit: cover; border-radius: 16px; margin: 0 0 14px; border: 1px solid var(--border); }
 .cdia .add { margin-top: auto; border: 1px dashed var(--border-strong); background: none; border-radius: 10px; padding: 6px; color: var(--faint); cursor: pointer; transition: color .2s, border-color .2s; }
 .cdia .add:hover { color: var(--teal); border-color: var(--teal); }
 .form-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -722,6 +723,7 @@ button, a, [role="button"] { min-height: 44px; }
         <div><h1>Cronograma</h1><p>O plano da semana. Sem horário fixo: a hora você escolhe ao agendar.</p></div>
         <div class="linha-btns">
           <button class="btn" id="cRepete"><svg class="i"><use href="#i-layers"/></svg>Repetir semana</button>
+          <button class="btn perigo" id="cLimpa"><svg class="i"><use href="#i-trash"/></svg>Apagar estrutura da semana</button>
           <button class="btn" id="cModelo"><svg class="i"><use href="#i-layers"/></svg>Preencher com o modelo</button>
           <button class="btn pri" id="cNovo"><svg class="i"><use href="#i-plus"/></svg>Item</button>
         </div>
@@ -1277,7 +1279,7 @@ function abrirGaveta(pasta, editar = false) {
     $("#gavCorpo").innerHTML = `
       <div class="det-midia">${midia}
         <div>${(p.redes || []).map((r) => { const [cls, tit, sub] = textoEstado(x.estado[r], p.quando); const est = x.estado[r];
-          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-txt">${esc(mascarar(est.erro).slice(0, 400))}</div>` : ""}</div></div>`; }).join("")}</div>
+          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-txt">${esc(mascarar(est.erro).slice(0, 400))}</div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}</div></div>`; }).join("")}</div>
       </div>
       ${x.erros.length ? `<div class="aviso-post" style="margin-top:14px">${ic("i-alert")}<span><b>O robô vai ignorar este post:</b> ${x.erros.map(esc).join(" · ")}</span></div>` : ""}
       <label class="campo">Legenda</label><div class="texto-leg">${esc(p.legenda || "(sem legenda)")}</div>
@@ -1590,15 +1592,17 @@ function desenharTrilha(passo, falhou = false) {
   }).join("");
 }
 let rodando = false;
-async function rodar(modo) {
+async function rodar(modo, reenviar = "") {
   if (rodando) return;
   if (!TOKEN) { abrirConta(); return; }
   const fila = POSTS.filter((x) => situacao(x) === "fila");
-  const texto = modo === "publicar"
+  const texto = reenviar
+    ? `<p>Vai tentar de novo só a rede <b>${esc(NOMES_REDE[reenviar.split(":")[1]] || reenviar)}</b> do post <b>${esc(reenviar.split(":")[0])}</b>.</p><p>As outras redes desse post não são mexidas, e o que já saiu não é publicado de novo.</p>`
+    : modo === "publicar"
     ? (fila.length ? `<p>Vai publicar agora: <b>${fila.map((x) => esc(x.pasta)).join(", ")}</b>.</p>` : `<p>Nenhum post passou da hora ainda, então nada deve sair agora.</p>`) + `<p>Posts com hora no futuro continuam esperando.</p>`
     : modo === "analises" ? `<p>Busca agora os números do Instagram, do Facebook e do YouTube e guarda cifrados. Não publica nada. Leva um ou dois minutos.</p>`
     : modo === "conexao" ? `<p>Confere os acessos ao Facebook, ao Instagram e ao YouTube. Não publica nada.</p>` : `<p>Confere os posts da agenda. Não publica nada.</p>`;
-  if (!(await confirmar({ titulo: NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: "Rodar agora" }))) return;
+  if (!(await confirmar({ titulo: reenviar ? "Enviar de novo?" : NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: reenviar ? "Enviar de novo" : "Rodar agora" }))) return;
   rodando = true; irPara("robo");
   const ex = $("#execucao"); ex.classList.remove("oculto"); ex.style.animation = "none"; void ex.offsetWidth; ex.style.animation = "entra .5s var(--ease) both";
   $("#execTit").textContent = NOMES_MODO[modo]; $("#execLink").classList.add("oculto");
@@ -1607,7 +1611,7 @@ async function rodar(modo) {
   const inicio = new Date(Date.now() - 5000);
   try {
     const wf = modo === "analises" ? "analises.yml" : WORKFLOW;
-    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: { modo } } });
+    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: reenviar ? { modo, reenviar } : { modo } } });
     desenharTrilha(1); $("#saida").textContent = "esperando o GitHub começar…";
     let run = null;
     for (let i = 0; i < 100; i++) {
@@ -2098,8 +2102,31 @@ async function carregarCronograma() {
     cronoErro = "";
   } catch (e) { if (e.status === 404) { CRONO = { itens: [] }; cronoErro = ""; } else cronoErro = e.message; }
   CRONO.itens = CRONO.itens || []; CRONO.modelo = CRONO.modelo || MODELO_PADRAO;
+  await carregarProducao();
   cronoCarregou = true;
   if (VIEW === "cronograma") desenharCronograma();
+}
+/* miniatura do item: a capa da biblioteca (reel) ou a primeira arte da pasta em producao/ (stories, carrossel) */
+let PRODUCAO = null;
+async function carregarProducao() {
+  if (PRODUCAO) return;
+  PRODUCAO = {};
+  try {
+    const pastas = (await gh(`/contents/producao?ref=${RAMO}`)) || [];
+    await Promise.all(pastas.filter((p) => p.type === "dir").map(async (p) => {
+      try {
+        const arqs = (await gh(`/contents/producao/${encodeURIComponent(p.name)}?ref=${RAMO}`)) || [];
+        PRODUCAO[p.name] = arqs.filter((a) => a.type === "file" && /\.(png|jpe?g|webp)$/i.test(a.name))
+          .sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { numeric: true }));
+      } catch {}
+    }));
+  } catch { PRODUCAO = {}; }
+}
+function capaItem(it) {
+  if (!it) return "";
+  if (it.biblioteca) { const b = BIB.find((y) => y.nome === it.biblioteca); return b?.capaUrl || ""; }
+  const pasta = (it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
+  return PRODUCAO?.[pasta]?.[0]?.download_url || "";
 }
 function statusItem(it) {
   if (it.biblioteca) {
@@ -2134,11 +2161,11 @@ function desenharCronograma() {
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
       ${itens.map((it) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], b = it.biblioteca ? BIB.find((y) => y.nome === it.biblioteca) : null;
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
         return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
           <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${b?.capaUrl ? `<span class="thumb" style="background-image:url('${esc(b.capaUrl)}')"></span>` : ""}</div>
+          <div class="mini">${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
         </div>`;
       }).join("")}
@@ -2218,6 +2245,18 @@ $("#cRepete").onclick = async () => {
   };
 };
 
+/* apagar só a estrutura vazia da semana (o que foi replicado sem querer) */
+$("#cLimpa").onclick = async () => {
+  const fim = somaDias(SEMANA, 6);
+  const vazios = CRONO.itens.filter((x) => x.data >= SEMANA && x.data <= fim && !x.tema && !x.biblioteca && !x.notas && x.status === "ideia");
+  if (!vazios.length) return toast("info", "Nada para apagar", "Esta semana não tem vagas vazias com status Ideia.");
+  const ok = await confirmar({ titulo: "Apagar a estrutura desta semana?", icone: "i-trash", perigo: true, rotulo: "Apagar", texto: `<p>Apago <b>${vazios.length}</b> vaga(s) vazia(s) desta semana.</p><p>Só saem as vagas sem tema, sem vídeo, sem notas e com status Ideia. O que já tem conteúdo fica como está, e as outras semanas não são mexidas.</p>` });
+  if (!ok) return;
+  const antes = CRONO.itens;
+  CRONO.itens = CRONO.itens.filter((x) => !vazios.includes(x)); desenharCronograma();
+  if (!(await salvarCrono(`apaga ${vazios.length} vaga(s) vazias da semana de ${SEMANA}`))) { CRONO.itens = antes; desenharCronograma(); }
+};
+
 /* pedir ao Claude para criar o conteúdo de um item sem vídeo */
 function podeCriar(it, hoje) { return !it.biblioteca && ["ideia", "roteiro"].includes(statusItem(it)) && it.data >= hoje; }
 function pedirCriacao(it) {
@@ -2251,7 +2290,9 @@ function editarItem(it, dataInicial) {
   const x = it ? { ...it, redes: [...(it.redes || [])] } : { id: novoId(), data: dataInicial, formato: "reel", tema: "", redes: redesPadrao("reel"), status: "ideia", notas: "" };
   const m = $("#modal");
   const opcoesBib = BIB.map((b) => `<option value="${esc(b.nome)}" ${x.biblioteca === b.nome ? "selected" : ""}>${esc(b.ficha.titulo || b.nome)}</option>`).join("");
+  const capaE = capaItem(it);
   m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>${novo ? "Novo item" : "Editar item"}</h2>
+    ${capaE ? `<img class="capa-edit" src="${esc(capaE)}" alt="Capa do item">` : ""}
     <div class="form-grade"><div><label class="campo" style="margin-top:0">Dia</label><input class="input" type="date" id="ciData" value="${esc(x.data)}"></div>
     <div><label class="campo" style="margin-top:0">Vídeo da biblioteca</label><select class="input" id="ciBib"><option value="">Nenhum</option>${opcoesBib}</select></div></div>
     <label class="campo">Formato</label><div class="escolhas" id="ciFmt">${Object.entries(FORMATOS).map(([k, n]) => `<button class="chip ${x.formato === k ? "ok" : ""}" data-v="${k}">${n}</button>`).join("")}</div>
@@ -2313,6 +2354,7 @@ document.addEventListener("click", (e) => {
   const v = b.closest("[data-view]"); if (v) { irPara(v.dataset.view); return; }
   const ab = b.closest("[data-abrir]"); if (ab) { abrirGaveta(ab.dataset.abrir); return; }
   const ro = b.closest("[data-rodar]"); if (ro) { rodar(ro.dataset.rodar); return; }
+  const re = b.closest("[data-reenviar]"); if (re) { rodar("publicar", re.dataset.reenviar); return; }
   const fi = b.closest("[data-filtro]"); if (fi) { aplicarFiltro(fi.dataset.filtro); return; }
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }

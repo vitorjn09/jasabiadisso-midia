@@ -356,6 +356,31 @@ def agora():
     return dt.datetime.now(dt.timezone.utc)
 
 
+def reenviar(alvo):
+    """Zera uma rede que falhou ou atrasou, para o robô tentar de novo.
+
+    alvo é "pasta:rede", por exemplo "2026-11-06-reel-venus:youtube".
+    Não mexe em rede já publicada, para não repetir post.
+    """
+    pasta_nome, _, rede = alvo.partition(":")
+    if not pasta_nome or "/" in pasta_nome or "\\" in pasta_nome or rede not in PUBLICAR:
+        print(f"reenviar: use pasta:rede, com rede em {', '.join(PUBLICAR)}. Recebido: {alvo!r}")
+        return False
+    pasta = AGENDA / pasta_nome
+    if not (pasta / "post.json").exists():
+        print(f"reenviar: pasta {pasta_nome} não existe na agenda")
+        return False
+    estado = ler_estado(pasta)
+    status = estado.get(rede, {}).get("status")
+    if status not in ("falhou", "erro", "atrasado"):
+        print(f"reenviar: {pasta_nome} {rede} está com status {status or 'aguardando'}, nada a fazer")
+        return False
+    del estado[rede]
+    gravar_estado(pasta, estado)
+    print(f"reenviar: {pasta_nome} {rede} zerado (era {status}), será publicado agora")
+    return True
+
+
 def publicar_pendentes():
     falhas = 0
     for pasta, p, erros in ler_posts():
@@ -467,6 +492,8 @@ def main():
     elif a.preparar:
         preparar()
     else:
+        if os.environ.get("REENVIAR", "").strip():
+            reenviar(os.environ["REENVIAR"].strip())
         sys.exit(1 if publicar_pendentes() else 0)
 
 

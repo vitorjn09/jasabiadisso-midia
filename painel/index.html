@@ -746,6 +746,7 @@ button, a, [role="button"] { min-height: 44px; }
           <option value="recentes">Mais recentes</option><option value="antigos">Mais antigos</option>
         </select></label>
       </div>
+      <button class="btn pri" id="bibAuto" style="width:100%;margin:0 0 16px">Agendar tudo pelo cronograma</button>
       <div id="bibLista"></div>
       <div class="arte-vista" id="arteVista" hidden>
         <button class="fecha" data-arte-fecha aria-label="Fechar">×</button>
@@ -2064,6 +2065,52 @@ function desenharBiblioteca() {
   }
   alvo.innerHTML = `<div class="vids stagger">${itens.map((i) => i.html).join("")}</div>`;
 }
+/* agenda de uma vez os vídeos prontos da biblioteca que têm data e hora no cronograma */
+async function agendarAutomatico() {
+  if (!TOKEN) return toast("err", "Conecte o painel ao GitHub", "Sem isso não dá para agendar.");
+  const planos = [], semData = [];
+  for (const b of BIB.filter((x) => statusBib(x).s === "pronto" && x.videoUrl)) {
+    const it = (CRONO.itens || []).find((x) => x.biblioteca === b.nome);
+    const hora = it ? horasDo(it)[0] : "";
+    const nome = b.ficha.titulo || b.nome;
+    if (!it?.data || !hora) { semData.push(nome); continue; }
+    const quando = `${it.data}T${hora}:00-03:00`;
+    if (new Date(quando) < new Date()) { semData.push(`${nome} (horário já passou)`); continue; }
+    planos.push({ b, it, quando });
+  }
+  planos.sort((a, b) => new Date(a.quando) - new Date(b.quando));
+  if (!planos.length) {
+    return toast("err", "Nada para agendar", semData.length ? "Sem data e hora no cronograma: " + semData.join(", ") : "Não há vídeos prontos na biblioteca.");
+  }
+  const lista = planos.map((p) => `<li>${esc(nomeDia(new Date(p.quando)))}, <b>${esc(F_HORA.format(new Date(p.quando)))}</b> · ${esc(p.b.ficha.titulo || p.b.nome)}</li>`).join("");
+  const ok = await confirmar({ titulo: `Agendar ${planos.length} ${planos.length === 1 ? "vídeo" : "vídeos"}?`, icone: "i-cal", rotulo: "Agendar tudo",
+    texto: `<ul>${lista}</ul>${semData.length ? `<p>Ficam de fora, sem data e hora no cronograma: ${esc(semData.join(", "))}.</p>` : ""}<p>O robô publica sozinho em cada horário, no Instagram, Facebook e YouTube. O cronograma também é atualizado.</p>` });
+  if (!ok) return;
+  const btn = $("#bibAuto"); btn.disabled = true;
+  try {
+    const arquivos = [], usados = new Set(POSTS.map((x) => x.pasta));
+    for (const { b, it, quando } of planos) {
+      const f = b.ficha;
+      const post = ordenar({ quando, tipo: f.tipo || "reel", redes: Object.keys(NOMES_REDE), legenda: (f.legenda || "").trim(), midias: ["video.mp4"],
+        ...(b.capaUrl ? { capa: f.capa || "capa.jpg" } : {}),
+        ...(f.titulo_facebook ? { titulo_facebook: f.titulo_facebook } : {}),
+        ...(f.titulo_youtube ? { titulo_youtube: f.titulo_youtube } : {}),
+        ...(f.ia ? { ia: true } : {}), biblioteca: b.nome });
+      let pasta = `${it.data}-${post.tipo}-${b.nome}`.slice(0, 80);
+      for (let i = 2; usados.has(pasta); i++) pasta = `${it.data}-${post.tipo}-${b.nome}-${i}`.slice(0, 80);
+      usados.add(pasta);
+      arquivos.push({ caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") });
+      ligarNoCronograma(b, it.data);
+    }
+    arquivos.push({ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") });
+    await commit(`Painel: agenda ${planos.length} vídeos da biblioteca pelo cronograma`, arquivos);
+    toast("ok", "Vídeos agendados", `${planos.length} no cronograma`); confete();
+    await carregarAgenda(); desenharBiblioteca();
+  } catch (e) {
+    toast("err", "Não agendou", e.message);
+  } finally { btn.disabled = false; }
+}
+$("#bibAuto").addEventListener("click", agendarAutomatico);
 $(".bib-filtros").addEventListener("change", (e) => {
   const s = e.target;
   if (s.id === "bibCat") BIB_CAT = s.value;

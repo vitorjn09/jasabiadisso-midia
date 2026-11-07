@@ -2210,18 +2210,21 @@ function desenharCronograma() {
   const dias = []; for (let i = 0; i < 7; i++) dias.push(somaDias(SEMANA, i));
   const ordem = Object.keys(FORMATOS);
   $("#crono").innerHTML = dias.map((k) => {
-    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horasDo(a)[0] || "99:99").localeCompare(horasDo(b)[0] || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
+    /* um cartão por horário (item com vários horários vira vários cartões), ordenados pela hora de cada cartão */
+    const cartoes = daSemana.filter((x) => x.data === k).flatMap((it) => {
+      const hs = horasDo(it);
+      return (hs.length > 1 ? hs : [hs[0] || null]).map((h, i, todos) => ({ it, h, i, n: todos.length }));
+    }).sort((a, b) => (a.h || "99:99").localeCompare(b.h || "99:99") || ordem.indexOf(a.it.formato) - ordem.indexOf(b.it.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${itens.flatMap((it) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it), hs = horasDo(it);
-        /* um item com vários horários (ex.: 3 stories) vira um cartão por horário, na ordem do dia */
-        return (hs.length > 1 ? hs : [null]).map((h, i, todos) => `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${todos.length > 1 ? ` ${i + 1}/${todos.length}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
+      ${cartoes.map(({ it, h, i, n }) => {
+        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
+        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${(h || horaDo(it)) ? `<span class="hora-c">${esc(h || horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+          <div class="mini">${h ? `<span class="hora-c">${esc(h)}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
-        </div>`);
+        </div>`;
       }).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;

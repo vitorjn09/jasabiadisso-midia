@@ -1829,6 +1829,13 @@ function avisos(erros) {
   if (!erros?.length) return "";
   return `<details class="card" style="margin-top:16px"><summary style="cursor:pointer;color:var(--muted);font-size:13px">${ic("i-alert")} ${erros.length} métrica(s) não vieram (falta de permissão ou métrica que a rede aposentou)</summary><pre class="erro-txt" style="white-space:pre-wrap;margin-top:10px">${esc(mascarar(erros.join("\n")))}</pre></details>`;
 }
+/* ordena os posts: por data (mais recentes ou mais antigos) ou por uma métrica (maior primeiro) */
+function ordenarPosts(lista, ordem) {
+  const data = (x) => new Date(x.quando || 0).getTime() || 0;
+  if (ordem === "recentes" || ordem === "antigos") return (lista || []).slice().sort((a, b) => ordem === "antigos" ? data(a) - data(b) : data(b) - data(a));
+  return (lista || []).slice().sort((a, b) => (b[ordem] ?? -1) - (a[ordem] ?? -1));
+}
+const metricaDeOrdem = (k) => (k === "recentes" || k === "antigos") ? "visualizacoes" : k;
 function desenharAnalises() {
   if (!AN) return;
   const segm = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-bottom:16px">
@@ -1851,10 +1858,10 @@ function desenharAnalises() {
       <div class="card"><h3>${ic("i-heart")}Interações · ${AN_PER === "ontem" ? "ontem" : AN_PER === "d7" ? "7 dias" : "28 dias"}</h3><div style="margin-top:14px">${rosca([{ n: "Curtidas", v: p.likes, cor: "#ff6b8b" }, { n: "Comentários", v: p.comments, cor: "#7fb2ff" }, { n: "Compartilhamentos", v: p.shares, cor: "#e3bd78" }, { n: "Salvos", v: p.saves, cor: "#5fb3a6" }])}</div></div>
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-users")}Seguidores novos por dia (30 dias)</h3>${novosPorDia(ig)}</div>
-    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
-      <div class="segm" id="anOrdem"><div class="ind"></div>${[["visualizacoes", "Views"], ["alcance", "Alcance"], ["interacoes", "Interações"], ["salvos", "Salvos"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-ano="${k}" class="${AN_ORDEM === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
-      <div class="tops stagger">${(ig.posts || []).slice().sort((a, b) => (b[AN_ORDEM] ?? -1) - (a[AN_ORDEM] ?? -1)).slice(0, 8).map((x, i) => `
-        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[AN_ORDEM])}</b><small>${esc({ visualizacoes: "visualizações", alcance: "contas alcançadas", interacoes: "interações", salvos: "salvos", compartilhamentos: "compartilhamentos" }[AN_ORDEM])}</small></div></div>
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Posts</h3>
+      <div class="segm" id="anOrdem"><div class="ind"></div>${[["recentes", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["alcance", "Alcance"], ["interacoes", "Interações"], ["salvos", "Salvos"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-ano="${k}" class="${AN_ORDEM === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${ordenarPosts(ig.posts, AN_ORDEM).map((x, i) => `
+        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM)])}</b><small>${esc({ visualizacoes: "visualizações", alcance: "contas alcançadas", interacoes: "interações", salvos: "salvos", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM)])}</small></div></div>
         <div class="mets"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.salvos)}</b>salvos</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint)">${esc(NOMES_TIPO[x.tipo] || x.tipo)} · ${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.tempo_medio_ms ? ` · ${(x.tempo_medio_ms / 1000).toFixed(1).replace(".", ",")}s assistidos` : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
     ${avisos(ig.erros)}`;
@@ -1869,19 +1876,16 @@ function desenharAnalises() {
       ${kpi("i-user", "Visitas à página (28d)", num(d.page_views_total))}
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Seguidores no Facebook</h3>${graficoLinha(serie("fb_seguidores"), "seguidores")}</div>
-    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Melhores posts</h3>
-      <div class="segm" id="anOrdemFb"><div class="ind"></div>${[["visualizacoes", "Views"], ["interacoes", "Interações"], ["reacoes", "Reações"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-anf="${k}" class="${AN_ORDEM_FB === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
-      <div class="tops stagger">${(fb.posts || []).slice().sort((a, b) => (b[AN_ORDEM_FB] ?? -1) - (a[AN_ORDEM_FB] ?? -1)).slice(0, 8).map((x, i) => `
-        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[AN_ORDEM_FB])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[AN_ORDEM_FB])}</small></div></div>
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Posts</h3>
+      <div class="segm" id="anOrdemFb"><div class="ind"></div>${[["recentes", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["interacoes", "Interações"], ["reacoes", "Reações"], ["compartilhamentos", "Compart."]].map(([k, n]) => `<button data-anf="${k}" class="${AN_ORDEM_FB === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${ordenarPosts(fb.posts, AN_ORDEM_FB).map((x, i) => `
+        <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM_FB)])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM_FB)])}</small></div></div>
         <div class="mets"><div><b>${num(x.reacoes)}</b>reações</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.compartilhamentos)}</b>compart.</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.legenda ? " · " + esc(x.legenda) : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
     ${avisos(fb.erros)}`;
   } else {
     const yt = AN.youtube || {}, c = yt.conta || {};
-    const chaveYt = { visualizacoes: "visualizacoes", curtidas: "curtidas", comentarios: "comentarios" };
-    const ytLista = (yt.videos || []).slice().sort((a, b) => AN_ORDEM_YT === "ordem"
-      ? new Date(b.quando || 0) - new Date(a.quando || 0)
-      : (b[chaveYt[AN_ORDEM_YT]] ?? -1) - (a[chaveYt[AN_ORDEM_YT]] ?? -1));
+    const ytLista = ordenarPosts(yt.videos, AN_ORDEM_YT === "ordem" ? "recentes" : AN_ORDEM_YT);
     html += `<div class="kpis stagger">
       ${kpi("i-users", "Inscritos", num(c.inscritos), delta(c.inscritos, valorHa("yt_inscritos", 7)) + sparkline(serie("yt_inscritos").slice(-30)), "gold")}
       ${kpi("i-eye", "Visualizações totais", num(c.visualizacoes), delta(c.visualizacoes, valorHa("yt_visualizacoes", 7)), "info")}
@@ -1889,7 +1893,7 @@ function desenharAnalises() {
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Visualizações do canal</h3>${graficoLinha(serie("yt_visualizacoes"), "visualizações")}</div>
     <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Shorts</h3>
-      <div class="segm" id="anOrdemYt"><div class="ind"></div>${[["ordem", "Ordem no canal"], ["visualizacoes", "Views"], ["curtidas", "Curtidas"], ["comentarios", "Comentários"]].map(([k, n]) => `<button data-anyt="${k}" class="${AN_ORDEM_YT === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="segm" id="anOrdemYt"><div class="ind"></div>${[["ordem", "Mais recentes"], ["antigos", "Mais antigos"], ["visualizacoes", "Views"], ["curtidas", "Curtidas"], ["comentarios", "Comentários"]].map(([k, n]) => `<button data-anyt="${k}" class="${AN_ORDEM_YT === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
       <div class="tops stagger">${ytLista.map((x, i) => `
       <a class="top" href="${esc(x.link)}" target="_blank" rel="noopener"><div class="img" style="aspect-ratio:16/10;background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x.visualizacoes)}</b><small>visualizações</small></div></div>
       <div class="mets" style="grid-template-columns:1fr 1fr"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div></div>

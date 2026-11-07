@@ -309,6 +309,7 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .logo-rede.instagram { background: radial-gradient(circle at 30% 110%, #fdc468, #df4996 55%, #6a5af9); color: #fff; }
 .logo-rede.facebook { background: #1877f2; color: #fff; }
 .logo-rede.youtube { background: #ff0033; color: #fff; }
+.logo-rede.tiktok { background: #111; color: #fff; box-shadow: inset 2px 0 0 #25f4ee, inset -2px 0 0 #fe2c55; }
 .linha-rede .info { flex: 1; min-width: 0; font-size: 13px; }
 .linha-rede .info b { display: block; font-size: 14px; }
 .linha-rede .info span { color: var(--muted); }
@@ -870,8 +871,9 @@ button, a, [role="button"] { min-height: 44px; }
           <div class="rede-op sel" data-rede="instagram"><div class="logo-rede instagram"><svg class="i"><use href="#i-ig"/></svg></div><div><b>Instagram</b><small>Feed, reels e stories</small></div></div>
           <div class="rede-op sel" data-rede="facebook"><div class="logo-rede facebook"><svg class="i"><use href="#i-fb"/></svg></div><div><b>Facebook</b><small>Página</small></div></div>
           <div class="rede-op sel" data-rede="youtube"><div class="logo-rede youtube"><svg class="i"><use href="#i-yt"/></svg></div><div><b>YouTube</b><small>Só reel (Short)</small></div></div>
+          <div class="rede-op sel" data-rede="tiktok"><div class="logo-rede tiktok"><svg class="i"><use href="#i-tt"/></svg></div><div><b>TikTok</b><small>Só reel, chega como rascunho</small></div></div>
         </div>
-        <p class="dica">TikTok não passa pelo robô.</p>
+        <p class="dica">No TikTok o vídeo chega como rascunho: abra a notificação no app, cole a legenda e toque em Publicar.</p>
       </div>
 
       <div class="etapa" data-etapa="4">
@@ -916,6 +918,7 @@ button, a, [role="button"] { min-height: 44px; }
       <div id="faixaToken3"></div>
       <div class="acoes-robo stagger">
         <div class="card spot acao" data-rodar="conexao"><div class="ic"><svg class="i g"><use href="#i-plug"/></svg></div><b>Testar conexão</b><p>Confere se o robô ainda entra no Facebook, no Instagram e no YouTube. Não publica nada.</p><span class="chip">Seguro</span></div>
+        <div class="card spot acao" data-tiktok-conectar><div class="ic"><svg class="i g"><use href="#i-tt"/></svg></div><b>Conectar TikTok</b><p>Liga a conta do TikTok ao robô. Os reels passam a chegar como rascunho no app. Só precisa fazer uma vez.</p><span class="chip">Seguro</span></div>
         <div class="card spot acao" data-rodar="verificar"><div class="ic"><svg class="i g"><use href="#i-list"/></svg></div><b>Verificar posts</b><p>Lê a agenda e aponta arquivo faltando ou formato errado. Não publica nada.</p><span class="chip">Seguro</span></div>
         <div class="card spot acao destaque" data-rodar="publicar"><div class="ic"><svg class="i g"><use href="#i-send"/></svg></div><b>Publicar agora</b><p>Publica os posts que já passaram da hora. Os de horário futuro continuam esperando.</p><span class="chip warn"><span class="ponto"></span>Publica de verdade</span></div>
       </div>
@@ -1012,10 +1015,11 @@ const DONO = "vitorjn09", REPO = "jasabiadisso-midia", RAMO = "main", WORKFLOW =
 const API = `https://api.github.com/repos/${DONO}/${REPO}`;
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const NOMES_REDE = { instagram: "Instagram", facebook: "Facebook", youtube: "YouTube" };
-const ICONE_REDE = { instagram: "i-ig", facebook: "i-fb", youtube: "i-yt" };
+const NOMES_REDE = { instagram: "Instagram", facebook: "Facebook", youtube: "YouTube", tiktok: "TikTok" };
+const ICONE_REDE = { instagram: "i-ig", facebook: "i-fb", youtube: "i-yt", tiktok: "i-tt" };
+const SO_REEL = ["youtube", "tiktok"];
 const NOMES_TIPO = { reel: "Reel", carrossel: "Carrossel", story: "Story", imagem: "Imagem" };
-const NOMES_MODO = { conexao: "Testar conexão", verificar: "Verificar posts", publicar: "Publicar agora", analises: "Atualizar análises" };
+const NOMES_MODO = { conexao: "Testar conexão", verificar: "Verificar posts", publicar: "Publicar agora", analises: "Atualizar análises", tiktok_login: "Conectar TikTok" };
 const EXT_VIDEO = [".mp4", ".mov"], EXT_IMAGEM = [".jpg", ".jpeg", ".png"];
 const ORDEM_CHAVES = ["quando", "tipo", "redes", "legenda", "midias", "capa", "titulo_facebook", "titulo_youtube", "ia"];
 const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1118,6 +1122,7 @@ function validar(p, nomes) {
     else if (redes.includes("instagram") && e === ".png") erros.push(`Instagram só aceita JPG: ${m}`);
   }
   if (redes.includes("youtube") && p.tipo !== "reel") erros.push("no YouTube só sai reel");
+  if (redes.includes("tiktok") && p.tipo !== "reel") erros.push("no TikTok só sai reel");
   if (p.tipo === "reel" && midias.length && !EXT_VIDEO.includes(extensao(midias[0]))) erros.push("reel precisa de um vídeo");
   if (["reel", "story", "imagem"].includes(p.tipo) && midias.length > 1) erros.push(`${p.tipo} leva só uma mídia`);
   if (p.tipo === "carrossel" && !(midias.length >= 2 && midias.length <= 10)) erros.push("carrossel leva de 2 a 10 imagens");
@@ -1316,7 +1321,7 @@ function abrirGaveta(pasta, editar = false) {
       <div class="quando-grade"><div><label class="campo" style="margin-top:0">Data</label><input class="input" type="date" id="eData" value="${local.slice(0, 10)}"></div>
       <div><label class="campo" style="margin-top:0">Hora (Brasília)</label><input class="input" type="time" id="eHora" value="${local.slice(11, 16)}"></div></div>
       <label class="campo">Redes</label>
-      <div class="redes" id="eRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ${(p.redes || []).includes(r) ? "ok" : ""}" data-r="${r}" style="cursor:pointer;padding:8px 12px" ${r === "youtube" && p.tipo !== "reel" ? "disabled" : ""}>${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
+      <div class="redes" id="eRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ${(p.redes || []).includes(r) ? "ok" : ""}" data-r="${r}" style="cursor:pointer;padding:8px 12px" ${SO_REEL.includes(r) && p.tipo !== "reel" ? "disabled" : ""}>${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
       <label class="campo">Legenda</label><textarea class="input" id="eLeg">${esc(p.legenda || "")}</textarea>
       ${p.tipo === "reel" ? `<label class="campo">Título no Facebook</label><input class="input" id="eFb" value="${esc(p.titulo_facebook || "")}">
       <label class="campo">Título no YouTube</label><input class="input" id="eYt" maxlength="100" value="${esc(p.titulo_youtube || "")}">` : ""}
@@ -1386,7 +1391,7 @@ async function apagarPost(x) {
 function isoParaLocal(iso) { const d = new Date(iso); return isNaN(d) ? "" : new Date(d.getTime() - 3 * 36e5).toISOString().slice(0, 16); }
 
 /* ================================================================ novo post (assistente) */
-const NOVO = { etapa: 0, tipo: "reel", midias: [], capa: null, ia: false, redes: new Set(["instagram", "facebook", "youtube"]) };
+const NOVO = { etapa: 0, tipo: "reel", midias: [], capa: null, ia: false, redes: new Set(["instagram", "facebook", "youtube", "tiktok"]) };
 const ETAPAS = 5;
 function irEtapa(n) {
   NOVO.etapa = n;
@@ -1490,8 +1495,8 @@ function atualizarPasta() { $("#pastaPrevia").textContent = nomePasta(); }
 
 // quando e redes
 function ajustarRedes() {
-  if (NOVO.tipo !== "reel") NOVO.redes.delete("youtube");
-  $$("#redesSel .rede-op").forEach((el) => { const r = el.dataset.rede; el.classList.toggle("sel", NOVO.redes.has(r)); el.classList.toggle("off", r === "youtube" && NOVO.tipo !== "reel"); });
+  if (NOVO.tipo !== "reel") SO_REEL.forEach((r) => NOVO.redes.delete(r));
+  $$("#redesSel .rede-op").forEach((el) => { const r = el.dataset.rede; el.classList.toggle("sel", NOVO.redes.has(r)); el.classList.toggle("off", SO_REEL.includes(r) && NOVO.tipo !== "reel"); });
   const chips = [];
   for (let i = 0; i < 7; i++) { const d = new Date(Date.now() + i * 864e5); chips.push(`<button class="chip" data-d="${chaveDia(d)}" style="cursor:pointer;padding:8px 12px">${i === 0 ? "Hoje" : i === 1 ? "Amanhã" : esc(F_CURTO.format(d))}</button>`); }
   $("#atalhosData").innerHTML = chips.join("");
@@ -1529,7 +1534,7 @@ $("#btnAvancar").onclick = () => { if (NOVO.etapa === ETAPAS - 1) return agendar
 $("#btnOutro").onclick = () => resetarNovo();
 function resetarNovo() {
   NOVO.midias.forEach((m) => URL.revokeObjectURL(m.url)); if (NOVO.capa) URL.revokeObjectURL(NOVO.capa.url);
-  Object.assign(NOVO, { etapa: 0, tipo: "reel", midias: [], capa: null, ia: false, redes: new Set(["instagram", "facebook", "youtube"]) });
+  Object.assign(NOVO, { etapa: 0, tipo: "reel", midias: [], capa: null, ia: false, redes: new Set(["instagram", "facebook", "youtube", "tiktok"]) });
   ["#fAssunto", "#fLegenda", "#fTitFb", "#fTitYt", "#fData", "#fHora"].forEach((s) => ($(s).value = ""));
   $("#tglIa").classList.remove("on"); $$("#tipos .tipo").forEach((t) => t.classList.toggle("sel", t.dataset.tipo === "reel"));
   desenharPrevias(); desenharCapa(); $("#envio").classList.add("oculto"); irEtapa(0);
@@ -1646,7 +1651,7 @@ function desenharTrilha(passo, falhou = false) {
   }).join("");
 }
 let rodando = false;
-async function rodar(modo, reenviar = "") {
+async function rodar(modo, reenviar = "", extra = null) {
   if (rodando) return;
   if (!TOKEN) { abrirConta(); return; }
   const fila = POSTS.filter((x) => situacao(x) === "fila");
@@ -1655,8 +1660,9 @@ async function rodar(modo, reenviar = "") {
     : modo === "publicar"
     ? (fila.length ? `<p>Vai publicar agora: <b>${fila.map((x) => esc(x.pasta)).join(", ")}</b>.</p>` : `<p>Nenhum post passou da hora ainda, então nada deve sair agora.</p>`) + `<p>Posts com hora no futuro continuam esperando.</p>`
     : modo === "analises" ? `<p>Busca agora os números do Instagram, do Facebook e do YouTube e guarda cifrados. Não publica nada. Leva um ou dois minutos.</p>`
-    : modo === "conexao" ? `<p>Confere os acessos ao Facebook, ao Instagram e ao YouTube. Não publica nada.</p>` : `<p>Confere os posts da agenda. Não publica nada.</p>`;
-  if (!(await confirmar({ titulo: reenviar ? "Enviar de novo?" : NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: reenviar ? "Enviar de novo" : "Rodar agora" }))) return;
+    : modo === "conexao" ? `<p>Confere os acessos ao Facebook, ao Instagram, ao YouTube e ao TikTok. Não publica nada.</p>`
+    : modo === "tiktok_login" ? `<p>O TikTok devolveu a autorização. O robô vai guardar o acesso e mostrar o nome da conta. Não publica nada.</p>` : `<p>Confere os posts da agenda. Não publica nada.</p>`;
+  if (!(await confirmar({ titulo: reenviar ? "Enviar de novo?" : NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "tiktok_login" ? "i-tt" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: reenviar ? "Enviar de novo" : "Rodar agora" }))) return;
   rodando = true; irPara("robo");
   const ex = $("#execucao"); ex.classList.remove("oculto"); ex.style.animation = "none"; void ex.offsetWidth; ex.style.animation = "entra .5s var(--ease) both";
   $("#execTit").textContent = NOMES_MODO[modo]; $("#execLink").classList.add("oculto");
@@ -1665,7 +1671,7 @@ async function rodar(modo, reenviar = "") {
   const inicio = new Date(Date.now() - 5000);
   try {
     const wf = modo === "analises" ? "analises.yml" : WORKFLOW;
-    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: reenviar ? { modo, reenviar } : { modo } } });
+    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: { modo, ...(reenviar ? { reenviar } : {}), ...(extra || {}) } } });
     desenharTrilha(1); $("#saida").textContent = "esperando o GitHub começar…";
     let run = null;
     for (let i = 0; i < 100; i++) {
@@ -2283,7 +2289,7 @@ function abrirVideo(nome, agendar = false) {
     const tts = f.tiktok?.status || "";
     $("#gavCorpo").innerHTML = `
       <div class="det-video">${player}<div>${linhas}</div></div>
-      <label class="campo">TikTok (vai pelo Metricool)</label>
+      <label class="campo">TikTok pelo Metricool (só enquanto o robô não estiver ligado ao TikTok)</label>
       <div class="tt-op" id="ttOp">${[["", "Não vai"], ["pedido", "Quero no TikTok"], ["postado", "Já está no TikTok"]].map(([k, n]) => `<button class="chip ${tts === k ? (k === "postado" ? "ok" : k === "pedido" ? "warn" : "info") : ""}" data-tt="${k}">${ic("i-tt")}${n}</button>`).join("")}</div>
       ${tts === "pedido" ? `<p class="dica">Peça no chat e eu agendo no Metricool.</p>` : ""}
       <label class="campo">Legenda</label><div class="texto-leg">${esc(f.legenda || "(sem legenda)")}</div>
@@ -2667,6 +2673,7 @@ document.addEventListener("click", (e) => {
   const v = b.closest("[data-view]"); if (v) { irPara(v.dataset.view); return; }
   const ab = b.closest("[data-abrir]"); if (ab) { abrirGaveta(ab.dataset.abrir); return; }
   const ro = b.closest("[data-rodar]"); if (ro) { rodar(ro.dataset.rodar); return; }
+  if (b.closest("[data-tiktok-conectar]")) { conectarTikTok(); return; }
   const re = b.closest("[data-reenviar]"); if (re) { rodar("publicar", re.dataset.reenviar); return; }
   const eb = b.closest("[data-erro]"); if (eb) { const d = eb.parentElement.querySelector(".erro-txt"); if (d) d.hidden = !d.hidden; return; }
   const fi = b.closest("[data-filtro]"); if (fi) { aplicarFiltro(fi.dataset.filtro); return; }
@@ -2715,7 +2722,28 @@ $("#btnAtualizarRuns").onclick = carregarRuns;
 // Atualiza sozinho enquanto a página está aberta (no celular, a cada 5 minutos).
 setInterval(() => { if (!document.hidden && !rodando) atualizar(); }, TOQUE ? 300000 : 120000);
 faixaToken(); desenharInicio(); irEtapa(0); requestAnimationFrame(posicionarNav);
-checarLogin(); atualizar();
+/* ================================================================ TikTok */
+// A chave do app (client key) não é segredo: ela aparece no próprio link de autorização.
+const TIKTOK_REDIRECT = "https://painel-robo-sabia-dessa.vercel.app/";
+async function conectarTikTok() {
+  if (!TOKEN) { abrirConta(); return; }
+  let chave = local.get("painel-tiktok-chave");
+  if (!chave) { chave = (prompt("Cole a Client key do app do TikTok (developers.tiktok.com > seu app > Credentials):") || "").trim(); if (!chave) return; local.set("painel-tiktok-chave", chave); }
+  const estado = "tiktok-" + Math.random().toString(36).slice(2, 10);
+  try { sessionStorage.setItem("painel-tiktok-estado", estado); } catch {}
+  location.href = "https://www.tiktok.com/v2/auth/authorize/?" + new URLSearchParams({ client_key: chave, scope: "user.info.basic,video.upload", response_type: "code", redirect_uri: TIKTOK_REDIRECT, state: estado });
+}
+function voltaDoTikTok() {
+  const q = new URLSearchParams(location.search), estado = q.get("state") || "";
+  if (!estado.startsWith("tiktok-")) return;
+  history.replaceState(null, "", location.pathname);
+  let esperado = ""; try { esperado = sessionStorage.getItem("painel-tiktok-estado") || ""; sessionStorage.removeItem("painel-tiktok-estado"); } catch {}
+  if (q.get("error")) return toast("err", "O TikTok não autorizou", q.get("error_description") || q.get("error"));
+  if (esperado && esperado !== estado) return toast("err", "Link do TikTok não confere", "Toque em Conectar TikTok de novo.");
+  const codigo = q.get("code"); if (codigo) setTimeout(() => rodar("tiktok_login", "", { codigo }), 600);
+}
+
+checarLogin(); atualizar(); voltaDoTikTok();
 const abaSalva = local.get("painel-aba");
 if (abaSalva && abaSalva !== "inicio" && ["agenda", "biblioteca", "cronograma", "analises", "robo"].includes(abaSalva)) irPara(abaSalva);
 </script>

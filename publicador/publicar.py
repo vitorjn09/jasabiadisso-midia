@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Publicador do Já Sabia Disso? para Instagram, Facebook e YouTube.
+"""Publicador do Já Sabia Disso? para Instagram, Facebook, YouTube e TikTok.
 
 Lê os posts em agenda/<pasta>/post.json, publica os que já chegaram na hora
-pelas APIs oficiais (Meta Graph API e YouTube Data API) e grava o resultado em estado.json na
+pelas APIs oficiais (Meta Graph API, YouTube Data API e TikTok Content
+Posting API) e grava o resultado em estado.json na
 mesma pasta. Roda a cada 15 minutos pelo GitHub Actions.
 
 Uso:
@@ -10,6 +11,7 @@ Uso:
   python publicador/publicar.py --verificar  só confere os posts, não publica
   python publicador/publicar.py --conexao    testa o token e mostra as contas
   python publicador/publicar.py --preparar   converte PNG em JPG (Instagram só aceita JPG)
+  python publicador/publicar.py --tiktok-login  primeira conexão do TikTok (TIKTOK_CODIGO)
 
 Variáveis de ambiente (segredos do repositório):
   META_TOKEN      token de página (longa duração) com permissão de publicar
@@ -17,6 +19,8 @@ Variáveis de ambiente (segredos do repositório):
   IG_USER_ID      id da conta do Instagram (opcional; é descoberto pela página)
   GRAPH_VERSION   versão da API (padrão v23.0)
   YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN   acesso ao canal do YouTube
+  TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REFRESH_TOKEN, SEGREDOS_TOKEN
+                  TikTok (veja publicador/tiktok.py). Sem eles, o TikTok é pulado.
 """
 
 import argparse
@@ -30,6 +34,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import tiktok  # noqa: E402
+
 RAIZ = Path(__file__).resolve().parent.parent
 AGENDA = RAIZ / "agenda"
 BIBLIOTECA = RAIZ / "biblioteca"
@@ -38,7 +45,7 @@ GRAPH = f"https://graph.facebook.com/{VERSAO}"
 RUPLOAD = "https://rupload.facebook.com"
 
 TIPOS = {"reel", "carrossel", "imagem", "story"}
-REDES = {"instagram", "facebook", "youtube"}
+REDES = {"instagram", "facebook", "youtube", "tiktok"}
 EXT_VIDEO = {".mp4", ".mov"}
 EXT_IMAGEM = {".jpg", ".jpeg", ".png"}
 
@@ -291,7 +298,20 @@ def yt_publicar(p, pasta):
     return r["id"]
 
 
-PUBLICAR = {"instagram": ig_publicar, "facebook": fb_publicar, "youtube": yt_publicar}
+# ---------------------------------------------------------------- TikTok
+
+# No TikTok o reel chega como rascunho: falta abrir a notificação no app,
+# colar a legenda e tocar em Publicar.
+AVISO_TIKTOK = "rascunho na caixa de entrada do TikTok: abra o app, cole a legenda e publique"
+
+
+def tt_publicar(p, pasta):
+    ident, status = tiktok.enviar_rascunho(pasta / p["midias"][0])
+    return f"{ident} ({status})"
+
+
+PUBLICAR = {"instagram": ig_publicar, "facebook": fb_publicar, "youtube": yt_publicar,
+            "tiktok": tt_publicar}
 
 
 # ---------------------------------------------------------------- biblioteca
@@ -379,6 +399,8 @@ def validar(p, pasta):
     tipo = p.get("tipo")
     if "youtube" in redes and tipo != "reel":
         erros.append("no YouTube só sai reel (Short)")
+    if "tiktok" in redes and tipo != "reel":
+        erros.append("no TikTok só sai reel (vídeo)")
     if tipo == "reel" and midias and not e_video(base / midias[0]):
         erros.append("reel precisa de um vídeo")
     if tipo in ("reel", "story", "imagem") and len(midias) > 1:
@@ -429,6 +451,7 @@ def reenviar(alvo):
 
 def publicar_pendentes():
     falhas = 0
+    tiktok_ok = tiktok.configurado()
     for pasta, p, erros in ler_posts():
         nome = pasta.name
         if erros:
@@ -442,6 +465,9 @@ def publicar_pendentes():
             atual = estado.get(rede, {})
             if atual.get("status") in ("publicado", "atrasado", "falhou"):
                 continue
+            if rede == "tiktok" and not tiktok_ok:
+                print(f"[{nome}] tiktok: pulado, o TikTok ainda não está conectado ao robô")
+                continue
             if agora() - quando > ATRASO_MAXIMO:
                 estado[rede] = {"status": "atrasado", "em": agora().isoformat()}
                 print(f"[{nome}] {rede}: passou da hora há mais de 12h, não publicado")
@@ -450,8 +476,10 @@ def publicar_pendentes():
                 baixar_da_biblioteca(p)
                 ident = PUBLICAR[rede](p, pasta_midias(p, pasta))
                 estado[rede] = {"status": "publicado", "id": ident, "em": agora().isoformat()}
+                if rede == "tiktok":
+                    estado[rede]["obs"] = AVISO_TIKTOK
                 marcar_na_biblioteca(p, rede, ident, pasta)
-                print(f"[{nome}] {rede}: publicado ({ident})")
+                print(f"[{nome}] {rede}: " + (AVISO_TIKTOK if rede == "tiktok" else "publicado") + f" ({ident})")
             except Exception as e:  # qualquer falha fica registrada e o resto segue
                 tentativas = atual.get("tentativas", 0) + 1
                 estado[rede] = {"status": "erro", "erro": str(e)[:1000],
@@ -488,6 +516,13 @@ def conexao():
                        cabecalhos={"Authorization": f"Bearer {acesso}"})
         nomes = [c["snippet"]["title"] for c in canal.get("items", [])]
         print(f"YouTube: {', '.join(nomes) or 'nenhum canal'}")
+    if tiktok.configurado():
+        try:
+            print(f"TikTok: {tiktok.conta()} (envia como rascunho)")
+        except tiktok.ErroTikTok as e:
+            print(f"TikTok: ERRO {e}")
+    else:
+        print("TikTok: ainda não conectado ao robô")
     pag = get(pagina_id(), fields="name,instagram_business_account{username}")
     print(f"Página do Facebook: {pag.get('name')} ({pagina_id()})")
     conta = pag.get("instagram_business_account")
@@ -526,12 +561,19 @@ def preparar():
             print(f"{pasta.name}: PNG convertido para JPG")
 
 
+def tiktok_login():
+    redirect = os.environ.get("TIKTOK_REDIRECT_URI", "https://painel-robo-sabia-dessa.vercel.app/")
+    nome = tiktok.login(os.environ.get("TIKTOK_CODIGO", "").strip(), redirect)
+    print(f"TikTok conectado: {nome}. O acesso ficou guardado no segredo TIKTOK_REFRESH_TOKEN.")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--verificar", action="store_true")
     g.add_argument("--conexao", action="store_true")
     g.add_argument("--preparar", action="store_true")
+    g.add_argument("--tiktok-login", action="store_true")
     a = ap.parse_args()
     if a.verificar:
         verificar()
@@ -539,6 +581,8 @@ def main():
         conexao()
     elif a.preparar:
         preparar()
+    elif a.tiktok_login:
+        tiktok_login()
     else:
         if os.environ.get("REENVIAR", "").strip():
             reenviar(os.environ["REENVIAR"].strip())

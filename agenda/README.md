@@ -20,7 +20,10 @@ Nome da pasta: `AAAA-MM-DD-tipo-assunto`, por exemplo `2026-11-02-reel-polvo`.
 ```
 
 - `tipo`: `reel`, `carrossel` (2 a 10 imagens), `imagem` ou `story` (1 imagem ou vídeo).
-- `redes`: `instagram`, `facebook`, `youtube` (no YouTube só reel). TikTok vai pelo Buffer.
+- `redes`: `instagram`, `facebook`, `youtube`, `tiktok` (no YouTube e no TikTok só reel).
+  No TikTok o vídeo chega como rascunho na caixa de entrada do app: abra a
+  notificação, cole a legenda e toque em Publicar. Enquanto o TikTok não estiver
+  conectado ao robô, ele é pulado sem erro.
 - `capa`, `titulo_facebook`, `titulo_youtube` e `ia` (true se o conteúdo foi gerado por IA) são opcionais.
 - O Instagram só aceita imagem em JPG: `python publicador/publicar.py --preparar` converte os PNG.
 - Post com mais de 12 horas de atraso não é publicado (fica `atrasado`).

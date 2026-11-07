@@ -1,6 +1,6 @@
 # jasabiadisso-midia
 
-Robô de publicação do Já Sabia Disso? para Instagram, Facebook e YouTube.
+Robô de publicação do Já Sabia Disso? para Instagram, Facebook, YouTube e TikTok.
 
 - `agenda/`: os posts agendados, um por pasta (veja `agenda/README.md`).
 - `publicador/publicar.py`: publica pelas APIs oficiais da Meta e do YouTube.
@@ -11,7 +11,9 @@ O repositório precisa ser público: o Instagram baixa as imagens pelo link
 
 Segredos (Settings > Secrets and variables > Actions): `META_TOKEN`,
 `FB_PAGE_ID`, `IG_USER_ID` (opcional), `YT_CLIENT_ID`, `YT_CLIENT_SECRET`,
-`YT_REFRESH_TOKEN`.
+`YT_REFRESH_TOKEN`. TikTok: `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET` e
+`SEGREDOS_TOKEN` (token do GitHub com Secrets: Read and write, para o robô
+guardar `TIKTOK_REFRESH_TOKEN` sozinho). Veja `docs/conectar-tiktok.md`.
 
 Teste manual: aba Actions > Publicar posts > Run workflow, com modo `conexao`
 (confere os acessos) ou `verificar` (confere os posts sem publicar).

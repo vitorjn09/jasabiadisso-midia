@@ -6,12 +6,16 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "publicar, verificar ou conexao"
+        description: "publicar, verificar, conexao ou tiktok_login"
         type: choice
-        options: [publicar, verificar, conexao]
+        options: [publicar, verificar, conexao, tiktok_login]
         default: publicar
       reenviar:
         description: "Opcional, só com modo publicar: pasta:rede para tentar de novo (ex.: 2026-11-06-reel-venus:youtube). Só zera redes com falhou, erro ou atrasado."
+        required: false
+        default: ""
+      codigo:
+        description: "Só com modo tiktok_login: o código que o TikTok devolve ao painel (o painel preenche sozinho)."
         required: false
         default: ""
 
@@ -33,6 +37,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Instalar o que o TikTok precisa
+        run: pip install -q pynacl
+
       - name: Rodar o publicador
         env:
           META_TOKEN: ${{ secrets.META_TOKEN }}
@@ -41,6 +48,11 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          SEGREDOS_TOKEN: ${{ secrets.SEGREDOS_TOKEN }}
+          TIKTOK_CODIGO: ${{ inputs.codigo }}
           MODO: ${{ inputs.modo || 'publicar' }}
           REENVIAR: ${{ inputs.reenviar }}
         shell: bash
@@ -50,6 +62,7 @@ jobs:
             case "$MODO" in
               verificar) python publicador/publicar.py --verificar ;;
               conexao)   python publicador/publicar.py --conexao ;;
+              tiktok_login) python publicador/publicar.py --tiktok-login ;;
               *)         python publicador/publicar.py ;;
             esac
           } 2>&1 | tee saida.txt

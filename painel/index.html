@@ -1719,7 +1719,7 @@ function confete() {
 
 /* ================================================================ análises */
 let SENHA_AN = local.get("painel-robo-senha-analises");
-let AN = null, AN_REDE = "instagram", AN_PER = "d7", AN_ORDEM = "visualizacoes", AN_ORDEM_FB = "visualizacoes", anCarregando = false;
+let AN = null, AN_REDE = "instagram", AN_PER = "d7", AN_ORDEM = "visualizacoes", AN_ORDEM_FB = "visualizacoes", AN_ORDEM_YT = "ordem", anCarregando = false;
 const N = new Intl.NumberFormat("pt-BR");
 const NC = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
 const num = (v) => (v === null || v === undefined ? "—" : Math.abs(v) >= 10000 ? NC.format(v) : N.format(v));
@@ -1862,28 +1862,35 @@ function desenharAnalises() {
     ${avisos(fb.erros)}`;
   } else {
     const yt = AN.youtube || {}, c = yt.conta || {};
+    const chaveYt = { visualizacoes: "visualizacoes", curtidas: "curtidas", comentarios: "comentarios" };
+    const ytLista = (yt.videos || []).slice().sort((a, b) => AN_ORDEM_YT === "ordem"
+      ? new Date(b.quando || 0) - new Date(a.quando || 0)
+      : (b[chaveYt[AN_ORDEM_YT]] ?? -1) - (a[chaveYt[AN_ORDEM_YT]] ?? -1));
     html += `<div class="kpis stagger">
       ${kpi("i-users", "Inscritos", num(c.inscritos), delta(c.inscritos, valorHa("yt_inscritos", 7)) + sparkline(serie("yt_inscritos").slice(-30)), "gold")}
       ${kpi("i-eye", "Visualizações totais", num(c.visualizacoes), delta(c.visualizacoes, valorHa("yt_visualizacoes", 7)), "info")}
       ${kpi("i-film", "Vídeos", num(c.videos), "", "ok")}
     </div>
     <div class="card" style="margin-top:16px"><h3>${ic("i-chart")}Visualizações do canal</h3>${graficoLinha(serie("yt_visualizacoes"), "visualizações")}</div>
-    <div class="card" style="margin-top:16px"><h3>${ic("i-trophy")}Shorts mais vistos</h3><div class="tops stagger">${(yt.videos || []).slice().sort((a, b) => (b.visualizacoes ?? 0) - (a.visualizacoes ?? 0)).slice(0, 8).map((x, i) => `
+    <div class="card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>${ic("i-trophy")}Shorts</h3>
+      <div class="segm" id="anOrdemYt"><div class="ind"></div>${[["ordem", "Ordem no canal"], ["visualizacoes", "Views"], ["curtidas", "Curtidas"], ["comentarios", "Comentários"]].map(([k, n]) => `<button data-anyt="${k}" class="${AN_ORDEM_YT === k ? "ativo" : ""}">${n}</button>`).join("")}</div></div>
+      <div class="tops stagger">${ytLista.map((x, i) => `
       <a class="top" href="${esc(x.link)}" target="_blank" rel="noopener"><div class="img" style="aspect-ratio:16/10;background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x.visualizacoes)}</b><small>visualizações</small></div></div>
       <div class="mets" style="grid-template-columns:1fr 1fr"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div></div>
-      <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.titulo)}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum vídeo encontrado.</div>`}</div></div>
+      <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) + " · " : ""}${esc(x.titulo)}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum vídeo encontrado.</div>`}</div></div>
     ${avisos(yt.erros)}`;
   }
   $("#anCorpo").innerHTML = segm + html;
   requestAnimationFrame(() => {
-    ["#anRedes", "#anPer", "#anOrdem", "#anOrdemFb"].forEach((s) => { const c = $(s); if (c) moverIndicador(c, $(".ind", c), $(".ativo", c)); });
+    ["#anRedes", "#anPer", "#anOrdem", "#anOrdemFb", "#anOrdemYt"].forEach((s) => { const c = $(s); if (c) moverIndicador(c, $(".ind", c), $(".ativo", c)); });
     $$("#anCorpo .linha.desenha").forEach((p) => p.style.setProperty("--len", p.getTotalLength() + 1));
     setTimeout(() => $$("#anCorpo .rosca circle[data-d]").forEach((c) => c.setAttribute("stroke-dasharray", c.dataset.d)), 60);
   });
 }
 $("#anCorpo").addEventListener("click", (e) => {
-  const r = e.target.closest("[data-anr]"), p = e.target.closest("[data-anp]"), o = e.target.closest("[data-ano]"), f = e.target.closest("[data-anf]");
+  const r = e.target.closest("[data-anr]"), p = e.target.closest("[data-anp]"), o = e.target.closest("[data-ano]"), f = e.target.closest("[data-anf]"), y = e.target.closest("[data-anyt]");
   if (f) { AN_ORDEM_FB = f.dataset.anf; desenharAnalises(); }
+  if (y) { AN_ORDEM_YT = y.dataset.anyt; desenharAnalises(); }
   if (r) { AN_REDE = r.dataset.anr; desenharAnalises(); } if (p) { AN_PER = p.dataset.anp; desenharAnalises(); } if (o) { AN_ORDEM = o.dataset.ano; desenharAnalises(); }
 });
 $("#anCorpo").addEventListener("pointermove", (e) => {

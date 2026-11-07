@@ -293,8 +293,7 @@
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:03:02.565Z"
+      "status": "ideia"
     },
     {
       "id": "gq3tgva",
@@ -346,7 +345,8 @@
         "youtube",
         "tiktok"
       ],
-      "status": "ideia"
+      "status": "pedido",
+      "pedido": "2026-11-07T19:03:22.304Z"
     },
     {
       "id": "p8xlhoh",

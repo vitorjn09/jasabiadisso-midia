@@ -2108,11 +2108,15 @@ function horaPadrao(data, formato, id) {
   let idx = mesmo.findIndex((x) => x.id === id); if (idx < 0) idx = mesmo.length;
   return ((CRONO.horarios || {})[formato] || [])[idx] || "";
 }
-function horaDo(it) {
-  if (!it) return "";
-  if (it.hora) return it.hora;
-  return horaPadrao(it.data, it.formato, it.id);
+/* horários do item: a hora própria; o item de stories usa os horários de todos os stories; os outros, o do seu lugar no dia */
+function horasDo(it) {
+  if (!it) return [];
+  if (it.hora) return [it.hora];
+  if (it.formato === "stories") return ((CRONO.horarios || {}).stories || []).filter(Boolean);
+  const p = horaPadrao(it.data, it.formato, it.id);
+  return p ? [p] : [];
 }
+function horaDo(it) { return horasDo(it).join(" · "); }
 let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";
 function dataDe(k) { return new Date(k + "T12:00:00-03:00"); }
 function somaDias(k, n) { return chaveDia(new Date(dataDe(k).getTime() + n * 864e5)); }
@@ -2182,7 +2186,7 @@ function desenharCronograma() {
   const dias = []; for (let i = 0; i < 7; i++) dias.push(somaDias(SEMANA, i));
   const ordem = Object.keys(FORMATOS);
   $("#crono").innerHTML = dias.map((k) => {
-    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horaDo(a) || "99:99").localeCompare(horaDo(b) || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
+    const itens = daSemana.filter((x) => x.data === k).sort((a, b) => (horasDo(a)[0] || "99:99").localeCompare(horasDo(b)[0] || "99:99") || ordem.indexOf(a.formato) - ordem.indexOf(b.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
       ${itens.map((it) => {
@@ -2352,7 +2356,7 @@ function editarItem(it, dataInicial) {
     <label class="campo">Redes</label><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div>
     <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
     ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
-    <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(horaDo(x))}">
+    <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(x.hora || "")}" placeholder="${esc(horaDo({ ...x, hora: undefined }) || "padrão")}">
     <p class="dica" style="margin:6px 0 0">Vazio ou igual ao horário padrão do formato: usa o padrão da semana.</p>
     <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
     <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}Salvar</button></div>`;
@@ -2368,8 +2372,7 @@ function editarItem(it, dataInicial) {
       status: stEscolhido, notas: $("#ciNotas").value.trim() });
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
     if (!x.notas) delete x.notas;
-    const hr = $("#ciHora").value, padrao = horaPadrao(x.data, x.formato, x.id);
-    x.hora = hr && hr !== padrao ? hr : undefined;
+    x.hora = $("#ciHora").value || undefined;
     const antes = JSON.stringify(CRONO.itens);
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);

@@ -1277,7 +1277,7 @@ function abrirGaveta(pasta, editar = false) {
     $("#gavCorpo").innerHTML = `
       <div class="det-midia">${midia}
         <div>${(p.redes || []).map((r) => { const [cls, tit, sub] = textoEstado(x.estado[r], p.quando); const est = x.estado[r];
-          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-txt">${esc(mascarar(est.erro).slice(0, 400))}</div>` : ""}</div></div>`; }).join("")}</div>
+          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-txt">${esc(mascarar(est.erro).slice(0, 400))}</div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}</div></div>`; }).join("")}</div>
       </div>
       ${x.erros.length ? `<div class="aviso-post" style="margin-top:14px">${ic("i-alert")}<span><b>O robô vai ignorar este post:</b> ${x.erros.map(esc).join(" · ")}</span></div>` : ""}
       <label class="campo">Legenda</label><div class="texto-leg">${esc(p.legenda || "(sem legenda)")}</div>
@@ -1590,15 +1590,17 @@ function desenharTrilha(passo, falhou = false) {
   }).join("");
 }
 let rodando = false;
-async function rodar(modo) {
+async function rodar(modo, reenviar = "") {
   if (rodando) return;
   if (!TOKEN) { abrirConta(); return; }
   const fila = POSTS.filter((x) => situacao(x) === "fila");
-  const texto = modo === "publicar"
+  const texto = reenviar
+    ? `<p>Vai tentar de novo só a rede <b>${esc(NOMES_REDE[reenviar.split(":")[1]] || reenviar)}</b> do post <b>${esc(reenviar.split(":")[0])}</b>.</p><p>As outras redes desse post não são mexidas, e o que já saiu não é publicado de novo.</p>`
+    : modo === "publicar"
     ? (fila.length ? `<p>Vai publicar agora: <b>${fila.map((x) => esc(x.pasta)).join(", ")}</b>.</p>` : `<p>Nenhum post passou da hora ainda, então nada deve sair agora.</p>`) + `<p>Posts com hora no futuro continuam esperando.</p>`
     : modo === "analises" ? `<p>Busca agora os números do Instagram, do Facebook e do YouTube e guarda cifrados. Não publica nada. Leva um ou dois minutos.</p>`
     : modo === "conexao" ? `<p>Confere os acessos ao Facebook, ao Instagram e ao YouTube. Não publica nada.</p>` : `<p>Confere os posts da agenda. Não publica nada.</p>`;
-  if (!(await confirmar({ titulo: NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: "Rodar agora" }))) return;
+  if (!(await confirmar({ titulo: reenviar ? "Enviar de novo?" : NOMES_MODO[modo] + "?", icone: modo === "publicar" ? "i-send" : modo === "conexao" ? "i-plug" : modo === "analises" ? "i-chart" : "i-list", texto, rotulo: reenviar ? "Enviar de novo" : "Rodar agora" }))) return;
   rodando = true; irPara("robo");
   const ex = $("#execucao"); ex.classList.remove("oculto"); ex.style.animation = "none"; void ex.offsetWidth; ex.style.animation = "entra .5s var(--ease) both";
   $("#execTit").textContent = NOMES_MODO[modo]; $("#execLink").classList.add("oculto");
@@ -1607,7 +1609,7 @@ async function rodar(modo) {
   const inicio = new Date(Date.now() - 5000);
   try {
     const wf = modo === "analises" ? "analises.yml" : WORKFLOW;
-    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: { modo } } });
+    await gh(`/actions/workflows/${wf}/dispatches`, { metodo: "POST", corpo: modo === "analises" ? { ref: RAMO } : { ref: RAMO, inputs: reenviar ? { modo, reenviar } : { modo } } });
     desenharTrilha(1); $("#saida").textContent = "esperando o GitHub começar…";
     let run = null;
     for (let i = 0; i < 100; i++) {
@@ -2313,6 +2315,7 @@ document.addEventListener("click", (e) => {
   const v = b.closest("[data-view]"); if (v) { irPara(v.dataset.view); return; }
   const ab = b.closest("[data-abrir]"); if (ab) { abrirGaveta(ab.dataset.abrir); return; }
   const ro = b.closest("[data-rodar]"); if (ro) { rodar(ro.dataset.rodar); return; }
+  const re = b.closest("[data-reenviar]"); if (re) { rodar("publicar", re.dataset.reenviar); return; }
   const fi = b.closest("[data-filtro]"); if (fi) { aplicarFiltro(fi.dataset.filtro); return; }
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }

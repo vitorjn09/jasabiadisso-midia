@@ -1928,8 +1928,19 @@ async function carregarBiblioteca() {
     BIB.sort((a, b) => String(b.ficha.criado || "").localeCompare(String(a.ficha.criado || "")));
     bibErro = "";
   } catch (e) { bibErro = e.message; }
+  if (!cronoCarregou) await carregarCronograma();
   bibCarregou = true;
-  $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length;
+  $("#navBib").textContent = BIB.filter((b) => statusBib(b).s === "pronto").length + pecasBib().filter((p) => p.s === "pronto").length;
+}
+/* stories e carrosséis que têm arte pronta em producao/ (ainda sem vídeo na biblioteca) */
+function pecasBib() {
+  return (CRONO.itens || []).filter((x) => ["stories", "carrossel"].includes(x.formato) && !x.biblioteca && /^producao\//.test(x.notas || ""))
+    .map((it) => { const s = statusItem(it); return { it, s, g: { pronto: "prontos", agendado: "agendados", publicado: "publicados" }[s] || null }; });
+}
+function chipPeca(p) {
+  if (p.s === "agendado") return `<span class="chip info">${esc(horaDo(p.it) || "Agendado")}</span>`;
+  if (p.s === "publicado") return `<span class="chip ok">${ic("i-check")}Publicado</span>`;
+  return `<span class="chip gold"><span class="ponto"></span>Pronto</span>`;
 }
 function statusBib(b) {
   const ags = POSTS.filter((x) => x.post?.biblioteca === b.nome);
@@ -1958,14 +1969,21 @@ function desenharBiblioteca() {
   const grupo = { pronto: "prontos", agendado: "agendados", publicado: "publicados" };
   const cont = { prontos: 0, agendados: 0, publicados: 0, todos: BIB.length };
   BIB.forEach((b) => cont[grupo[statusBib(b).s]]++);
+  const pecas = pecasBib();
+  pecas.forEach((p) => { if (p.g) cont[p.g]++; });
+  cont.todos += pecas.filter((p) => p.g).length;
   $$("[data-bc]").forEach((el) => (el.textContent = cont[el.dataset.bc]));
   const lista = BIB.filter((b) => BIB_FILTRO === "todos" || grupo[statusBib(b).s] === BIB_FILTRO);
-  if (!lista.length) {
+  const listaPecas = pecas.filter((p) => p.g && (BIB_FILTRO === "todos" || p.g === BIB_FILTRO));
+  if (!lista.length && !listaPecas.length) {
     alvo.innerHTML = BIB.length ? vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.")
       : vazio("i-film", "A biblioteca está vazia", "Quando eu terminar um vídeo, ele aparece aqui com capa, legenda e títulos, pronto para agendar.");
     return;
   }
-  alvo.innerHTML = `<div class="vids stagger">${lista.map((b) => {
+  alvo.innerHTML = `<div class="vids stagger">${listaPecas.map((p) => `<div class="card vid st-${p.s}">
+      <div class="capa" style="background-image:url('${esc(capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}</span></div>
+      <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
+    </div>`).join("")}${lista.map((b) => {
     const f = b.ficha, st = statusBib(b);
     return `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">

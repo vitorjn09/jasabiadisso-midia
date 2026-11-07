@@ -114,6 +114,7 @@ button { font: inherit; color: inherit; }
 .citem .mini { display: flex; gap: 4px; margin-top: 7px; color: var(--muted); align-items: center; }
 .citem .mini svg.i { width: 13px; height: 13px; }
 .citem .thumb { width: 22px; height: 30px; border-radius: 5px; background: var(--surface-2) center/cover; margin-left: auto; }
+.hora-c { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--text); margin-right: 6px; align-self: center; }
 .capa-edit { display: block; width: 100%; max-height: 260px; object-fit: cover; border-radius: 16px; margin: 0 0 14px; border: 1px solid var(--border); }
 .cdia .add { margin-top: auto; border: 1px dashed var(--border-strong); background: none; border-radius: 10px; padding: 6px; color: var(--faint); cursor: pointer; transition: color .2s, border-color .2s; }
 .cdia .add:hover { color: var(--teal); border-color: var(--teal); }
@@ -728,6 +729,7 @@ button, a, [role="button"] { min-height: 44px; }
           <button class="btn" id="cRepete"><svg class="i"><use href="#i-layers"/></svg>Repetir semana</button>
           <button class="btn perigo" id="cLimpa"><svg class="i"><use href="#i-trash"/></svg>Apagar estrutura da semana</button>
           <button class="btn" id="cModelo"><svg class="i"><use href="#i-layers"/></svg>Preencher com o modelo</button>
+          <button class="btn" id="cHoras"><svg class="i"><use href="#i-plan"/></svg>Horários padrão</button>
           <button class="btn pri" id="cNovo"><svg class="i"><use href="#i-plus"/></svg>Item</button>
         </div>
       </div>
@@ -2098,6 +2100,12 @@ const REDES_CRONO = { instagram: ["Instagram", "i-ig"], facebook: ["Facebook", "
 const ST_CRONO = { ideia: ["Ideia", ""], roteiro: ["Roteiro", "info"], producao: ["Produzindo", "warn"], pedido: ["Pedido", "info"], pronto: ["Pronto", "gold"], agendado: ["Agendado", "info"], publicado: ["Publicado", "ok"], pulado: ["Não saiu", "err"] };
 const MODELO_PADRAO = { "1": ["stories", "carrossel", "reel"], "2": ["reel"], "3": ["stories", "reel"], "4": ["reel"], "5": ["stories", "carrossel", "reel"], "6": ["reel"], "0": ["stories", "reel"] };
 const NOMES_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+/* hora do item: a própria, se tiver; senão o horário padrão do dia da semana */
+function horaDo(it) {
+  if (!it) return "";
+  if (it.hora) return it.hora;
+  return (CRONO.horarios || {})[String(dataDe(it.data).getUTCDay())] || "";
+}
 let CRONO = { itens: [] }, cronoCarregou = false, cronoErro = "";
 function dataDe(k) { return new Date(k + "T12:00:00-03:00"); }
 function somaDias(k, n) { return chaveDia(new Date(dataDe(k).getTime() + n * 864e5)); }
@@ -2175,7 +2183,7 @@ function desenharCronograma() {
         return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
           <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}</span><span class="chip ${cls}">${rot}</span></div>
           <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+          <div class="mini">${horaDo(it) ? `<span class="hora-c">${esc(horaDo(it))}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
           ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
         </div>`;
       }).join("")}
@@ -2255,6 +2263,22 @@ $("#cRepete").onclick = async () => {
   };
 };
 
+/* horário padrão de cada dia da semana */
+$("#cHoras").onclick = () => {
+  const m = $("#modal");
+  m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>Horários padrão</h2>
+    <p>Cada dia sai nesse horário, a não ser que o item tenha hora própria.</p>
+    ${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label class="campo" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><span>${NOMES_SEMANA[d]}</span><input class="input" type="time" data-dia="${d}" value="${esc((CRONO.horarios || {})[String(d)] || "")}" style="width:auto"></label>`).join("")}
+    <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="hrOk">${ic("i-check")}Salvar</button></div>`;
+  abrirModal();
+  $("#hrOk").onclick = async () => {
+    const antes = CRONO.horarios, novo = {};
+    m.querySelectorAll("[data-dia]").forEach((i) => { if (i.value) novo[i.dataset.dia] = i.value; });
+    CRONO.horarios = novo; fecharModal(); desenharCronograma();
+    if (!(await salvarCrono("horários padrão da semana"))) { CRONO.horarios = antes; desenharCronograma(); }
+  };
+};
+
 /* apagar só a estrutura vazia da semana (o que foi replicado sem querer) */
 $("#cLimpa").onclick = async () => {
   const fim = somaDias(SEMANA, 6);
@@ -2310,6 +2334,8 @@ function editarItem(it, dataInicial) {
     <label class="campo">Redes</label><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div>
     <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
     ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
+    <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(horaDo(x))}">
+    <p class="dica" style="margin:6px 0 0">Vazio ou igual ao padrão do dia: usa o horário padrão da semana.</p>
     <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
     <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}Salvar</button></div>`;
   abrirModal();
@@ -2324,6 +2350,8 @@ function editarItem(it, dataInicial) {
       status: stEscolhido, notas: $("#ciNotas").value.trim() });
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
     if (!x.notas) delete x.notas;
+    const hr = $("#ciHora").value, padraoDia = (CRONO.horarios || {})[String(dataDe(data).getUTCDay())] || "";
+    x.hora = hr && hr !== padraoDia ? hr : undefined;
     const antes = JSON.stringify(CRONO.itens);
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);

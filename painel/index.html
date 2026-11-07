@@ -254,20 +254,28 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .bib-filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
 .bib-filtros label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; min-width: 0; }
 .bib-filtros select { width: 100%; min-width: 0; height: 44px; font: inherit; font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 10px; }
+.arte-vista { position: fixed; inset: 0; z-index: 75; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: rgba(5,9,9,.97); padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+.arte-vista[hidden] { display: none; }
+.av-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+.av-tit { display: flex; flex-direction: column; min-width: 0; color: #fff; }
+.av-tit b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.av-tit span { font-size: 12px; color: rgba(255,255,255,.65); margin-top: 2px; }
+.av-palco { position: relative; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 4px 16px; }
+.av-palco img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 12px; box-shadow: 0 20px 60px -20px rgba(0,0,0,.8); user-select: none; -webkit-user-drag: none; }
+.av-btn { flex: none; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; background: rgba(255,255,255,.08); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+.av-ant, .av-prox { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.55); }
+.av-ant { left: 8px; } .av-prox { right: 8px; }
+.av-ant[hidden], .av-prox[hidden] { display: none; }
+.av-mini { display: flex; gap: 8px; overflow-x: auto; padding: 12px 16px 16px; justify-content: center; scrollbar-width: none; }
+.av-mini:empty { padding: 0 0 16px; }
+.av-mini button { flex: none; width: 46px; height: 64px; padding: 0; border: 2px solid transparent; border-radius: 8px; background: center/cover no-repeat; opacity: .55; cursor: pointer; }
+.av-mini button.on { border-color: var(--teal); opacity: 1; }
 /* abas de status ocupam a largura toda e se dividem igualmente */
 #bibFiltros { display: flex; width: 100%; margin-bottom: 14px; }
 #bibFiltros button { flex: 1 1 0; justify-content: center; min-width: 0; padding: 9px 6px; font-size: 13px; }
 /* vídeo da gaveta aparece inteiro sem precisar rolar */
 .gaveta .corpo video { display: block; width: auto; max-width: 100%; max-height: 58vh; margin: 0 auto; border-radius: 16px; background: #000; }
 @media (max-width: 380px) { .bib-filtros { grid-template-columns: 1fr; } }
-.arte-vista { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.arte-vista[hidden] { display: none; }
-.arte-vista img { max-width: 100%; max-height: 86vh; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }
-.arte-vista button { position: absolute; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--surface-solid); color: var(--text); font-size: 24px; cursor: pointer; }
-.arte-vista .fecha { top: 14px; right: 14px; }
-.arte-vista .ant { left: 12px; top: 50%; transform: translateY(-50%); }
-.arte-vista .prox { right: 12px; top: 50%; transform: translateY(-50%); }
-.arte-vista .cont { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; font-weight: 600; }
 .grupo { margin-top: 26px; }
 .grupo-tit { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font: 600 15px Fredoka; }
 .grupo-tit::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent); }
@@ -726,7 +734,7 @@ button, a, [role="button"] { min-height: 44px; }
     <!-- ============================================ biblioteca -->
     <section class="view" id="v-biblioteca">
       <div class="topo">
-        <div><h1>Biblioteca</h1><p>Vídeos prontos. Escolha um e agende para o robô postar no Instagram, Facebook e YouTube.</p></div>
+        <div><h1>Biblioteca</h1><p>Reels, stories e carrosséis prontos. Agende um a um ou tudo de uma vez pelo cronograma.</p></div>
       </div>
       <div class="segm" id="bibFiltros">
         <div class="ind"></div>
@@ -748,12 +756,10 @@ button, a, [role="button"] { min-height: 44px; }
       </div>
       <button class="btn pri" id="bibAuto" style="width:100%;margin:0 0 16px">Agendar tudo pelo cronograma</button>
       <div id="bibLista"></div>
-      <div class="arte-vista" id="arteVista" hidden>
-        <button class="fecha" data-arte-fecha aria-label="Fechar">×</button>
-        <button class="ant" data-arte-ant id="artePrev" aria-label="Arte anterior">‹</button>
-        <img id="arteImg" alt="">
-        <button class="prox" data-arte-prox id="arteProx" aria-label="Próxima arte">›</button>
-        <span class="cont" id="arteCont"></span>
+      <div class="arte-vista" id="arteVista" hidden role="dialog" aria-modal="true" aria-label="Arte">
+        <div class="av-topo"><div class="av-tit"><b id="arteTit"></b><span id="arteCont"></span></div><button class="av-btn" data-arte-fecha aria-label="Fechar">×</button></div>
+        <div class="av-palco"><button class="av-btn av-ant" data-arte-ant id="artePrev" aria-label="Arte anterior">‹</button><img id="arteImg" alt=""><button class="av-btn av-prox" data-arte-prox id="arteProx" aria-label="Próxima arte">›</button></div>
+        <div class="av-mini" id="arteMini"></div>
       </div>
     </section>
 
@@ -1068,7 +1074,14 @@ async function gh(caminho, op = {}) {
 }
 
 // Grava vários arquivos (e apaga outros) num único commit no ramo principal.
-async function commit(mensagem, arquivos, apagar = [], progresso = () => {}) {
+/* um commit por vez: vários cliques seguidos não disputam o mesmo ponto do ramo */
+let filaCommit = Promise.resolve();
+function commit(...args) {
+  const vez = filaCommit.then(() => commitAgora(...args));
+  filaCommit = vez.catch(() => {});
+  return vez;
+}
+async function commitAgora(mensagem, arquivos, apagar = [], progresso = () => {}) {
   if (!TOKEN) throw new Error("conecte o painel ao GitHub primeiro");
   const entradas = [], total = arquivos.length + 2;
   for (const [i, a] of arquivos.entries()) {
@@ -1084,7 +1097,7 @@ async function commit(mensagem, arquivos, apagar = [], progresso = () => {}) {
     const arvore = await gh("/git/trees", { metodo: "POST", corpo: { base_tree: base.tree.sha, tree: entradas } });
     const novo = await gh("/git/commits", { metodo: "POST", corpo: { message: mensagem, tree: arvore.sha, parents: [ref.object.sha] } });
     try { await gh(`/git/refs/heads/${RAMO}`, { metodo: "PATCH", corpo: { sha: novo.sha } }); progresso(1, "Pronto"); return novo.sha; }
-    catch (e) { if (e.status === 422 && t < 3) continue; throw e; } // o robô gravou algo no meio: tenta de novo
+    catch (e) { if (e.status === 422 && t < 6) { await new Promise((ok) => setTimeout(ok, 700 * t)); continue; } throw e; } // alguém gravou no meio: espera um pouco e tenta de novo
   }
 }
 
@@ -2065,50 +2078,103 @@ function desenharBiblioteca() {
   }
   alvo.innerHTML = `<div class="vids stagger">${itens.map((i) => i.html).join("")}</div>`;
 }
-/* agenda de uma vez os vídeos prontos da biblioteca que têm data e hora no cronograma */
+/* arte da pasta producao/ convertida para JPG (o Instagram não aceita PNG) */
+async function artePraJpg(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error("não consegui baixar uma das artes");
+  const img = await createImageBitmap(await r.blob());
+  const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0);
+  const blob = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.92));
+  const bytes = new Uint8Array(await blob.arrayBuffer()); let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+/* legenda e hashtags do legenda.txt da pasta (carrossel) */
+async function legendaDaProducao(pasta) {
+  try {
+    const t = await gh(`/contents/producao/${encodeURIComponent(pasta)}/legenda.txt?ref=${RAMO}`, { raw: true });
+    const leg = (t.match(/Legenda:\s*\n([\s\S]*?)(?:\n\s*\n|$)/) || [])[1] || "";
+    const tags = (t.match(/Hashtags[^\n]*:\s*\n([^\n]+)/) || [])[1] || "";
+    return [leg.trim(), tags.trim()].filter(Boolean).join("\n\n");
+  } catch { return ""; }
+}
+/* agenda de uma vez tudo o que está pronto na biblioteca e tem data e hora no cronograma: reels, stories (um post por story) e carrosséis */
 async function agendarAutomatico() {
   if (!TOKEN) return toast("err", "Conecte o painel ao GitHub", "Sem isso não dá para agendar.");
-  const planos = [], semData = [];
+  await carregarProducao();
+  const planos = [], fora = [], agora = new Date();
   for (const b of BIB.filter((x) => statusBib(x).s === "pronto" && x.videoUrl)) {
     const it = (CRONO.itens || []).find((x) => x.biblioteca === b.nome);
-    const hora = it ? horasDo(it)[0] : "";
-    const nome = b.ficha.titulo || b.nome;
-    if (!it?.data || !hora) { semData.push(nome); continue; }
+    const hora = it ? horasDo(it)[0] : "", nome = b.ficha.titulo || b.nome;
+    if (!it?.data || !hora) { fora.push(`${nome} (sem data e hora)`); continue; }
     const quando = `${it.data}T${hora}:00-03:00`;
-    if (new Date(quando) < new Date()) { semData.push(`${nome} (horário já passou)`); continue; }
-    planos.push({ b, it, quando });
+    if (new Date(quando) < agora) { fora.push(`${nome} (horário já passou)`); continue; }
+    planos.push({ tipo: "reel", b, it, quando, rotulo: `Reel · ${nome}` });
+  }
+  for (const pc of pecasBib().filter((x) => x.s === "pronto")) {
+    const it = pc.it, pasta = (it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1], arqs = PRODUCAO?.[pasta] || [];
+    const nome = it.tema || FORMATOS[it.formato] || it.formato, horas = horasDo(it);
+    const redes = (it.redes || ["instagram", "facebook"]).filter((r) => r === "instagram" || r === "facebook");
+    if (!arqs.length) { fora.push(`${nome} (sem artes)`); continue; }
+    if (!it.data || !horas.length) { fora.push(`${nome} (sem data e hora)`); continue; }
+    if (!redes.length) { fora.push(`${nome} (sem Instagram ou Facebook)`); continue; }
+    if (it.formato === "stories") {
+      arqs.forEach((a, i) => {
+        const rot = `${nome} · story ${i + 1}/${arqs.length}`;
+        if (!horas[i]) { fora.push(`${rot} (sem horário)`); return; }
+        const quando = `${it.data}T${horas[i]}:00-03:00`;
+        if (new Date(quando) < agora) { fora.push(`${rot} (horário já passou)`); return; }
+        planos.push({ tipo: "story", it, pasta, arqs: [a], n: i + 1, redes, quando, rotulo: `Story · ${rot}` });
+      });
+    } else {
+      if (arqs.length < 2 || arqs.length > 10) { fora.push(`${nome} (carrossel precisa de 2 a 10 artes)`); continue; }
+      const quando = `${it.data}T${horas[0]}:00-03:00`;
+      if (new Date(quando) < agora) { fora.push(`${nome} (horário já passou)`); continue; }
+      planos.push({ tipo: "carrossel", it, pasta, arqs, redes, quando, rotulo: `Carrossel · ${nome}` });
+    }
   }
   planos.sort((a, b) => new Date(a.quando) - new Date(b.quando));
-  if (!planos.length) {
-    return toast("err", "Nada para agendar", semData.length ? "Sem data e hora no cronograma: " + semData.join(", ") : "Não há vídeos prontos na biblioteca.");
-  }
-  const lista = planos.map((p) => `<li>${esc(nomeDia(new Date(p.quando)))}, <b>${esc(F_HORA.format(new Date(p.quando)))}</b> · ${esc(p.b.ficha.titulo || p.b.nome)}</li>`).join("");
-  const ok = await confirmar({ titulo: `Agendar ${planos.length} ${planos.length === 1 ? "vídeo" : "vídeos"}?`, icone: "i-cal", rotulo: "Agendar tudo",
-    texto: `<ul>${lista}</ul>${semData.length ? `<p>Ficam de fora, sem data e hora no cronograma: ${esc(semData.join(", "))}.</p>` : ""}<p>O robô publica sozinho em cada horário, no Instagram, Facebook e YouTube. O cronograma também é atualizado.</p>` });
+  if (!planos.length) return toast("err", "Nada para agendar", fora.length ? fora.join(", ") : "Não há nada pronto na biblioteca.");
+  const lista = planos.map((pl) => `<li>${esc(nomeDia(new Date(pl.quando)))}, <b>${esc(F_HORA.format(new Date(pl.quando)))}</b> · ${esc(pl.rotulo)}</li>`).join("");
+  const ok = await confirmar({ titulo: `Agendar ${planos.length} ${planos.length === 1 ? "post" : "posts"}?`, icone: "i-cal", rotulo: "Agendar tudo",
+    texto: `<ul>${lista}</ul>${fora.length ? `<p>Ficam de fora: ${esc(fora.join(", "))}.</p>` : ""}<p>O robô publica sozinho em cada horário. Reels vão para Instagram, Facebook e YouTube. Stories e carrosséis vão para as redes marcadas no cronograma.</p>` });
   if (!ok) return;
-  const btn = $("#bibAuto"); btn.disabled = true;
+  const btn = $("#bibAuto"), texto = btn.textContent; btn.disabled = true;
   try {
-    const arquivos = [], usados = new Set(POSTS.map((x) => x.pasta));
-    for (const { b, it, quando } of planos) {
-      const f = b.ficha;
-      const post = ordenar({ quando, tipo: f.tipo || "reel", redes: Object.keys(NOMES_REDE), legenda: (f.legenda || "").trim(), midias: ["video.mp4"],
-        ...(b.capaUrl ? { capa: f.capa || "capa.jpg" } : {}),
-        ...(f.titulo_facebook ? { titulo_facebook: f.titulo_facebook } : {}),
-        ...(f.titulo_youtube ? { titulo_youtube: f.titulo_youtube } : {}),
-        ...(f.ia ? { ia: true } : {}), biblioteca: b.nome });
-      let pasta = `${it.data}-${post.tipo}-${b.nome}`.slice(0, 80);
-      for (let i = 2; usados.has(pasta); i++) pasta = `${it.data}-${post.tipo}-${b.nome}-${i}`.slice(0, 80);
-      usados.add(pasta);
-      arquivos.push({ caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") });
-      ligarNoCronograma(b, it.data);
+    const arquivos = [], usados = new Set(POSTS.map((x) => x.pasta)), legendas = {};
+    const nomePasta = (base) => { let n = base.slice(0, 80); for (let i = 2; usados.has(n); i++) n = `${base}-${i}`.slice(0, 80); usados.add(n); return n; };
+    for (const [k, pl] of planos.entries()) {
+      btn.textContent = `Preparando ${k + 1} de ${planos.length}…`;
+      if (pl.tipo === "reel") {
+        const f = pl.b.ficha;
+        const post = ordenar({ quando: pl.quando, tipo: f.tipo || "reel", redes: Object.keys(NOMES_REDE), legenda: (f.legenda || "").trim(), midias: ["video.mp4"],
+          ...(pl.b.capaUrl ? { capa: f.capa || "capa.jpg" } : {}),
+          ...(f.titulo_facebook ? { titulo_facebook: f.titulo_facebook } : {}),
+          ...(f.titulo_youtube ? { titulo_youtube: f.titulo_youtube } : {}),
+          ...(f.ia ? { ia: true } : {}), biblioteca: pl.b.nome });
+        const pasta = nomePasta(`${pl.it.data}-${post.tipo}-${pl.b.nome}`);
+        arquivos.push({ caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") });
+        ligarNoCronograma(pl.b, pl.it.data);
+      } else {
+        const curto = pl.pasta.replace(/^\d{4}-\d\d-\d\d-/, "");
+        const pasta = nomePasta(`${pl.it.data}-${pl.tipo}-${curto}${pl.n ? `-${pl.n}` : ""}`);
+        const midias = pl.arqs.map((a) => a.name.replace(/\.[^.]+$/, "") + ".jpg");
+        for (const [j, a] of pl.arqs.entries()) arquivos.push({ caminho: `agenda/${pasta}/${midias[j]}`, base64: await artePraJpg(a.download_url) });
+        let legenda = "";
+        if (pl.tipo === "carrossel") { if (!(pl.pasta in legendas)) legendas[pl.pasta] = await legendaDaProducao(pl.pasta); legenda = legendas[pl.pasta]; }
+        const post = ordenar({ quando: pl.quando, tipo: pl.tipo, redes: pl.redes, legenda, midias, origem: `producao/${pl.pasta}` });
+        arquivos.push({ caminho: `agenda/${pasta}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") });
+        pl.it.status = "agendado";
+      }
     }
     arquivos.push({ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") });
-    await commit(`Painel: agenda ${planos.length} vídeos da biblioteca pelo cronograma`, arquivos);
-    toast("ok", "Vídeos agendados", `${planos.length} no cronograma`); confete();
+    await commit(`Painel: agenda ${planos.length} posts da biblioteca pelo cronograma`, arquivos, [], (f, m) => { btn.textContent = m; });
+    toast("ok", "Tudo agendado", `${planos.length} ${planos.length === 1 ? "post" : "posts"} no robô`); confete();
     await carregarAgenda(); desenharBiblioteca();
   } catch (e) {
     toast("err", "Não agendou", e.message);
-  } finally { btn.disabled = false; }
+  } finally { btn.disabled = false; btn.textContent = texto; }
 }
 $("#bibAuto").addEventListener("click", agendarAutomatico);
 $(".bib-filtros").addEventListener("change", (e) => {
@@ -2140,22 +2206,41 @@ $("#bibLista").addEventListener("click", (e) => {
   const c = e.target.closest("[data-bib]"); if (c) return abrirVideo(c.dataset.bib);
   const a = e.target.closest("[data-peca]"); if (a) abrirArte(a.dataset.peca, +a.dataset.idx);
 });
-/* visualização de arte (stories e carrosséis) em tela cheia, com setas entre as artes da pasta */
-let ARTE_LISTA = [], ARTE_ATUAL = 0;
+/* visualização de arte (stories e carrosséis): tela cheia fixa, título em cima, arte inteira no meio e miniaturas embaixo */
+let ARTE_LISTA = [], ARTE_ATUAL = 0, arteToque = null;
+document.body.appendChild($("#arteVista")); // fora da seção, para ficar presa na tela e não rolar junto
 function abrirArte(pasta, i) {
   ARTE_LISTA = PRODUCAO?.[pasta] || []; if (!ARTE_LISTA.length) return;
-  ARTE_ATUAL = i || 0; mostrarArte(); $("#arteVista").hidden = false;
+  const it = (CRONO.itens || []).find((x) => (x.notas || "").startsWith(`producao/${pasta}`));
+  $("#arteTit").textContent = it?.tema || FORMATOS[it?.formato] || "Arte";
+  $("#arteMini").innerHTML = ARTE_LISTA.length > 1 ? ARTE_LISTA.map((a, k) => `<button data-arte-ir="${k}" style="background-image:url('${esc(a.download_url)}')" aria-label="Arte ${k + 1}"></button>`).join("") : "";
+  ARTE_ATUAL = i || 0; mostrarArte();
+  $("#arteVista").hidden = false; document.documentElement.classList.add("travado");
 }
 function mostrarArte() {
   $("#arteImg").src = ARTE_LISTA[ARTE_ATUAL].download_url;
-  $("#arteCont").textContent = `${ARTE_ATUAL + 1} / ${ARTE_LISTA.length}`;
+  $("#arteCont").textContent = ARTE_LISTA.length > 1 ? `${ARTE_ATUAL + 1} de ${ARTE_LISTA.length}` : "";
   $("#artePrev").hidden = ARTE_ATUAL === 0;
   $("#arteProx").hidden = ARTE_ATUAL >= ARTE_LISTA.length - 1;
+  $$("#arteMini [data-arte-ir]").forEach((b) => b.classList.toggle("on", +b.dataset.arteIr === ARTE_ATUAL));
 }
+function fecharArte() { $("#arteVista").hidden = true; travar(); }
+function passarArte(d) { const n = ARTE_ATUAL + d; if (n >= 0 && n < ARTE_LISTA.length) { ARTE_ATUAL = n; mostrarArte(); } }
 $("#arteVista").addEventListener("click", (e) => {
-  if (e.target.closest("[data-arte-fecha]") || e.target === $("#arteVista")) { $("#arteVista").hidden = true; return; }
-  if (e.target.closest("[data-arte-prox]")) { ARTE_ATUAL++; mostrarArte(); }
-  else if (e.target.closest("[data-arte-ant]")) { ARTE_ATUAL--; mostrarArte(); }
+  if (e.target.closest("[data-arte-fecha]")) return fecharArte();
+  if (e.target.closest("[data-arte-prox]")) return passarArte(1);
+  if (e.target.closest("[data-arte-ant]")) return passarArte(-1);
+  const m = e.target.closest("[data-arte-ir]"); if (m) { ARTE_ATUAL = +m.dataset.arteIr; mostrarArte(); }
+});
+$("#arteVista").addEventListener("touchstart", (e) => { arteToque = e.touches[0].clientX; }, { passive: true });
+$("#arteVista").addEventListener("touchend", (e) => {
+  if (arteToque === null) return;
+  const dx = e.changedTouches[0].clientX - arteToque; arteToque = null;
+  if (Math.abs(dx) > 50) passarArte(dx < 0 ? 1 : -1);
+});
+addEventListener("keydown", (e) => {
+  if ($("#arteVista").hidden) return;
+  if (e.key === "Escape") fecharArte(); else if (e.key === "ArrowRight") passarArte(1); else if (e.key === "ArrowLeft") passarArte(-1);
 });
 
 function abrirVideo(nome, agendar = false) {

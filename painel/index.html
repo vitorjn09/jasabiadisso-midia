@@ -2558,6 +2558,7 @@ function editarItem(it, dataInicial) {
 /* ================================================================ navegação */
 let VIEW = "inicio";
 function irPara(v) {
+  if (["agenda", "biblioteca", "cronograma", "analises", "robo"].includes(v) || v === "inicio") local.set("painel-aba", v);
   if (v !== VIEW) { VIEW = v; $$(".view").forEach((s) => s.classList.toggle("ativa", s.id === "v-" + v)); window.scrollTo({ top: 0 }); }
   $$("#nav [data-view], #tabbar [data-view]").forEach((b) => b.classList.toggle("ativo", b.dataset.view === v));
   posicionarNav();
@@ -2628,6 +2629,8 @@ $("#btnAtualizarRuns").onclick = carregarRuns;
 setInterval(() => { if (!document.hidden && !rodando) atualizar(); }, TOQUE ? 300000 : 120000);
 faixaToken(); desenharInicio(); irEtapa(0); requestAnimationFrame(posicionarNav);
 checarLogin(); atualizar();
+const abaSalva = local.get("painel-aba");
+if (abaSalva && abaSalva !== "inicio" && ["agenda", "biblioteca", "cronograma", "analises", "robo"].includes(abaSalva)) irPara(abaSalva);
 </script>
 <script>
 if ("serviceWorker" in navigator) {

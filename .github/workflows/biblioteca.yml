@@ -1,0 +1,74 @@
+name: Guardar vídeo na biblioteca
+
+# Recebe vídeos num ramo temporário entrada/<nome>, com biblioteca/<nome>/video.mp4,
+# capa.jpg e ficha.json. O vídeo vai para a Release "biblioteca" (fora do repositório),
+# a ficha e a capa vão para a main e o ramo temporário é apagado.
+
+on:
+  push:
+    branches: ["entrada/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: biblioteca
+  cancel-in-progress: false
+
+jobs:
+  guardar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enviar vídeos para a Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release view biblioteca >/dev/null 2>&1 || \
+            gh release create biblioteca --target main --title "Biblioteca de vídeos" \
+              --notes "Vídeos prontos para agendar. Cada um tem a ficha em biblioteca/<nome>/ficha.json."
+          mkdir -p /tmp/novos
+          for video in biblioteca/*/video.mp4; do
+            [ -f "$video" ] || continue
+            nome=$(basename "$(dirname "$video")")
+            cp "$video" "/tmp/$nome.mp4"
+            gh release upload biblioteca "/tmp/$nome.mp4" --clobber
+            url="https://github.com/${GITHUB_REPOSITORY}/releases/download/biblioteca/$nome.mp4"
+            python3 - "$nome" "$url" <<'PY'
+          import json, sys
+          from pathlib import Path
+          nome, url = sys.argv[1], sys.argv[2]
+          arq = Path("biblioteca") / nome / "ficha.json"
+          ficha = json.loads(arq.read_text(encoding="utf-8")) if arq.exists() else {"titulo": nome}
+          ficha["video_url"] = url
+          arq.write_text(json.dumps(ficha, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+            mkdir -p "/tmp/novos/$nome"
+            find "biblioteca/$nome" -maxdepth 1 -type f ! -name "*.mp4" -exec cp {} "/tmp/novos/$nome/" \;
+            echo "Guardado: $nome"
+          done
+
+      - name: Levar fichas e capas para a main
+        run: |
+          set -euo pipefail
+          git config user.name "publicador"
+          git config user.email "publicador@users.noreply.github.com"
+          git fetch origin main
+          git checkout -f -B main origin/main
+          if [ -n "$(ls -A /tmp/novos)" ]; then
+            mkdir -p biblioteca
+            cp -r /tmp/novos/* biblioteca/
+            git add biblioteca
+            git diff --cached --quiet || git commit -m "Biblioteca: novo vídeo pronto"
+            git pull --rebase origin main
+            git push origin main
+          fi
+
+      - name: Apagar o ramo temporário
+        if: success()
+        run: git push origin --delete "${GITHUB_REF_NAME}"

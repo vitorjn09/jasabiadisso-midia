@@ -1,0 +1,14 @@
+STORIES DE DOMINGO · 08/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: "o flamingo nasce rosa?" (Reel de hoje: biblioteca/flamingo-rosa-comida).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: o flamingo fica numa perna só porque cansa menos; nessa posição o corpo trava sozinho e quase não usa músculo.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (segunda 09/11): "o que é mais antigo: a Universidade de Oxford ou o Império Asteca?" Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): Chang, Y.-H. & Ting, L. H. (2017), "Mechanical evidence that flamingos can support their body on one leg with little active muscular force", Biology Letters 13: 20160948 (Georgia Tech e Emory). Ressalva: há também a hipótese de que a perna dobrada ajuda a guardar calor; o story fala só do que o estudo mostrou.
+Desenhos próprios (o mesmo flamingo do Reel). Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

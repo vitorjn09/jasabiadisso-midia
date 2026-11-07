@@ -29,3 +29,16 @@ Nome da pasta: `AAAA-MM-DD-tipo-assunto`, por exemplo `2026-11-02-reel-polvo`.
 `estado.json` mostra, por rede: `publicado` (com o id), `erro` (tenta de novo
 no próximo ciclo), `falhou` (desistiu depois de 3 erros) ou `atrasado`.
 Depois de publicado em todas as redes, a pasta pode ser apagada.
+
+## Vídeo da biblioteca
+
+Um post pode usar um vídeo de `biblioteca/<nome>/` em vez de ter as mídias na
+pasta. Basta o campo `"biblioteca": "<nome>"` no `post.json` (com
+`"midias": ["video.mp4"]` e `"capa": "capa.jpg"`). O robô baixa o vídeo da
+Release `biblioteca` na hora de postar e marca na ficha onde ele saiu. O painel
+faz isso sozinho pelo botão Agendar da aba Biblioteca.
+
+## Horário
+
+O cron do GitHub atrasa. O workflow `relogio.yml` dorme até a hora exata do
+próximo post e chama o publicador. Ele recomeça sozinho quando a agenda muda.

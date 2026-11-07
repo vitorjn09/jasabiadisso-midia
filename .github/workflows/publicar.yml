@@ -10,6 +10,10 @@ on:
         type: choice
         options: [publicar, verificar, conexao]
         default: publicar
+      reenviar:
+        description: "Opcional, só com modo publicar: pasta:rede para tentar de novo (ex.: 2026-11-06-reel-venus:youtube). Só zera redes com falhou, erro ou atrasado."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -38,6 +42,7 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           MODO: ${{ inputs.modo || 'publicar' }}
+          REENVIAR: ${{ inputs.reenviar }}
         shell: bash
         run: |
           # A saída também vai para saida.txt e vira uma anotação que o painel (painel/index.html) lê.

@@ -10,9 +10,8 @@
     "em": "2026-11-06T21:17:11.028053+00:00"
   },
   "youtube": {
-    "status": "falhou",
-    "erro": "YouTube recusou o envio: 403 {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Request had insufficient authentication scopes.\",\n    \"errors\": [\n      {\n        \"message\": \"Insufficient Permission\",\n        \"domain\": \"global\",\n        \"reason\": \"insufficientPermissions\"\n      }\n    ],\n    \"status\": \"PERMISSION_DENIED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"ACCESS_TOKEN_SCOPE_INSUFFICIENT\",\n        \"domain\": \"googleapis.com\",\n        \"metadata\": {\n          \"service\": \"youtube.googleapis.com\",\n          \"method\": \"youtube.api.v3.V3DataVideoService.Insert\"\n        }\n      }\n    ]\n  }\n}\n",
-    "tentativas": 3,
-    "em": "2026-11-06T21:55:38.408951+00:00"
+    "status": "publicado",
+    "id": "3gRkDeqsoXI",
+    "em": "2026-11-07T02:59:46.809798+00:00"
   }
 }

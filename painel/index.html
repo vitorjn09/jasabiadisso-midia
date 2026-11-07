@@ -251,9 +251,15 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .segm button.ativo { color: var(--text); }
 .segm button span { font-size: 11px; opacity: .7; }
 .segm .ind { position: absolute; top: 4px; bottom: 4px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border-strong); transition: transform .4s var(--spring), width .4s var(--spring); }
-.bib-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
-.bib-filtros label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
-.bib-filtros select { font: inherit; font-size: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; }
+.bib-filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px; }
+.bib-filtros label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; min-width: 0; }
+.bib-filtros select { width: 100%; min-width: 0; height: 44px; font: inherit; font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0 10px; }
+/* abas de status ocupam a largura toda e se dividem igualmente */
+#bibFiltros { display: flex; width: 100%; margin-bottom: 14px; }
+#bibFiltros button { flex: 1 1 0; justify-content: center; min-width: 0; padding: 9px 6px; font-size: 13px; }
+/* vídeo da gaveta aparece inteiro sem precisar rolar */
+.gaveta .corpo video { display: block; width: auto; max-width: 100%; max-height: 58vh; margin: 0 auto; border-radius: 16px; background: #000; }
+@media (max-width: 380px) { .bib-filtros { grid-template-columns: 1fr; } }
 .arte-vista { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .arte-vista[hidden] { display: none; }
 .arte-vista img { max-width: 100%; max-height: 86vh; border-radius: 14px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }

@@ -1,0 +1,15 @@
+STORIES DE DOMINGO · 15/11/2026 (PROCLAMAÇÃO DA REPÚBLICA) · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+Atenção: o Reel de 16/11 está como "ideia" no cronograma, com o tema "A girafa tem 7 vértebras no pescoço, igual a você" (escolhido agora pela rotina). O story 3 anuncia esse tema, então o Reel precisa ser pedido e feito até lá.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: a 1ª bandeira da República, que não era a que a gente conhece (Reel da bandeira provisória).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: o marechal Deodoro da Fonseca era monarquista e amigo de Dom Pedro II, e estava doente no dia; saiu da cama para comandar as tropas.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (segunda 16/11): "o pescoço da girafa e o seu têm uma coisa igual" (7 vértebras; a resposta fica para o vídeo). Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): Agência Senado, "Proclamação da República" (Deodoro, monarquista, doente, liderou a tropa no Campo de Santana); Britannica, "Manuel Deodoro da Fonseca"; Arquivo Nacional / MAPA, "Proclamação da República".
+Desenhos próprios ou recortados dos Reels. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

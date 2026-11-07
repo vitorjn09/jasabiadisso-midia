@@ -1,0 +1,13 @@
+CARROSSEL · SEXTA 13/11/2026 · CURIOSIDADE DO DIA · POR QUE A SEXTA-FEIRA 13 DÁ MEDO?
+4 slides em 1080×1350 (4:5). Postar na ordem 13-11-slide-01 a 13-11-slide-04 (a capa é o 01).
+Ordem do dia: este carrossel sai ANTES do Reel de hoje ("Sexta-feira 13: um medo bem mais novo do que parece"). É o esquenta: conta de onde vem a fama da sexta e do 13 e guarda o Rossini, a terça-feira 13 e as três sextas-feiras 13 de 2026 para o vídeo.
+Horário sugerido: por volta de 12:15, antes do Reel. Não publicado nem agendado.
+
+Legenda:
+Hoje é sexta-feira 13 🐈‍⬛ Arrasta pra ver por que a sexta e o 13 ganharam fama de azar, e desde quando os dois andam juntos. O vídeo completo sai hoje no perfil. Você já sabia disso? 👇
+
+Hashtags (máximo de 5):
+#curiosidades #sextafeira13 #historia #supersticao #jasabiadisso
+
+Fatos: os mesmos do roteiro checado do Reel (produção/sexta-feira-13/roteiro-sexta-feira-13.txt): a sexta ligada à crucificação e o 13 aos 13 à mesa da Última Ceia; a combinação só aparece escrita no século 19 (Britannica, History.com).
+Ilustrações recortadas do próprio Reel. Para refazer: abrir carrossel.html e tirar print de cada <section> em 1080×1350.

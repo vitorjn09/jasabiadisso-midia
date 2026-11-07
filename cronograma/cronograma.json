@@ -202,21 +202,21 @@
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:35.513Z"
+      "status": "pronto",
+      "biblioteca": "oxford-astecas"
     },
     {
       "id": "rcyhpjr",
       "data": "2026-11-09",
       "formato": "carrossel",
-      "tema": "",
+      "tema": "Oxford é mais velha que os astecas (esquenta do Reel)",
       "redes": [
         "instagram",
         "facebook",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:30.045Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-09-carrossel-oxford-astecas"
     },
     {
       "id": "oebclj9",
@@ -241,131 +241,131 @@
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:44.345Z"
+      "status": "pronto",
+      "biblioteca": "coala-digital"
     },
     {
       "id": "kciqvuh",
       "data": "2026-11-10",
       "formato": "stories",
-      "tema": "",
+      "tema": "Coala dorme até 22 h e convite para seguir",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:41.889Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-10-stories-coala-sono-e-convite"
     },
     {
       "id": "mk0s5a4",
       "data": "2026-11-11",
       "formato": "stories",
-      "tema": "",
+      "tema": "Cavalo-marinho: o pai que engravida e teaser do ketchup",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:48.911Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-11-stories-cavalo-marinho-e-teaser-ketchup"
     },
     {
       "id": "vb95nw9",
       "data": "2026-11-12",
       "formato": "reel",
-      "tema": "",
+      "tema": "O ketchup que já foi remédio",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:52.382Z"
+      "status": "pronto",
+      "biblioteca": "ketchup-remedio"
     },
     {
       "id": "783vzsy",
       "data": "2026-11-13",
       "formato": "reel",
-      "tema": "",
+      "tema": "Sexta-feira 13: um medo bem mais novo do que parece",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:03:49.629Z"
+      "status": "pronto",
+      "biblioteca": "sexta-feira-13"
     },
     {
       "id": "gq3tgva",
       "data": "2026-11-13",
       "formato": "carrossel",
-      "tema": "",
+      "tema": "Por que a sexta-feira 13 dá medo? (esquenta do Reel)",
       "redes": [
         "instagram",
         "facebook",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:59.622Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-13-carrossel-sexta-feira-13"
     },
     {
       "id": "c34mrjt",
       "data": "2026-11-13",
       "formato": "stories",
-      "tema": "",
+      "tema": "O nome do medo de sexta-feira 13 e teaser do tubarão",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:02:55.361Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-13-stories-nome-do-medo-e-teaser-tubarao"
     },
     {
       "id": "4y22q7w",
       "data": "2026-11-14",
       "formato": "reel",
-      "tema": "",
+      "tema": "Os tubarões são mais velhos que as árvores",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:03:05.495Z"
+      "status": "pronto",
+      "biblioteca": "tubarao-arvores"
     },
     {
       "id": "fk0ecfv",
       "data": "2026-11-15",
       "formato": "reel",
-      "tema": "",
+      "tema": "A primeira bandeira da República parecia a dos EUA",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:03:22.304Z"
+      "status": "pronto",
+      "biblioteca": "bandeira-provisoria"
     },
     {
       "id": "p8xlhoh",
       "data": "2026-11-15",
       "formato": "stories",
-      "tema": "",
+      "tema": "Deodoro, amigo do imperador, e teaser da girafa",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:03:08.243Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-15-stories-deodoro-e-teaser-girafa"
     },
     {
       "id": "3br2k0b",
       "data": "2026-11-16",
       "formato": "reel",
-      "tema": "",
+      "tema": "A girafa tem 7 vértebras no pescoço, igual a você",
       "redes": [
         "instagram",
         "facebook",
@@ -390,19 +390,19 @@
       "id": "ad32wau",
       "data": "2026-11-16",
       "formato": "stories",
-      "tema": "",
+      "tema": "A língua roxa da girafa e teaser do vombate",
       "redes": [
         "instagram",
         "facebook"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-07T19:04:00.893Z"
+      "status": "pronto",
+      "notas": "producao/2026-11-16-stories-lingua-da-girafa-e-teaser-vombate"
     },
     {
       "id": "kl83jgc",
       "data": "2026-11-17",
       "formato": "reel",
-      "tema": "",
+      "tema": "O vombate faz cocô em formato de cubo",
       "redes": [
         "instagram",
         "facebook",

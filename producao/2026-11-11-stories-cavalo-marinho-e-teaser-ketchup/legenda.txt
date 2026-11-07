@@ -1,0 +1,15 @@
+STORIES DE QUARTA · 11/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+Como "story 2 antes do Reel" não se aplica (não há Reel), poste o story 2 umas 2 a 3 h depois do 1, e o 3 à noite.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: quarta não tem Reel, então o tema é dos próprios stories: "o pai que fica grávido" (cavalo-marinho).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade, já respondida: no cavalo-marinho, quem engravida é o macho; a fêmea põe os ovos na bolsa dele, que carrega os filhotes por 2 a 4 semanas e solta às vezes mais de mil.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (quinta 12/11): "esse molho já foi vendido em farmácia" (ketchup; a resposta fica para o vídeo). Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): Smithsonian Ocean, "Seahorses" (macho carrega os ovos na bolsa e dá à luz); National Geographic, "Seahorses" (gestação de 2 a 4 semanas, de 100 a cerca de 1.000 filhotes ou mais por vez, conforme a espécie).
+Desenhos próprios ou recortados dos Reels. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

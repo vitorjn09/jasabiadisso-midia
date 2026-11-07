@@ -1,0 +1,14 @@
+STORIES DE TERÇA · 10/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: o bichinho com digital quase igual à sua (Reel do coala).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: o coala dorme de 18 a 22 horas por dia, porque o eucalipto dá pouca energia.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Convite para seguir o perfil: não tem Reel amanhã (quarta 11/11 é só stories), então o story chama para seguir e avisa que tem mais curiosidade amanhã.
+
+Fatos (story 2): Australian Koala Foundation, "Koala facts" (dormem 18 a 22 h por dia); San Diego Zoo Wildlife Alliance, "Koala" (dieta de eucalipto pobre em energia, muitas horas de descanso).
+Desenhos próprios ou recortados dos Reels. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

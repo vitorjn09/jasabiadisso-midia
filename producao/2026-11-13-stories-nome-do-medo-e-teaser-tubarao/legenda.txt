@@ -1,0 +1,14 @@
+STORIES DE SEXTA · 13/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: carrossel e Reel da sexta-feira 13 (de onde vem esse medo).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: o medo de sexta-feira 13 tem nome, parascavedecatriafobia (do grego paraskeuí, sexta-feira; dekatreís, treze; fobia, medo).
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (sábado 14/11): "quem chegou primeiro: o tubarão ou a árvore?" (a resposta fica para o vídeo). Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): Britannica, "Friday the 13th" (nomes paraskevidekatriaphobia e friggatriskaidekaphobia); Merriam-Webster, "paraskevidekatriaphobia". Em português a forma usada é parascavedecatriafobia.
+Desenhos próprios ou recortados dos Reels. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

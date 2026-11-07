@@ -1,0 +1,15 @@
+STORIES DE SEGUNDA · 16/11/2026 · @jasabiadisso.br
+3 stories em 1080×1920, sem enquete, contagem, quiz ou figurinha. É só subir a imagem como está.
+Não publicados nem agendados.
+Atenção: os Reels de 16/11 ("A girafa tem 7 vértebras no pescoço, igual a você") e de 17/11 ("O vombate faz cocô em formato de cubo") estão como "ideia" no cronograma, com tema escolhido pela rotina. Estes stories anunciam os dois, então eles precisam ser pedidos e feitos até lá.
+
+Ordem e horário sugerido:
+1) story-1-manha.png · 9:30
+   O que sai hoje: o que o pescoço da girafa tem igual ao seu (Reel da girafa, 7 vértebras).
+2) story-2-antes-do-reel.png · 1 a 2 h antes do Reel
+   Curiosidade extra, já respondida: a língua da girafa é escura, quase roxo-azulada, e chega a uns 50 cm; ajuda a puxar folhas entre os espinhos das acácias.
+3) story-3-depois-do-reel.png · cerca de 2 h depois do Reel
+   Teaser de amanhã (terça 17/11): "que bicho faz cocô quadrado?" (vombate; a resposta fica para o vídeo). Termina com "sai amanhã no perfil, fica de olho 👀".
+
+Fatos (story 2): San Diego Zoo Wildlife Alliance, "Giraffe" (língua de 45 a 50 cm, escura); Smithsonian's National Zoo, "Giraffe".
+Desenhos próprios ou recortados dos Reels. Para refazer: abrir stories.html e tirar print de cada <section> em 1080×1920.

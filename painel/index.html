@@ -2273,15 +2273,25 @@ $("#cRepete").onclick = async () => {
 /* horário padrão de cada dia da semana */
 $("#cHoras").onclick = () => {
   const m = $("#modal"), nomeF = { reel: "Reel", carrossel: "Carrossel", stories: "3 stories" };
-  const linhas = HORA_FORMATOS.map((f) => `<label class="campo">${nomeF[f]}</label><div style="display:flex;gap:8px">${[0, 1, 2].map((i) => `<input class="input" type="time" data-f="${f}" data-i="${i}" value="${esc(((CRONO.horarios || {})[f] || [])[i] || "")}" aria-label="${nomeF[f]} ${i + 1}º">`).join("")}</div>`).join("");
+  const grupo = (f) => {
+    const lista = ((CRONO.horarios || {})[f] || []).filter(Boolean);
+    const campos = (lista.length ? lista : [""]).map((v) => `<input class="input" type="time" data-f="${f}" value="${esc(v)}" aria-label="${nomeF[f]}">`).join("");
+    return `<label class="campo">${nomeF[f]}</label><div data-grupo="${f}" style="display:grid;gap:8px">${campos}</div>
+      <button class="btn peq" data-add="${f}" style="margin-top:8px">${ic("i-plus")}Adicionar horário</button>`;
+  };
   m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>Horários padrão</h2>
-    <p>Cada formato sai na ordem: 1º, 2º e 3º do dia. Vale para toda semana. Um item com hora própria não usa o padrão.</p>
-    ${linhas}
+    <p>Cada formato sai nesses horários, na ordem em que você põe, em toda semana. Um item com hora própria não usa o padrão.</p>
+    ${HORA_FORMATOS.map(grupo).join("")}
     <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="hrOk">${ic("i-check")}Salvar</button></div>`;
   abrirModal();
+  m.onclick = (e) => {
+    const b = e.target.closest("[data-add]"); if (!b) return;
+    const f = b.dataset.add, g = m.querySelector(`[data-grupo="${f}"]`);
+    g.insertAdjacentHTML("beforeend", `<input class="input" type="time" data-f="${f}" value="" aria-label="${nomeF[f]}">`);
+  };
   $("#hrOk").onclick = async () => {
     const antes = CRONO.horarios, novo = {};
-    HORA_FORMATOS.forEach((f) => { const l = [0, 1, 2].map((i) => m.querySelector(`[data-f="${f}"][data-i="${i}"]`).value); if (l.some(Boolean)) novo[f] = l; });
+    HORA_FORMATOS.forEach((f) => { const l = [...m.querySelectorAll(`[data-f="${f}"]`)].map((i) => i.value).filter(Boolean); if (l.length) novo[f] = l; });
     CRONO.horarios = novo; fecharModal(); desenharCronograma();
     if (!(await salvarCrono("horários padrão da semana"))) { CRONO.horarios = antes; desenharCronograma(); }
   };

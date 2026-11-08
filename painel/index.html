@@ -583,6 +583,8 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 }
 /* =============================================================== barra inferior (celular) */
 .tabbar { display: none; }
+/* a folha "Mais" só existe no celular */
+@media (min-width: 901px) { .mais-folha, #maisVeu { display: none !important; } }
 @media (max-width: 900px) {
   .app { grid-template-columns: minmax(0, 1fr); }
   .side { display: none; }
@@ -1087,6 +1089,64 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 .mv-lista > div.bate { background: color-mix(in srgb, var(--gold) 12%, var(--surface-2)); }
 .mv-plano { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
 .mv-plano .i { color: var(--teal); flex: none; width: 16px; height: 16px; margin-top: 2px; }
+
+/* ================================================= editar item (folha com cara de app) */
+.ei-topo { display: flex; gap: 14px; align-items: flex-start; }
+.ei-capa { flex: none; width: 64px; aspect-ratio: 9 / 16; border-radius: 14px; background: var(--surface-2) center/cover no-repeat; border: 1px solid var(--border); display: grid; place-items: center; color: var(--teal); }
+.ei-capa.vazia { border-style: dashed; }
+.ei-capa .i { width: 24px; height: 24px; }
+.ei-info { flex: 1; min-width: 0; }
+.ei-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.ei-meta .chip { padding: 4px 10px; font-size: 12px; }
+.ei-tema { width: 100%; margin-top: 6px; padding: 6px 0; border: 0; border-bottom: 1px dashed var(--border-strong); background: transparent; color: var(--text); font: 600 19px/1.3 Fredoka, system-ui, sans-serif; resize: none; outline: none; }
+.ei-tema:focus { border-bottom-color: var(--teal); }
+.ei-tema::placeholder { color: var(--faint); font-weight: 500; }
+.ei-passos { margin-top: 16px; }
+.ei-passo { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); text-align: left; font: inherit; }
+button.ei-passo { cursor: pointer; transition: transform .2s var(--spring); }
+button.ei-passo:active { transform: scale(.98); }
+.ei-passo > span:nth-child(2) { flex: 1; min-width: 0; }
+.ei-passo b { display: block; font-size: 15px; }
+.ei-passo small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+.ei-passo > .i { color: var(--faint); width: 18px; height: 18px; flex: none; }
+.ei-passo.pri { border-color: color-mix(in srgb, var(--teal) 50%, transparent); background: color-mix(in srgb, var(--teal) 12%, var(--surface-2)); }
+.ei-passo.pri .af-ic { background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; }
+.ei-passo.info .af-ic { color: var(--info); }
+.ei-passo.ouro { border-color: color-mix(in srgb, var(--gold) 55%, transparent); background: color-mix(in srgb, var(--gold) 12%, var(--surface-2)); }
+.ei-passo.ouro .af-ic { background: linear-gradient(135deg, var(--gold), #c99a4f); color: #1e1709; }
+.ei-passo.ok .af-ic { color: var(--ok, var(--teal)); }
+.ei-sub { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.ei-sec { margin-top: 18px; }
+.ei-tit { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ei-dica { flex-basis: 100%; color: var(--faint) !important; }
+.ei-fmts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.ei-fmts button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 2px 8px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font: 600 12px/1.15 Inter, system-ui, sans-serif; cursor: pointer; text-align: center; transition: border-color .2s, background .2s, color .2s; }
+.ei-fmts button .i { width: 20px; height: 20px; }
+.ei-fmts button.ok { color: var(--text); border-color: var(--teal); background: color-mix(in srgb, var(--teal) 14%, var(--surface-2)); box-shadow: 0 0 0 1px var(--teal); }
+.ei-fmts button.ok .i { color: var(--teal); }
+.ei-mais { margin-top: 18px; border: 1px solid var(--border); border-radius: 16px; padding: 0 14px; background: var(--surface-2); }
+.ei-mais summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; }
+.ei-mais summary::-webkit-details-marker { display: none; }
+.ei-mais summary > span { flex: 1; min-width: 0; }
+.ei-mais summary b { display: block; font-size: 14px; }
+.ei-mais summary small { display: block; font-size: 12px; color: var(--muted); }
+.ei-mais summary .i { width: 18px; height: 18px; color: var(--faint); transform: rotate(90deg); transition: transform .25s; }
+.ei-mais[open] summary .i { transform: rotate(-90deg); }
+.ei-mais[open] { padding-bottom: 14px; }
+.ei-mais .campo:first-of-type { margin-top: 0; }
+/* agenda: nomes legíveis e planejados mais enxutos */
+.post .titulo-post { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; margin: 4px 0 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.post .titulo-post small { display: block; font-size: 11.5px; font-weight: 700; color: var(--teal); letter-spacing: .02em; margin-bottom: 1px; }
+.post .titulo-post.sem-tema { color: var(--faint); font-weight: 500; }
+.post.planejado { grid-template-columns: 60px 1fr; align-items: center; padding: 12px 14px; }
+.post.planejado .pl-midia { border-radius: 10px; }
+.post.planejado .pl-midia > .i { width: 20px; height: 20px; }
+.post.planejado .pl-midia .tag { font-size: 9.5px; padding: 2px 6px; top: 4px; left: 4px; }
+.post.planejado .hora { font-size: 19px; }
+.post.planejado .titulo-post { margin: 3px 0 6px; }
+.pl-pe { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pl-pe .leg { margin: 0; font-size: 12.5px; flex: 1; min-width: 120px; }
+.pl-pe .btn { flex: none; }
 </style>
 </head>
 <body>
@@ -1841,15 +1901,29 @@ function planejadosDaAgenda() {
       const n = jaTem.get(k); if (n > 0) { jaTem.set(k, n - 1); return false; } return true;
     });
 }
+/* nome que dá para ler: título do vídeo ou tema do plano, e "Story 2 de 3" */
+function tituloPost(x) {
+  const p = x.post || {}, it = itemDoPost(x);
+  const b = p.biblioteca ? BIB.find((y) => y.nome === p.biblioteca) : null;
+  let base = b?.ficha?.titulo || it?.tema || x.pasta.replace(/^\d{4}-\d\d-\d\d-/, "").replace(/^(story|reel|carrossel|imagem)-/, "").replace(/^(stories|carrossel)-/, "").replace(/-\d+$/, "").replace(/-/g, " ");
+  base = base.charAt(0).toUpperCase() + base.slice(1);
+  if (p.tipo === "story" && it) {
+    const irmaos = postsDoItem(it).sort((a, c) => new Date(a.post.quando) - new Date(c.post.quando));
+    if (irmaos.length > 1) return [`Story ${irmaos.indexOf(x) + 1} de ${irmaos.length}`, base];
+  }
+  return ["", base];
+}
 function cartaoPlanejado({ it, h, i, n }) {
   const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
-  const txt = st === "pedido" ? "Pedido ao Claude: ele cria e deixa pronto para agendar." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
+  const txt = st === "pedido" ? "O Claude vai criar e deixar pronto." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
+  const acao = st === "pronto" && it.biblioteca ? `<button class="btn peq ouro" data-agendarbib="${esc(it.biblioteca)}">${ic("i-cal")}Agendar</button>`
+    : ["ideia", "roteiro", "producao"].includes(st) && !it.biblioteca ? `<button class="btn peq pri" data-pedir="${esc(it.id)}">${ic("i-zap")}Pedir ao Claude</button>` : "";
   return `<div class="card post planejado st-${st}" data-plano="${esc(it.id)}">
     <div class="midia pl-midia" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""}>${capa ? "" : ic(st === "pedido" ? "i-zap" : "i-plan")}<span class="tag">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span></div>
     <div style="min-width:0">
       <div class="hora">${h ? esc(h) : "--:--"}<span class="chip ${cls}">${rot}</span></div>
-      <div class="pasta">${esc(it.tema || "Tema a definir")}</div>
-      <div class="leg" style="margin-top:4px">${txt}</div>
+      <div class="titulo-post ${it.tema ? "" : "sem-tema"}">${esc(it.tema || "Tema a definir")}</div>
+      <div class="pl-pe"><span class="leg">${txt}</span>${acao}</div>
     </div></div>`;
 }
 function desenharAgenda() {
@@ -1883,7 +1957,7 @@ function desenharAgenda() {
           ${midiaHTML(x)}
           <div style="min-width:0">
             <div class="hora">${q ? esc(F_HORA.format(q)) : "--:--"}</div>
-            <div class="pasta">${esc(x.pasta)}</div>
+            ${(() => { const [sub, tit] = tituloPost(x); return `<div class="titulo-post">${sub ? `<small>${esc(sub)}</small>` : ""}${esc(tit)}</div>`; })()}
             <div class="redes">${(p.redes || []).map((r) => chipRede(r, x.estado[r], p.quando)).join("")}</div>
             ${x.erros.length ? `<div class="aviso-post">${ic("i-alert")}<span>${x.erros.map(esc).join(" · ")}</span></div>` : ""}
             <div class="leg">${esc(p.legenda || "")}</div>
@@ -3709,28 +3783,100 @@ function pedirCriacao(it, novo = false) {
     else { m.innerHTML = `<h2>Copie e cole no chat</h2><textarea class="input" rows="5" readonly onclick="this.select()">${esc(msg)}</textarea><div class="btns"><button class="btn pri" data-fecha>Pronto</button></div>`; abrirModal(); }
   };
 }
+const ICONE_FMT = { reel: "i-film", carrossel: "i-layers", stories: "i-circle", story: "i-circle", imagem: "i-image" };
+/* o próximo passo de um item, no topo da folha: pedir, aguardar, agendar ou ver na agenda */
+function proximoPasso(it, st) {
+  const fmtN = (FORMATOS[it.formato] || "conteúdo").toLowerCase();
+  const linha = (cls, icone, tit, sub, passo, seta = true) => `<${passo ? `button data-passo="${passo}"` : "div"} class="ei-passo ${cls}"><span class="af-ic">${ic(icone)}</span><span><b>${tit}</b><small>${sub}</small></span>${passo && seta ? ic("i-right") : ""}</${passo ? "button" : "div"}>`;
+  if (st === "pedido") {
+    const quando = it.pedido ? new Date(it.pedido).toLocaleString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
+    return `<div class="ei-passos">${linha("info", "i-zap", "Pedido ao Claude", `Ele pega os pedidos do plano algumas vezes por dia, cria o ${esc(fmtN)} e deixa pronto para agendar.${quando ? ` Pedido em ${esc(quando)}.` : ""}`)}
+      <div class="ei-sub"><button class="btn peq" data-passo="pedir">${ic("i-copy")}Copiar o pedido</button><button class="btn peq fant" data-passo="cancelar">${ic("i-x")}Cancelar pedido</button></div></div>`;
+  }
+  if (st === "pronto") {
+    if (it.biblioteca) return `<div class="ei-passos">${linha("ouro", "i-cal", "Pronto. Falta agendar", "O vídeo está na biblioteca. Escolha o dia e a hora para o robô publicar.", "agendar")}</div>`;
+    return `<div class="ei-passos">${linha("ouro", "i-upload", "Pronto. Falta agendar", `Os arquivos estão prontos${(it.notas || "").startsWith("producao/") ? ` em ${esc(it.notas.split(/\s/)[0])}` : ""}. Abre o Novo post com este dia.`, "novo")}</div>`;
+  }
+  if (st === "agendado") return `<div class="ei-passos">${linha("ok", "i-check", "Na agenda", "Já está com dia e hora para o robô publicar.", "ver")}</div>`;
+  if (st === "publicado") return `<div class="ei-passos">${linha("ok", "i-check", "Publicado", "Já saiu nas redes.", "")}</div>`;
+  if (st === "pulado") return "";
+  return `<div class="ei-passos">${linha("pri", "i-zap", "Pedir para o Claude criar", `Ele faz o ${esc(fmtN)} e deixa pronto para você agendar.`, "pedir")}</div>`;
+}
 function editarItem(it, dataInicial) {
   const novo = !it;
-  const x = it ? { ...it, redes: [...(it.redes || [])] } : { id: novoId(), data: dataInicial, formato: "reel", tema: "", redes: redesPadrao("reel"), status: "ideia", notas: "" };
-  const m = $("#modal");
+  const x = it ? { ...it, redes: [...(it.redes || [])] } : { id: novoId(), data: dataInicial || chaveDia(new Date()), formato: "reel", tema: "", redes: redesPadrao("reel"), status: "ideia", notas: "" };
+  const m = $("#modal"), st = novo ? "ideia" : statusItem(it), [stRot, stCls] = ST_CRONO[st];
   const opcoesBib = BIB.map((b) => `<option value="${esc(b.nome)}" ${x.biblioteca === b.nome ? "selected" : ""}>${esc(b.ficha.titulo || b.nome)}</option>`).join("");
   const capaE = capaItem(it);
-  m.innerHTML = `<div class="ic-topo">${ic("i-plan", "i g")}</div><h2>${novo ? "Novo item" : "Editar item"}</h2>
-    ${capaE ? `<img class="capa-edit" src="${esc(capaE)}" alt="Capa do item">` : ""}
-    <div class="form-grade"><div><label class="campo" style="margin-top:0">Dia</label><input class="input" type="date" id="ciData" value="${esc(x.data)}"></div>
-    <div><label class="campo" style="margin-top:0">Vídeo da biblioteca</label><select class="input" id="ciBib"><option value="">Nenhum</option>${opcoesBib}</select></div></div>
-    <label class="campo">Formato</label><div class="escolhas" id="ciFmt">${Object.entries(FORMATOS).map(([k, n]) => `<button class="chip ${x.formato === k ? "ok" : ""}" data-v="${k}">${n}</button>`).join("")}</div>
-    <label class="campo">Tema</label><input class="input" id="ciTema" value="${esc(x.tema || "")}" placeholder="Ex.: Cleópatra e as pirâmides">
-    <label class="campo">Redes</label><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div>
-    <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
-    ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
-    <label class="tgl-linha"><input type="checkbox" id="ciFixa" ${itemFixo(x) ? "checked" : ""}><span><b>Data comemorativa</b><small>${eventoDoDia(x.data) ? `${esc(eventoDoDia(x.data))}: ` : ""}só sai neste dia. Mudar a data pede confirmação.</small></span></label>
-    <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(x.hora || "")}" placeholder="${esc(horaDo({ ...x, hora: undefined }) || "padrão")}">
-    <p class="dica" style="margin:6px 0 0">Vazio ou igual ao horário padrão do formato: usa o padrão da semana.</p>
-    <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
-    <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}Salvar</button></div>`;
+  m.innerHTML = `<div class="ei-topo">
+      <div class="ei-capa ${capaE ? "" : "vazia"}" id="ciCapa" ${capaE ? `style="background-image:url('${esc(capaE)}')"` : ""}>${capaE ? "" : ic(ICONE_FMT[x.formato] || "i-plan")}</div>
+      <div class="ei-info">
+        <div class="ei-meta"><span class="chip ${stCls}">${novo ? "Novo" : stRot}</span><span id="ciQuando"></span></div>
+        <textarea class="ei-tema" id="ciTema" rows="2" placeholder="Sobre o que é? Vazio: o Claude sugere">${esc(x.tema || "")}</textarea>
+      </div>
+    </div>
+    ${novo ? "" : proximoPasso(it, st)}
+    <div class="ei-sec"><div class="ei-tit">Quando</div>
+      <div class="mv-dias" id="ciDias"></div>
+      <input class="input" type="date" id="ciData" value="${esc(x.data)}" style="margin-top:8px" aria-label="Outra data">
+      <div style="margin-top:10px">${seletorHora("ciHora", x.hora || "")}</div>
+      <div class="mv-horas" id="ciHorasSug"></div>
+    </div>
+    <div class="ei-sec"><div class="ei-tit">Formato</div>
+      <div class="ei-fmts" id="ciFmt">${Object.entries(FORMATOS).map(([k, n]) => `<button class="${x.formato === k ? "ok" : ""}" data-v="${k}">${ic(ICONE_FMT[k] || "i-plan")}<span>${n}</span></button>`).join("")}</div>
+    </div>
+    <div class="ei-sec"><div class="ei-tit">Onde vai sair</div><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div></div>
+    <details class="ei-mais"><summary><span><b>Mais opções</b><small>Vídeo da biblioteca, data comemorativa, status e notas</small></span>${ic("i-right")}</summary>
+      <label class="campo">Vídeo da biblioteca</label><select class="input" id="ciBib"><option value="">Nenhum</option>${opcoesBib}</select>
+      <label class="tgl-linha"><input type="checkbox" id="ciFixa" ${itemFixo(x) ? "checked" : ""}><span><b>Data comemorativa</b><small>${eventoDoDia(x.data) ? `${esc(eventoDoDia(x.data))}: ` : ""}só sai neste dia. Mudar a data pede confirmação.</small></span></label>
+      <label class="campo">Status (à mão)</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
+      <p class="dica" style="margin:6px 0 0">Normalmente o status muda sozinho: ao pedir ao Claude, quando fica pronto e quando é agendado.</p>
+      <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
+    </details>
+    <div class="btns">${novo ? "" : `<button class="btn perigo" id="ciApaga" style="margin-right:auto" aria-label="Tirar do plano">${ic("i-trash")}</button>`}<button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="ciSalva">${ic("i-check")}${novo ? "Criar" : "Salvar"}</button></div>`;
   abrirModal();
-  $("#ciFmt").onclick = (e) => { const c = e.target.closest("[data-v]"); if (!c) return; $$("#ciFmt .chip").forEach((y) => y.classList.toggle("ok", y === c)); };
+  const fmtAtual = () => $("#ciFmt .ok")?.dataset.v || x.formato;
+  const desenhar = () => {
+    const k = $("#ciData").value, h = $("#ciHora").value, f = fmtAtual(), hoje = chaveDia(new Date());
+    const padrao = k ? horaPadrao(k, f, x.id) : "";
+    $("#ciQuando").textContent = k ? rotuloQuando(k, h || (f === "stories" ? "" : padrao)) : "Sem dia";
+    const lista = Array.from({ length: 14 }, (_, i) => somaDias(hoje, i));
+    if (x.data && !lista.includes(x.data)) lista.unshift(x.data);
+    if (k && !lista.includes(k)) lista.push(k);
+    lista.sort();
+    $("#ciDias").innerHTML = lista.map((d) => { const dt = dataDe(d), n = Object.values(temNoDia(d)).reduce((a, b) => a + b, 0) - (!novo && d === it.data ? 1 : 0);
+      return `<button class="mv-dia ${d === k ? "ok" : ""} ${!novo && d === it.data ? "orig" : ""} ${eventoDoDia(d) ? "evento" : ""}" data-d="${d}" title="${esc(eventoDoDia(d))}"><small>${d === hoje ? "hoje" : NOMES_SEMANA[dt.getUTCDay()].toLowerCase()}</small><b>${dt.getUTCDate()}</b><i>${n > 0 ? "•".repeat(Math.min(n, 3)) : ""}</i>${!novo && d === it.data ? "<em>atual</em>" : ""}</button>`; }).join("");
+    depoisDoQuadro(() => { const sel = $("#ciDias .ok"); if (sel) sel.scrollIntoView({ block: "nearest", inline: "center" }); });
+    const sug = [...new Set(((CRONO.horarios || {})[f] || []).filter(Boolean))];
+    $("#ciHorasSug").innerHTML = (sug.length ? `<small>${f === "stories" ? "Horários dos stories:" : "Horário padrão:"}</small>${sug.map((v) => `<button class="chip ${v === h ? "ok" : ""}" data-hsug="${v}">${v}</button>`).join("")}` : "") +
+      `<small class="ei-dica">${h ? "" : f === "stories" ? "Sem hora: os 3 stories usam os horários padrão." : padrao ? `Sem hora: usa o padrão, ${padrao}.` : "Sem hora definida."}</small>`;
+    const capa = $("#ciCapa"); if (capa.classList.contains("vazia")) capa.innerHTML = ic(ICONE_FMT[f] || "i-plan");
+  };
+  desenhar();
+  const setHora = (v) => { $("#ciHora").value = v; const [hh = "", mm = ""] = v.split(":"); $$('#modal [data-hora="ciHora"]').forEach((sl) => { sl.value = sl.dataset.p === "h" ? hh : mm; }); };
+  m.onclick = async (e) => {
+    const d = e.target.closest("[data-d]"); if (d) { $("#ciData").value = d.dataset.d; return desenhar(); }
+    const hs = e.target.closest("[data-hsug]"); if (hs) { setHora(hs.dataset.hsug === $("#ciHora").value ? "" : hs.dataset.hsug); return desenhar(); }
+    const f = e.target.closest("#ciFmt [data-v]"); if (f) { $$("#ciFmt [data-v]").forEach((y) => y.classList.toggle("ok", y === f)); return desenhar(); }
+    const ps = e.target.closest("[data-passo]"); if (!ps || novo) return;
+    const passo = ps.dataset.passo; m.onclick = null; fecharModal();
+    if (passo === "pedir") return pedirCriacao(it);
+    if (passo === "agendar") return abrirVideo(it.biblioteca, true);
+    if (passo === "ver") { DIA_FILTRO = it.data; return irPara("agenda"); }
+    if (passo === "novo") {
+      irPara("novo"); if (NOVO.etapa) resetarNovo();
+      const tipo = it.formato === "stories" ? "story" : it.formato;
+      $(`#tipos [data-tipo="${tipo}"]`)?.click(); $("#fData").value = it.data; const h = horasDo(it)[0]; if (h && $("#fHora")) $("#fHora").value = h;
+      return toast("info", "Dia já escolhido", `${FORMATOS[it.formato] || ""} de ${rotuloQuando(it.data)}. Falta só o arquivo.`);
+    }
+    if (passo === "cancelar") {
+      const antes = JSON.stringify(it); it.status = "ideia"; delete it.pedido; desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+      if (!(await salvarCrono(`cancela o pedido "${it.tema || FORMATOS[it.formato]}"`))) { Object.keys(it).forEach((c) => delete it[c]); Object.assign(it, JSON.parse(antes)); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
+    }
+  };
+  m.oninput = (e) => { if (e.target.id === "ciData") desenhar(); };
+  m.onchange = (e) => { if (e.target.closest("[data-hora]")) setTimeout(desenhar); };
+  fechaModalCb = () => { m.onclick = m.oninput = m.onchange = null; };
   $("#ciRedes").onclick = (e) => { const c = e.target.closest("[data-v]"); if (c) c.classList.toggle("ok"); };
   let stEscolhido = x.status;
   $("#ciSt").onclick = (e) => { const c = e.target.closest("[data-v]"); if (!c) return; stEscolhido = c.dataset.v; $$("#ciSt .chip").forEach((y) => { y.className = "chip" + (y === c ? " " + y.dataset.c : ""); }); };
@@ -3738,30 +3884,32 @@ function editarItem(it, dataInicial) {
   $("#ciSalva").onclick = async () => {
     const data = $("#ciData").value; if (!data) return sacode($("#ciData"));
     const fixa = $("#ciFixa").checked;
+    m.onclick = m.oninput = m.onchange = null;
     if (!novo && it.data !== data && itemFixo(it) && fixa) { fecharModal(); if (!(await confirmarDataFixa(it.data, data))) return; }
     // guarda a escolha só quando ela difere do automático (dia comemorativo)
     if (fixa === !!eventoDoDia(data)) delete x.dataFixa; else x.dataFixa = fixa;
-    Object.assign(x, { data, formato: $("#ciFmt .chip.ok")?.dataset.v || x.formato, tema: $("#ciTema").value.trim(), redes: $$("#ciRedes .chip.ok").map((c) => c.dataset.v),
+    Object.assign(x, { data, formato: fmtAtual(), tema: $("#ciTema").value.trim(), redes: $$("#ciRedes .chip.ok").map((c) => c.dataset.v),
       status: stEscolhido, notas: $("#ciNotas").value.trim() });
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
     if (!x.notas) delete x.notas;
-    x.hora = $("#ciHora").value || undefined;
+    x.hora = $("#ciHora").value || undefined; if (!x.hora) delete x.hora;
     const antes = JSON.stringify(CRONO.itens);
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
+    if (!novo && !x.hora) delete it.hora;
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);
-    desenharCronograma();
-    if (!(await salvarCrono(`${novo ? "novo item" : "edita"} "${x.tema || FORMATOS[x.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); }
+    desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    if (!(await salvarCrono(`${novo ? "novo item" : "edita"} "${x.tema || FORMATOS[x.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
   };
   $("#ciApaga")?.addEventListener("click", async () => {
+    m.onclick = m.oninput = m.onchange = null;
     fecharModal();
     const ok = await confirmar({ titulo: "Tirar do cronograma?", icone: "i-trash", perigo: true, rotulo: "Tirar", texto: `<p><b>${esc(it.tema || FORMATOS[it.formato])}</b> sai do plano. Nada é apagado da agenda nem da biblioteca.</p>` });
     if (!ok) return;
     const antes = JSON.stringify(CRONO.itens);
-    CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); desenharCronograma();
-    if (!(await salvarCrono(`tira "${it.tema || FORMATOS[it.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); }
+    CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    if (!(await salvarCrono(`tira "${it.tema || FORMATOS[it.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
   });
 }
-
 /* ================================================================ catálogo do mês */
 /* junta o cronograma do mês com os números das análises (Instagram, Facebook, YouTube) e ordena pelo que mais rendeu */
 let CAT_TUDO = false, CAT_MES = chaveDia(new Date()).slice(0, 7), CAT_METRICA = "views", CAT_FMT = "todos", CAT_ORDEM = "melhores", CAT_DIA = "";
@@ -3991,6 +4139,8 @@ document.addEventListener("click", (e) => {
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
   const ad = b.closest("[data-adddia]"); if (ad) { abrirAdicionarDia(ad.dataset.adddia); return; }
+  const pd = b.closest("[data-pedir]"); if (pd) { pedirCriacao(CRONO.itens.find((x) => x.id === pd.dataset.pedir)); return; }
+  const agb = b.closest("[data-agendarbib]"); if (agb) { abrirVideo(agb.dataset.agendarbib, true); return; }
   const pl = b.closest("[data-plano]"); if (pl) { editarItem(CRONO.itens.find((x) => x.id === pl.dataset.plano)); return; }
   if (b.closest("[data-conta]") || b.closest("#btnConta") || b.closest("#btnContaMob")) { abrirConta(); return; }
 });

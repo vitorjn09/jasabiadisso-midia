@@ -1037,6 +1037,56 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 .pl-midia .tag { position: absolute; top: 6px; left: 6px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(0,0,0,.6); color: #fff; }
 .post.planejado.st-pedido .pl-midia { color: var(--info); }
 .post.planejado.st-pronto { border-color: color-mix(in srgb, var(--gold) 50%, transparent); }
+
+/* datas comemorativas e mover junto */
+.junto { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.junto label { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); font-size: 13.5px; cursor: pointer; }
+.junto input { width: 18px; height: 18px; accent-color: var(--teal); flex: none; }
+.junto span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tgl-linha { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; }
+.tgl-linha input { width: 20px; height: 20px; accent-color: var(--gold); margin-top: 2px; flex: none; }
+.tgl-linha b { display: block; font-size: 14px; }
+.tgl-linha small { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.citem .fixo { display: inline-flex; margin-left: 6px; color: var(--gold); vertical-align: -2px; }
+.citem .fixo .i { width: 13px; height: 13px; }
+
+/* ================================================= mudar dia e hora de um post */
+.mv-resumo { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 18px; background: var(--surface-2); border: 1px solid var(--border); }
+.mv-lado { flex: 1; min-width: 0; }
+.mv-lado small { display: block; font-size: 11.5px; color: var(--muted); }
+.mv-lado b { display: block; font: 600 16px/1.25 Fredoka, system-ui, sans-serif; margin-top: 2px; }
+.mv-lado.novo b { color: var(--teal); }
+.mv-seta { color: var(--faint); display: grid; place-items: center; transition: color .2s, transform .3s var(--spring); }
+.mv-seta.on { color: var(--teal); transform: translateX(2px); }
+.mv-seta .i { width: 18px; height: 18px; }
+.mv-fixo { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 14%, transparent); color: var(--text); font-size: 13px; line-height: 1.4; }
+.mv-fixo .i { color: var(--gold); flex: none; margin-top: 1px; }
+.mv-fixo b { display: block; color: var(--gold); }
+.mv-fixo b.in { display: inline; color: var(--text); }
+.mv-fixo .btn { margin-top: 8px; display: flex; }
+.mv-fixo.fora { background: color-mix(in srgb, var(--gold) 20%, transparent); }
+.mv-dias { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 4px; scroll-snap-type: x proximity; }
+.mv-dias::-webkit-scrollbar { display: none; }
+.mv-dia { position: relative; flex: none; width: 52px; padding: 7px 0 5px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; font: inherit; display: flex; flex-direction: column; align-items: center; gap: 1px; scroll-snap-align: start; transition: border-color .2s, background .2s, transform .2s var(--spring); }
+.mv-dia:active { transform: scale(.94); }
+.mv-dia small { font-size: 10.5px; color: var(--muted); text-transform: lowercase; }
+.mv-dia b { font: 600 18px/1.1 Fredoka, system-ui, sans-serif; }
+.mv-dia i { font-style: normal; font-size: 11px; line-height: 8px; height: 8px; color: var(--teal); letter-spacing: 1px; }
+.mv-dia em { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); font: 700 9px/1 Inter, system-ui, sans-serif; font-style: normal; padding: 2px 5px; border-radius: 99px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--muted); text-transform: uppercase; }
+.mv-dia.evento { border-color: color-mix(in srgb, var(--gold) 60%, transparent); }
+.mv-dia.evento small { color: var(--gold); }
+.mv-dia.orig { border-style: dashed; }
+.mv-dia.ok { border-color: var(--teal); border-style: solid; background: color-mix(in srgb, var(--teal) 16%, var(--surface-2)); box-shadow: 0 0 0 1px var(--teal); }
+.mv-dias { padding: 9px 6px 4px; margin: 0 -6px; scroll-padding-inline: 6px; }
+.mv-horas { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.mv-horas small { color: var(--muted); font-size: 12px; margin-right: 2px; }
+.mv-horas .chip { cursor: pointer; padding: 6px 10px; }
+.mv-lista { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.mv-lista > div { padding: 9px 12px; font-size: 13.5px; background: var(--surface-2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.mv-lista > div + div { border-top: 1px solid var(--border); }
+.mv-lista > div.bate { background: color-mix(in srgb, var(--gold) 12%, var(--surface-2)); }
+.mv-plano { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; }
+.mv-plano .i { color: var(--teal); flex: none; width: 16px; height: 16px; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -1783,6 +1833,7 @@ function planejadosDaAgenda() {
   if (!cronoCarregou || FILTRO !== "todos") return [];
   const hoje = chaveDia(new Date()), jaTem = new Map();
   return (CRONO.itens || []).filter((it) => it.data && (DIA_FILTRO ? it.data === DIA_FILTRO : it.data >= hoje) && !["agendado", "publicado", "pulado"].includes(statusItem(it)))
+    .filter((it) => !postsDoItem(it).length)
     .flatMap((it) => { const hs = horasDo(it); return (hs.length > 1 ? hs : [hs[0] || ""]).map((h, i, todos) => ({ it, h, i, n: todos.length })); })
     .filter((pl) => { // se o dia já tem post desse formato na agenda, o planejado já virou post: não repete
       const k = `${pl.it.data}|${pl.it.formato === "stories" ? "story" : pl.it.formato}`;
@@ -1887,10 +1938,21 @@ function abrirGaveta(pasta, editar = false) {
   $("#gavRot").textContent = `${NOMES_TIPO[p.tipo] || "Post"} · ${x.pasta}`;
   $("#gavTit").textContent = q ? `${nomeDia(q)}, ${F_HORA.format(q)}` : "Sem data";
   if (editar) {
-    const local = q ? isoParaLocal(p.quando) : "";
+    const local = q ? isoParaLocal(p.quando) : "", kFixo = q ? diaFixoDoPost(x) : "", ev = kFixo ? eventoDoDia(kFixo) : "", foraDoDia = kFixo && kFixo !== chaveDia(q);
+    const fmtCrono = p.tipo === "story" ? "stories" : p.tipo, sugeridas = [...new Set(((CRONO.horarios || {})[fmtCrono] || []).filter(Boolean))];
+    JUNTO.clear(); if (q) outrosDoDia(x).forEach((y) => JUNTO.add(y.pasta));
     $("#gavCorpo").innerHTML = `
-      <div class="quando-grade"><div><label class="campo" style="margin-top:0">Data</label><input class="input" type="date" id="eData" value="${local.slice(0, 10)}"></div>
-      <div><label class="campo" style="margin-top:0">Hora (Brasília)</label>${seletorHora("eHora", local.slice(11, 16))}</div></div>
+      <div class="mover">
+        <div class="mv-resumo" id="eResumo"></div>
+        ${kFixo ? `<div class="mv-fixo ${foraDoDia ? "fora" : ""}">${ic(foraDoDia ? "i-alert" : "i-cal")}<span><b>${esc(ev || "Data comemorativa")}</b>${foraDoDia ? `Foi feito para <b class="in">${esc(rotuloQuando(kFixo))}</b> e está fora desse dia.<button class="btn peq ouro" data-d="${kFixo}">${ic("i-cal")}Voltar para ${esc(rotuloQuando(kFixo))}</button>` : "Este post foi feito para este dia. Mude só o horário, se precisar."}</span></div>` : ""}
+        <label class="campo">Dia</label>
+        <div class="mv-dias" id="eDias"></div>
+        <input class="input" type="date" id="eData" value="${local.slice(0, 10)}" style="margin-top:8px" aria-label="Outra data">
+        <label class="campo">Hora (Brasília)</label>
+        ${seletorHora("eHora", local.slice(11, 16))}
+        ${sugeridas.length ? `<div class="mv-horas" id="eHorasSug"><small>Horários de ${esc((FORMATOS[fmtCrono] || "").toLowerCase())}:</small>${sugeridas.map((h) => `<button class="chip" data-hsug="${h}">${h}</button>`).join("")}</div>` : ""}
+        <div id="eNoDia"></div>
+      </div>
       <label class="campo">Redes</label>
       <div class="redes" id="eRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ${(p.redes || []).includes(r) ? "ok" : ""}" data-r="${r}" style="cursor:pointer;padding:8px 12px" ${r === "youtube" && p.tipo !== "reel" ? "disabled" : ""}>${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
       <label class="campo">Legenda</label><textarea class="input" id="eLeg">${esc(p.legenda || "")}</textarea>
@@ -1898,6 +1960,14 @@ function abrirGaveta(pasta, editar = false) {
       <label class="campo">Título no YouTube</label><input class="input" id="eYt" maxlength="100" value="${esc(p.titulo_youtube || "")}">` : ""}
       <div class="aviso-post" id="eErros"></div>`;
     $("#eRedes").onclick = (e) => { const b = e.target.closest("[data-r]"); if (b && !b.disabled) b.classList.toggle("ok"); };
+    const corpo = $("#gavCorpo");
+    corpo.onclick = (e) => {
+      const d = e.target.closest("[data-d]"); if (d) { $("#eData").value = d.dataset.d; return desenharMover(x); }
+      const h = e.target.closest("[data-hsug]"); if (h) { $("#eHora").value = h.dataset.hsug; const [hh, mm] = h.dataset.hsug.split(":"); $$('#gavCorpo [data-hora="eHora"]').forEach((sl) => { sl.value = sl.dataset.p === "h" ? hh : mm; }); return desenharMover(x); }
+    };
+    corpo.oninput = (e) => { if (e.target.id === "eData") desenharMover(x); };
+    corpo.onchange = (e) => { if (e.target.closest("[data-hora]")) setTimeout(() => desenharMover(x)); };
+    desenharMover(x);
     $("#gavPe").innerHTML = `<button class="btn fant" id="eCancela">Cancelar</button><button class="btn pri" id="eSalva">${ic("i-check")}Salvar mudanças</button>`;
     $("#eCancela").onclick = () => abrirGaveta(pasta);
     $("#eSalva").onclick = () => salvarEdicao(x);
@@ -1915,6 +1985,7 @@ function abrirGaveta(pasta, editar = false) {
       ${blocoTextos(p)}
       <label class="campo">Arquivos</label><div class="redes">${x.arquivos.map((a) => `<a class="chip" href="${esc(a.download_url)}" target="_blank" rel="noopener">${esc(a.name)}${a.size ? " · " + tamanho(a.size) : ""}</a>`).join("")}</div>`;
     $("#gavPe").innerHTML = `<button class="btn perigo" id="gApaga">${ic("i-trash")}Apagar</button><button class="btn" id="gEdita">${ic("i-edit")}Editar</button>`;
+    $("#gavCorpo").onclick = $("#gavCorpo").oninput = $("#gavCorpo").onchange = null;
     $("#gApaga").onclick = () => apagarPost(x);
     $("#gEdita").onclick = () => abrirGaveta(pasta, true);
   }
@@ -1925,6 +1996,42 @@ function travar() { document.documentElement.classList.toggle("travado", !!($("#
 function fecharGaveta() { $("#veu").classList.remove("on"); $("#gaveta").classList.remove("on"); $("#gaveta").setAttribute("aria-hidden", "true"); $$("#gaveta video").forEach((v) => v.pause()); travar(); }
 $("#veu").onclick = fecharGaveta; $("#gavFechar").onclick = fecharGaveta;
 
+const F_DIA_MES = fmt({ weekday: "short", day: "numeric", month: "short" });
+function rotuloQuando(k, h) { return `${k === chaveDia(new Date()) ? "Hoje" : F_DIA_MES.format(new Date(k + "T12:00:00-03:00")).replace(/\./g, "")}${h ? ` · ${h}` : ""}`; }
+let EDITANDO = null;
+function desenharMover(x) {
+  EDITANDO = x;
+  const p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
+  const k0 = q ? chaveDia(q) : "", h0 = q ? F_HORA.format(q) : "", k = $("#eData").value, h = $("#eHora").value;
+  const mudouDia = !!(k0 && k && k !== k0), mudouHora = !!(h && h !== h0);
+  // resumo: como está e como vai ficar
+  $("#eResumo").innerHTML = `<div class="mv-lado"><small>Agora</small><b>${q ? esc(rotuloQuando(k0, h0)) : "Sem data"}</b></div>
+    <span class="mv-seta ${mudouDia || mudouHora ? "on" : ""}">${ic("i-right")}</span>
+    <div class="mv-lado ${mudouDia || mudouHora ? "novo" : ""}"><small>${mudouDia || mudouHora ? "Vai para" : "Sem mudança"}</small><b>${k ? esc(rotuloQuando(k, h)) : "Escolha o dia"}</b></div>`;
+  // dias: os próximos 14 (e o dia atual do post, se ficar fora)
+  const hoje = chaveDia(new Date()), lista = Array.from({ length: 14 }, (_, i) => somaDias(hoje, i));
+  if (k0 && !lista.includes(k0)) lista.unshift(k0);
+  if (k && !lista.includes(k)) lista.push(k);
+  const conta = (d) => POSTS.filter((y) => y !== x && y.post?.quando && chaveDia(new Date(y.post.quando)) === d).length;
+  $("#eDias").innerHTML = lista.map((d) => { const dt = dataDe(d), n = conta(d);
+    return `<button class="mv-dia ${d === k ? "ok" : ""} ${d === k0 ? "orig" : ""} ${eventoDoDia(d) ? "evento" : ""}" data-d="${d}" title="${esc(eventoDoDia(d))}"><small>${d === hoje ? "hoje" : NOMES_SEMANA[dt.getUTCDay()].toLowerCase()}</small><b>${dt.getUTCDate()}</b><i>${n ? "•".repeat(Math.min(n, 3)) : ""}</i>${d === k0 ? "<em>atual</em>" : ""}</button>`; }).join("");
+  depoisDoQuadro(() => { const sel = $("#eDias .ok"); if (sel) sel.scrollIntoView({ block: "nearest", inline: "nearest" }); });
+  $$("#eHorasSug [data-hsug]").forEach((c) => c.classList.toggle("ok", c.dataset.hsug === h));
+  // o que já tem no dia escolhido
+  const linha = (y, extra = "") => `<b>${esc(F_HORA.format(new Date(y.post.quando)))}</b> ${esc(NOMES_TIPO[y.post.tipo] || y.post.tipo)} · ${esc(y.pasta.replace(/^\d{4}-\d\d-\d\d-/, "").replace(/^(story|reel|carrossel|imagem)-/, "").replace(/-/g, " "))}${extra}`;
+  const noDia = k ? POSTS.filter((y) => y !== x && y.post?.quando && chaveDia(new Date(y.post.quando)) === k && !(mudouDia && JUNTO.has(y.pasta))).sort((a, b) => new Date(a.post.quando) - new Date(b.post.quando)) : [];
+  const bate = noDia.find((y) => h && F_HORA.format(new Date(y.post.quando)) === h);
+  let html = noDia.length ? `<div class="sec-tit" style="margin-top:18px">Neste dia já tem</div><div class="mv-lista">${noDia.map((y) => `<div class="${y === bate ? "bate" : ""}">${linha(y, y === bate ? ' <span class="chip warn">mesmo horário</span>' : "")}</div>`).join("")}</div>` : "";
+  if (mudouDia) {
+    const outros = outrosDoDia(x);
+    if (outros.length) html += `<div class="sec-tit" style="margin-top:18px">Levar junto para ${esc(rotuloQuando(k))}</div><p class="dica" style="margin:0 0 8px">São do mesmo dia. Cada um mantém o seu horário.</p>
+      <div class="junto">${outros.map((y) => `<label><input type="checkbox" data-junto="${esc(y.pasta)}" ${JUNTO.has(y.pasta) ? "checked" : ""}><span>${linha(y)}</span></label>`).join("")}</div>`;
+  }
+  const it = itemDoPost(x);
+  if (it && mudouDia) html += `<p class="dica mv-plano">${ic("i-plan")}<span>O item do plano (${esc(FORMATOS[it.formato] || it.formato)}${it.tema ? `: ${esc(it.tema)}` : ""}) muda de dia junto.</span></p>`;
+  $("#eNoDia").innerHTML = html;
+}
+document.addEventListener("change", (e) => { if (EDITANDO && e.target.closest("#eNoDia [data-junto]")) setTimeout(() => desenharMover(EDITANDO)); });
 async function salvarEdicao(x) {
   const data = $("#eData").value, hora = $("#eHora").value;
   const post = { ...x.post };
@@ -1941,13 +2048,29 @@ async function salvarEdicao(x) {
   if (!post.redes.length) erros.push("marque pelo menos uma rede");
   erros.push(...validar(post, x.nomes).filter((e) => !erros.includes(e)));
   if (erros.length) { $("#eErros").innerHTML = ic("i-alert") + `<span>${erros.map(esc).join(" · ")}</span>`; return; }
-  const ok = await confirmar({ titulo: "Salvar as mudanças?", icone: "i-edit", texto: `<p><b>${esc(NOMES_TIPO[post.tipo])}</b> em <b>${esc(F_COMPLETO.format(new Date(post.quando)))}</b> no ${esc(post.redes.map((r) => NOMES_REDE[r]).join(", "))}.</p><p>O que já foi publicado não muda nas redes.</p>`, rotulo: "Salvar" });
-  if (!ok) return;
+  const diaAntes = x.post.quando ? chaveDia(new Date(x.post.quando)) : "", mudouDia = !!(diaAntes && diaAntes !== data);
+  const kFixo = diaFixoDoPost(x);
+  if (mudouDia && kFixo && data !== kFixo && !(await confirmarDataFixa(kFixo, data))) return;
+  const outros = mudouDia ? outrosDoDia(x).filter((y) => JUNTO.has(y.pasta)) : [];
+  const juntos = outros.map((y) => ({ pasta: y.pasta, post: ordenar({ ...y.post, quando: `${data}T${F_HORA.format(new Date(y.post.quando))}:00-03:00` }) }));
+  if (mudouDia) {
+    const ok = await confirmar({ titulo: `Mudar para ${rotuloQuando(data)}?`, icone: "i-cal", rotulo: "Mudar de dia",
+      texto: `<p><b>${esc(NOMES_TIPO[post.tipo])}</b> sai de ${esc(rotuloQuando(diaAntes, F_HORA.format(new Date(x.post.quando))))} e vai para <b>${esc(rotuloQuando(data, hora))}</b>.</p>${juntos.length ? `<p>Vão junto ${juntos.length === 1 ? "mais 1 post" : `mais ${juntos.length} posts`} do mesmo dia, cada um no seu horário.</p>` : ""}${itemDoPost(x) ? "<p>O plano também muda de dia.</p>" : ""}` });
+    if (!ok) return;
+  }
+  // o plano acompanha: o item ligado a estes posts vai para o novo dia (e hora)
+  const novos = new Map([[x.pasta, post.quando], ...juntos.map((j) => [j.pasta, j.post.quando])]);
+  const planoMudou = cronoCarregou ? sincronizarPlano(novos) : [];
   const b = $("#eSalva"); b.disabled = true; b.classList.add("gira"); b.innerHTML = `${ic("i-refresh")}Salvando…`;
   try {
-    await commit(`Painel: edita ${x.pasta}`, [{ caminho: `agenda/${x.pasta}/post.json`, base64: b64Texto(JSON.stringify(ordenar(post), null, 2) + "\n") }]);
-    toast("ok", "Mudanças salvas", x.pasta); fecharGaveta(); carregarAgenda();
-  } catch (e) { toast("err", "Não salvou", e.message); b.disabled = false; b.classList.remove("gira"); b.innerHTML = `${ic("i-check")}Salvar mudanças`; }
+    await commit(`Painel: edita ${x.pasta}${juntos.length ? ` e leva ${juntos.length} junto` : ""}`, [{ caminho: `agenda/${x.pasta}/post.json`, base64: b64Texto(JSON.stringify(ordenar(post), null, 2) + "\n") },
+      ...juntos.map((j) => ({ caminho: `agenda/${j.pasta}/post.json`, base64: b64Texto(JSON.stringify(j.post, null, 2) + "\n") })),
+      ...(planoMudou.length ? [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }] : [])]);
+    toast("ok", mudouDia ? `Foi para ${rotuloQuando(data, hora)}` : "Mudanças salvas", [juntos.length ? `mais ${juntos.length} do mesmo dia junto` : "", planoMudou.length ? "plano atualizado" : ""].filter(Boolean).join(" · ") || x.pasta); fecharGaveta(); carregarAgenda(); desenharCronograma();
+  } catch (e) {
+    planoMudou.forEach(([it, antes]) => { Object.keys(it).forEach((c) => delete it[c]); Object.assign(it, JSON.parse(antes)); });
+    toast("err", "Não salvou", e.message); b.disabled = false; b.classList.remove("gira"); b.innerHTML = `${ic("i-check")}Salvar mudanças`;
+  }
 }
 async function apagarPost(x) {
   const publicado = Object.values(x.estado).some((e) => e.status === "publicado");
@@ -3055,6 +3178,8 @@ function abrirVideo(nome, agendar = false) {
     const marca = () => $$("#agDias [data-d]").forEach((c) => c.classList.toggle("ok", c.dataset.d === $("#agData").value));
     $("#agDias").onclick = (e) => { const c = e.target.closest("[data-d]"); if (c) { $("#agData").value = c.dataset.d; marca(); } };
     $("#agData").oninput = marca;
+    const itP = (CRONO.itens || []).find((y) => y.biblioteca === nome);
+    if (itP?.data && itP.data >= chaveDia(new Date())) { $("#agData").value = itP.data; marca(); const h = horasDo(itP)[0]; if (h) { $("#agHora").value = h; const [hh, mm] = h.split(":"); $$('#gavCorpo [data-hora="agHora"]').forEach((sel) => { sel.value = sel.dataset.p === "h" ? hh : mm; }); } }
     $("#agRedes").onclick = (e) => { const c = e.target.closest("[data-r]"); if (c) c.classList.toggle("ok"); };
     $("#gavPe").innerHTML = `<button class="btn fant" id="agVolta">Voltar</button><button class="btn pri" id="agOk">${ic("i-cal")}Agendar</button>`;
     $("#agVolta").onclick = () => abrirVideo(nome);
@@ -3110,6 +3235,8 @@ async function agendarDaBiblioteca(b) {
   const post = ordenar({ quando, tipo: f.tipo || "reel", redes, legenda: $("#agLeg").value.trim(), midias: ["video.mp4"], ...(b.capaUrl ? { capa: f.capa || "capa.jpg" } : {}),
     ...($("#agFb").value.trim() ? { titulo_facebook: $("#agFb").value.trim() } : {}), ...($("#agYt").value.trim() ? { titulo_youtube: $("#agYt").value.trim() } : {}),
     ...(f.ia ? { ia: true } : {}), biblioteca: b.nome });
+  const itP = (CRONO.itens || []).find((y) => y.biblioteca === b.nome);
+  if (itP?.data && itemFixo(itP) && !(await confirmarDataFixa(itP.data, data))) return abrirVideo(b.nome, true);
   let pasta = `${data}-${post.tipo}-${b.nome}`.slice(0, 80);
   for (let i = 2; POSTS.some((x) => x.pasta === pasta); i++) pasta = `${data}-${post.tipo}-${b.nome}-${i}`.slice(0, 80);
   const ok = await confirmar({ titulo: "Agendar este vídeo?", icone: "i-cal", rotulo: "Agendar",
@@ -3199,6 +3326,10 @@ function statusItem(it) {
     const b = BIB.find((y) => y.nome === it.biblioteca);
     if (b) { const s = statusBib(b).s; if (s === "publicado" || s === "agendado") return s; if (["ideia", "roteiro", "producao", "pedido"].includes(it.status)) return "pronto"; }
   }
+  if (!it.biblioteca && (it.notas || "").startsWith("producao/")) {
+    const ps = postsDoItem(it);
+    if (ps.length) return ps.every((x) => { const e = Object.values(x.estado || {}); return e.length && e.every((v) => v.status === "publicado"); }) ? "publicado" : "agendado";
+  }
   return ST_CRONO[it.status] ? it.status : "ideia";
 }
 function ligarNoCronograma(b, data) {
@@ -3213,7 +3344,7 @@ let CMES_OFF = 0, CDIA = "";
 function cartaoItem(it, h, i, n, hoje) {
   const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
   return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-    <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
+    <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}${itemFixo(it) ? `<span class="fixo" title="Data comemorativa: só sai neste dia">${ic("i-cal")}</span>` : ""}</span><span class="chip ${cls}">${rot}</span></div>
     <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
     <div class="mini">${h ? `<span class="hora-c">${esc(h)}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
     ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
@@ -3320,7 +3451,9 @@ $("#crono").addEventListener("dragover", (e) => { const d = e.target.closest("[d
 $("#crono").addEventListener("drop", async (e) => {
   const d = e.target.closest("[data-cdia]"); if (!d || !itemArrastado) return; e.preventDefault();
   const it = CRONO.itens.find((x) => x.id === itemArrastado); if (!it || it.data === d.dataset.cdia) return;
-  const antes = it.data; it.data = d.dataset.cdia; desenharCronograma();
+  const novoDia = d.dataset.cdia;
+  if (itemFixo(it) && !(await confirmarDataFixa(it.data, novoDia))) return;
+  const antes = it.data; it.data = novoDia; desenharCronograma();
   if (!(await salvarCrono(`move "${it.tema || FORMATOS[it.formato]}" para ${it.data}`))) { it.data = antes; desenharCronograma(); }
 });
 async function salvarCrono(msg) {
@@ -3416,6 +3549,80 @@ $("#cLimpa").onclick = async () => {
 
 /* pedir ao Claude para criar o conteúdo de um item sem vídeo */
 function podeCriar(it, hoje) { return !it.biblioteca && ["ideia", "roteiro"].includes(statusItem(it)) && it.data >= hoje; }
+/* ================================================================ datas comemorativas
+   Conteúdo de data comemorativa só faz sentido no próprio dia. Tudo o que está planejado num desses dias fica "preso" à data:
+   mudar o dia pede confirmação. No item do cronograma dá para ligar ou desligar isso à mão (dataFixa). */
+const DATAS_EVENTO = { "01-01": "Ano-Novo", "03-08": "Dia da Mulher", "04-21": "Tiradentes", "04-22": "Descobrimento do Brasil", "05-01": "Dia do Trabalho",
+  "06-12": "Dia dos Namorados", "06-24": "São João", "07-20": "Dia do Amigo", "09-07": "Independência", "10-12": "Dia das Crianças", "10-15": "Dia do Professor",
+  "10-31": "Halloween", "11-02": "Finados", "11-15": "Proclamação da República", "11-20": "Consciência Negra", "12-24": "Véspera de Natal", "12-25": "Natal", "12-31": "Réveillon" };
+function eventoDoDia(k) {
+  if (!k) return "";
+  const d = dataDe(k), md = k.slice(5), dia = d.getUTCDate(), sem = d.getUTCDay(), mes = d.getUTCMonth() + 1;
+  if (DATAS_EVENTO[md]) return DATAS_EVENTO[md];
+  if (sem === 5 && dia === 13) return "Sexta-feira 13";
+  if (sem === 0 && dia >= 8 && dia <= 14 && mes === 5) return "Dia das Mães";
+  if (sem === 0 && dia >= 8 && dia <= 14 && mes === 8) return "Dia dos Pais";
+  return "";
+}
+function itemFixo(it) { return !!it && (it.dataFixa === true || (it.dataFixa !== false && !!eventoDoDia(it.data))); }
+function ligadoAoItem(x, it) {
+  const p = x?.post || {}, pasta = (p.origem || "").replace(/^producao\//, "");
+  return !!it && !!((p.biblioteca && it.biblioteca === p.biblioteca) || (pasta && (it.notas || "").startsWith("producao/" + pasta)));
+}
+function itemDoPost(x) { return (CRONO.itens || []).find((it) => ligadoAoItem(x, it)); }
+function postsDoItem(it) { return carregou ? POSTS.filter((x) => ligadoAoItem(x, it)) : []; }
+/* quando um post muda de dia ou hora, o item do plano ligado a ele vai junto (senão ele fica no dia antigo como "Pronto") */
+function sincronizarPlano(novos) { // novos: Map pasta -> novo "quando"
+  const mudados = [];
+  for (const it of CRONO.itens || []) {
+    const ps = postsDoItem(it); if (!ps.some((y) => novos.has(y.pasta))) continue;
+    const quandos = ps.map((y) => new Date(novos.get(y.pasta) || y.post.quando)), dias = [...new Set(quandos.map(chaveDia))];
+    const antes = JSON.stringify(it);
+    if (dias.length === 1 && it.data !== dias[0]) it.data = dias[0];
+    if (it.formato !== "stories" && ps.length === 1) { const h = F_HORA.format(quandos[0]); if ((it.hora || horasDo(it)[0]) !== h) it.hora = h; }
+    if (JSON.stringify(it) !== antes) mudados.push([it, antes]);
+  }
+  return mudados;
+}
+/* o dia em que um post de data comemorativa tem que sair ("" se não tem dia fixo) */
+function diaFixoDoPost(x) {
+  const it = itemDoPost(x); if (it) return itemFixo(it) ? it.data : "";
+  const k = x?.post?.quando ? chaveDia(new Date(x.post.quando)) : ""; return k && eventoDoDia(k) ? k : "";
+}
+function postFixo(x) {
+  const it = itemDoPost(x); if (it) return itemFixo(it);
+  return !!(x?.post?.quando && eventoDoDia(chaveDia(new Date(x.post.quando))));
+}
+async function confirmarDataFixa(diaOriginal, novoDia) {
+  if (!diaOriginal || diaOriginal === novoDia) return true;
+  const ev = eventoDoDia(diaOriginal);
+  return confirmar({ titulo: "Este conteúdo é de data comemorativa", icone: "i-cal", perigo: true, rotulo: "Mudar mesmo assim",
+    texto: `<p>Ele foi feito para <b>${esc(nomeDia(new Date(diaOriginal + "T12:00:00-03:00")))}</b>${ev ? ` (${esc(ev)})` : ""} e só faz sentido nesse dia.</p><p>Mudar para ${esc(nomeDia(new Date(novoDia + "T12:00:00-03:00")))}?</p>` });
+}
+/* assunto do dia: o tema que os outros posts e itens do dia já têm (ex.: os stories já falam do Deodoro, então o reel pedido fala disso) */
+function assuntoDoDia(k, menosId = "") {
+  const temas = [];
+  const limpa = (t) => (t || "").replace(/\s+e\s+teaser.*$/i, "").replace(/teaser.*$/i, "").trim();
+  (CRONO.itens || []).forEach((it) => { if (it.data === k && it.id !== menosId && it.tema) temas.push(limpa(it.tema)); });
+  POSTS.forEach((x) => {
+    const p = x.post || {}; if (!p.quando || chaveDia(new Date(p.quando)) !== k) return;
+    if (p.biblioteca) { const b = BIB.find((y) => y.nome === p.biblioteca); temas.push(b?.ficha?.titulo || p.biblioteca.replace(/-/g, " ")); return; }
+    const slug = x.pasta.replace(/^\d{4}-\d\d-\d\d-/, "").replace(/^(story|reel|carrossel|imagem)-/, "").replace(/^(stories|carrossel)-/, "").replace(/-\d+$/, "");
+    temas.push(limpa(slug.replace(/-/g, " ")));
+  });
+  const vistos = new Set(), unicos = temas.filter((t) => t && !vistos.has(t.toLowerCase()) && vistos.add(t.toLowerCase()));
+  const ev = eventoDoDia(k);
+  return { temas: unicos, evento: ev, sugestao: unicos[0] ? unicos[0][0].toUpperCase() + unicos[0].slice(1) : ev };
+}
+/* ao mudar o dia de um post, os outros do mesmo dia (reel, stories, carrossel do mesmo assunto) podem ir juntos */
+const JUNTO = new Set();
+document.addEventListener("change", (e) => { const c = e.target.closest("[data-junto]"); if (c) { if (c.checked) JUNTO.add(c.dataset.junto); else JUNTO.delete(c.dataset.junto); } });
+function outrosDoDia(x) {
+  const k = chaveDia(new Date(x.post.quando));
+  return POSTS.filter((y) => y !== x && y.post?.quando && chaveDia(new Date(y.post.quando)) === k && !Object.values(y.estado || {}).some((e) => e.status === "publicado"))
+    .sort((a, b) => new Date(a.post.quando) - new Date(b.post.quando));
+}
+
 /* ================================================================ adicionar conteúdo num dia (Agenda e Plano)
    Mostra o que o dia já tem, o que falta pelo modelo da semana e deixa: pedir ao Claude para criar,
    agendar um arquivo que você já tem, ou só reservar a vaga no plano. */
@@ -3473,10 +3680,12 @@ function abrirAdicionarDia(k, fmt = "") {
 function pedirCriacao(it, novo = false) {
   if (!it) return;
   const dia = `${NOMES_SEMANA[dataDe(it.data).getUTCDay()].toLowerCase()}, ${dataDe(it.data).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
+  const ctx = assuntoDoDia(it.data, it.id), sugestao = it.tema || ctx.sugestao || "";
   const m = $("#modal");
   m.innerHTML = `<div class="ic-topo">${ic("i-zap", "i g")}</div><h2>Pedir para criar</h2>
     <p><b>${esc(FORMATOS[it.formato] || it.formato)}</b> de ${esc(dia)}${it.hora ? ` às <b>${esc(it.hora)}</b>` : ""}.</p>
-    <label class="campo">Tema</label><input class="input" id="pcTema" value="${esc(it.tema || "")}" placeholder="Deixe vazio para o Claude sugerir">
+    <label class="campo">Tema</label><input class="input" id="pcTema" value="${esc(sugestao)}" placeholder="Deixe vazio para o Claude sugerir">
+    ${ctx.temas.length || ctx.evento ? `<p class="dica" style="margin:6px 0 0">${ctx.evento ? `Dia de <b>${esc(ctx.evento)}</b>. ` : ""}${ctx.temas.length ? `O dia já fala de: ${esc(ctx.temas.join(", "))}. O tema veio daí para combinar com os outros posts.` : ""}</p>` : ""}
     <label class="campo">Recado (opcional)</label><textarea class="input" id="pcNotas" rows="3" placeholder="Ex.: tom engraçado, falar da fonte…">${esc(it.notas || "")}</textarea>
     <p class="dica">O item fica como “Pedido ao Claude” e a mensagem é copiada. Depois é só colar no chat com o Claude.</p>
     <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="pcOk">${ic("i-check")}Pedir</button></div>`;
@@ -3484,7 +3693,7 @@ function pedirCriacao(it, novo = false) {
   $("#pcOk").onclick = async () => {
     const tema = $("#pcTema").value.trim(), notas = $("#pcNotas").value.trim();
     const redes = (it.redes || []).map((r) => REDES_CRONO[r]?.[0] || r).join(", ");
-    const msg = `Cria o ${(FORMATOS[it.formato] || it.formato).toLowerCase()} de ${dia}${it.hora ? ` às ${it.hora}` : ""}${tema ? ` sobre "${tema}"` : " (sugira o tema)"} para ${redes}.${notas ? ` Recado: ${notas}` : ""} (item ${it.id} do cronograma)`;
+    const msg = `Cria o ${(FORMATOS[it.formato] || it.formato).toLowerCase()} de ${dia}${it.hora ? ` às ${it.hora}` : ""}${tema ? ` sobre "${tema}"` : " (sugira o tema)"} para ${redes}.${ctx.temas.length ? ` No mesmo dia já tem: ${ctx.temas.join("; ")} (combinar com eles).` : ""}${ctx.evento ? ` É dia de ${ctx.evento}: tem que sair nesse dia.` : ""}${notas ? ` Recado: ${notas}` : ""} (item ${it.id} do cronograma)`;
     let copiou = false;
     try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
     fecharModal();
@@ -3515,6 +3724,7 @@ function editarItem(it, dataInicial) {
     <label class="campo">Redes</label><div class="escolhas" id="ciRedes">${Object.entries(REDES_CRONO).map(([k, [n, i]]) => `<button class="chip ${x.redes.includes(k) ? "ok" : ""}" data-v="${k}">${ic(i)}${n}</button>`).join("")}</div>
     <label class="campo">Status</label><div class="escolhas" id="ciSt">${Object.entries(ST_CRONO).map(([k, [n, c]]) => `<button class="chip ${x.status === k ? c || "info" : ""}" data-v="${k}" data-c="${c || "info"}">${n}</button>`).join("")}</div>
     ${x.biblioteca && statusItem(x) !== x.status ? `<p class="dica" style="margin:8px 0 0">O vídeo ligado a este item já está ${ST_CRONO[statusItem(x)][0].toLowerCase()}, então é isso que aparece no cronograma.</p>` : ""}
+    <label class="tgl-linha"><input type="checkbox" id="ciFixa" ${itemFixo(x) ? "checked" : ""}><span><b>Data comemorativa</b><small>${eventoDoDia(x.data) ? `${esc(eventoDoDia(x.data))}: ` : ""}só sai neste dia. Mudar a data pede confirmação.</small></span></label>
     <label class="campo">Hora de publicar</label><input class="input" type="time" id="ciHora" value="${esc(x.hora || "")}" placeholder="${esc(horaDo({ ...x, hora: undefined }) || "padrão")}">
     <p class="dica" style="margin:6px 0 0">Vazio ou igual ao horário padrão do formato: usa o padrão da semana.</p>
     <label class="campo">Notas</label><textarea class="input" id="ciNotas" rows="3" placeholder="Roteiro, links, ideias…">${esc(x.notas || "")}</textarea>
@@ -3527,6 +3737,10 @@ function editarItem(it, dataInicial) {
   $("#ciBib").onchange = () => { const b = BIB.find((y) => y.nome === $("#ciBib").value); if (b && !$("#ciTema").value) $("#ciTema").value = b.ficha.titulo || b.nome; };
   $("#ciSalva").onclick = async () => {
     const data = $("#ciData").value; if (!data) return sacode($("#ciData"));
+    const fixa = $("#ciFixa").checked;
+    if (!novo && it.data !== data && itemFixo(it) && fixa) { fecharModal(); if (!(await confirmarDataFixa(it.data, data))) return; }
+    // guarda a escolha só quando ela difere do automático (dia comemorativo)
+    if (fixa === !!eventoDoDia(data)) delete x.dataFixa; else x.dataFixa = fixa;
     Object.assign(x, { data, formato: $("#ciFmt .chip.ok")?.dataset.v || x.formato, tema: $("#ciTema").value.trim(), redes: $$("#ciRedes .chip.ok").map((c) => c.dataset.v),
       status: stEscolhido, notas: $("#ciNotas").value.trim() });
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;

@@ -1147,6 +1147,23 @@ button.ei-passo:active { transform: scale(.98); }
 .pl-pe { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .pl-pe .leg { margin: 0; font-size: 12.5px; flex: 1; min-width: 120px; }
 .pl-pe .btn { flex: none; }
+
+/* pedir o dia todo */
+.grupo-tit:has(.pedir-dia) { flex-wrap: wrap; row-gap: 8px; }
+.grupo-tit:has(.pedir-dia)::after { display: none; }
+.grupo-tit small { white-space: nowrap; }
+.grupo-tit .pedir-dia { margin-left: auto; font: 600 13px/1 Inter, system-ui, sans-serif; }
+.cdia-acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.pd-lista { display: flex; flex-direction: column; margin-top: 12px; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+.pd-item { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface-2); cursor: pointer; }
+.pd-item + .pd-item { border-top: 1px solid var(--border); }
+.pd-item > input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--teal); }
+.pd-item .af-ic { width: 34px; height: 34px; border-radius: 10px; }
+.pd-item b { display: block; font-size: 14px; }
+.pd-item small { display: block; font-size: 12px; color: var(--muted); }
+.pd-item .pd-tema { grid-column: 2 / -1; margin-top: 2px; padding: 9px 12px; font-size: 14px; }
+.pd-item.off { opacity: .5; }
+.pd-item.off .pd-tema { pointer-events: none; }
 </style>
 </head>
 <body>
@@ -1917,7 +1934,7 @@ function cartaoPlanejado({ it, h, i, n }) {
   const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
   const txt = st === "pedido" ? "O Claude vai criar e deixar pronto." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
   const acao = st === "pronto" && it.biblioteca ? `<button class="btn peq ouro" data-agendarbib="${esc(it.biblioteca)}">${ic("i-cal")}Agendar</button>`
-    : ["ideia", "roteiro", "producao"].includes(st) && !it.biblioteca ? `<button class="btn peq pri" data-pedir="${esc(it.id)}">${ic("i-zap")}Pedir ao Claude</button>` : "";
+    : ["ideia", "roteiro", "producao"].includes(st) && !it.biblioteca && i === 0 ? `<button class="btn peq pri" data-pedir="${esc(it.id)}">${ic("i-zap")}Pedir ao Claude</button>` : "";
   return `<div class="card post planejado st-${st}" data-plano="${esc(it.id)}">
     <div class="midia pl-midia" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""}>${capa ? "" : ic(st === "pedido" ? "i-zap" : "i-plan")}<span class="tag">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span></div>
     <div style="min-width:0">
@@ -1949,7 +1966,7 @@ function desenharAgenda() {
     const es = grupos.get(k).sort((a, b) => a.hora.localeCompare(b.hora));
     const nP = es.filter((e) => e.post).length, nPl = es.length - nP;
     const conta = [nP ? `${nP} post${nP > 1 ? "s" : ""}` : "", nPl ? `${nPl} planejado${nPl > 1 ? "s" : ""}` : ""].filter(Boolean).join(" · ");
-    return `<div class="grupo"><div class="grupo-tit">${k === "sem-data" ? "Sem data" : esc(nomeDia(new Date(k + "T12:00:00-03:00")))}<small>${conta}</small></div>
+    return `<div class="grupo"><div class="grupo-tit">${k === "sem-data" ? "Sem data" : esc(nomeDia(new Date(k + "T12:00:00-03:00")))}<small>${conta}</small>${k !== "sem-data" && FILTRO === "todos" ? botaoPedirDia(k) : ""}</div>
       <div class="posts stagger">${es.map((e) => {
         if (e.plano) return cartaoPlanejado(e.plano);
         const x = e.post, p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
@@ -3444,7 +3461,7 @@ function desenharCronoMes() {
   if (!k) { $("#cDiaLista").innerHTML = `<p class="dica-mes">${ic("i-cal")}Toque num dia para ver e editar o que tem nele.</p>`; return; }
   const cs = cartoesDoDia(k), dt = dataDe(k);
   $("#cDiaLista").innerHTML = `<div class="cdia-cab"><div><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}</small><b class="display">${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}</b></div>
-      <button class="btn pri peq" data-adddia="${k}">${ic("i-plus")}Adicionar</button></div>
+      <div class="cdia-acoes">${botaoPedirDia(k).replace("btn peq pri", "btn peq")}<button class="btn pri peq" data-adddia="${k}">${ic("i-plus")}Adicionar</button></div></div>
     ${cs.length ? `<div class="cdia-itens" data-cdia="${k}">${cs.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}</div>` : `<p class="dica-mes">Nada planejado nesse dia.</p>`}`;
 }
 function aplicarVistaCrono() {
@@ -3749,6 +3766,47 @@ function abrirAdicionarDia(k, fmt = "") {
       m.onclick = null; fecharModal(); CRONO.itens.push(it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
       if (!(await salvarCrono(`reserva ${FORMATOS[fmt].toLowerCase()} em ${k}`))) { CRONO.itens = CRONO.itens.filter((x) => x !== it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
     }
+  };
+}
+/* pedir o dia todo de uma vez: todos os itens do dia que ainda são ideia, num pedido só */
+function pediveisDoDia(k) {
+  if (!cronoCarregou) return [];
+  return (CRONO.itens || []).filter((it) => it.data === k && !it.biblioteca && ["ideia", "roteiro", "producao"].includes(statusItem(it)))
+    .sort((a, b) => (horasDo(a)[0] || "99").localeCompare(horasDo(b)[0] || "99"));
+}
+function botaoPedirDia(k) {
+  const n = pediveisDoDia(k).length;
+  return n ? `<button class="btn peq pri pedir-dia" data-pedirdia="${k}">${ic("i-zap")}Pedir ${n > 1 ? `os ${n}` : "ao Claude"}</button>` : "";
+}
+function pedirDia(k) {
+  const itens = pediveisDoDia(k); if (!itens.length) return toast("info", "Nada para pedir", "Os itens deste dia já foram pedidos ou estão prontos.");
+  const ctx = assuntoDoDia(k), m = $("#modal"), marcados = new Set(itens.map((it) => it.id));
+  const linha = (it) => { const hs = horasDo(it); return `<label class="pd-item"><input type="checkbox" data-pd="${esc(it.id)}" checked>
+      <span class="af-ic">${ic(ICONE_FMT[it.formato] || "i-plan")}</span>
+      <span><b>${esc(FORMATOS[it.formato] || it.formato)}</b><small>${hs.length ? esc(hs.join(" · ")) : "sem hora"}</small></span>
+      <input class="input pd-tema" data-pdtema="${esc(it.id)}" value="${esc(it.tema || "")}" placeholder="${esc(ctx.sugestao ? `Tema (ex.: ${ctx.sugestao})` : "Tema: vazio, o Claude sugere")}"></label>`; };
+  m.innerHTML = `<div class="ic-topo">${ic("i-zap", "i g")}</div><h2>Pedir o dia todo</h2>
+    <p>${esc(rotuloQuando(k))}${ctx.evento ? ` · dia de <b>${esc(ctx.evento)}</b>` : ""}. O Claude cria tudo no mesmo assunto e deixa pronto para agendar.</p>
+    <div class="pd-lista">${itens.map(linha).join("")}</div>
+    ${ctx.temas.length ? `<p class="dica" style="margin:8px 0 0">O dia já fala de: ${esc(ctx.temas.join(", "))}.</p>` : ""}
+    <label class="campo">Recado (opcional)</label><textarea class="input" id="pdNotas" rows="2" placeholder="Ex.: tudo sobre o vombate, tom engraçado…"></textarea>
+    <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="pdOk">${ic("i-zap")}<span id="pdRot">Pedir ${itens.length}</span></button></div>`;
+  abrirModal();
+  m.onchange = (e) => { const c = e.target.closest("[data-pd]"); if (!c) return; if (c.checked) marcados.add(c.dataset.pd); else marcados.delete(c.dataset.pd); c.closest(".pd-item").classList.toggle("off", !c.checked); $("#pdRot").textContent = `Pedir ${marcados.size}`; $("#pdOk").disabled = !marcados.size; };
+  fechaModalCb = () => { m.onchange = null; };
+  $("#pdOk").onclick = async () => {
+    const escolhidos = itens.filter((it) => marcados.has(it.id)); if (!escolhidos.length) return;
+    const notas = $("#pdNotas").value.trim(), temas = new Map(escolhidos.map((it) => [it.id, $(`[data-pdtema="${it.id}"]`).value.trim()]));
+    const dia = `${NOMES_SEMANA[dataDe(k).getUTCDay()].toLowerCase()}, ${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
+    const partes = escolhidos.map((it) => { const hs = horasDo(it), t = temas.get(it.id); return `${(FORMATOS[it.formato] || it.formato).toLowerCase()}${hs.length ? ` (${hs.join(", ")})` : ""}${t ? ` sobre "${t}"` : ""} [item ${it.id}]`; });
+    const msg = `Cria o conteúdo de ${dia}, tudo no mesmo assunto: ${partes.join("; ")}.${ctx.temas.length ? ` O dia já fala de: ${ctx.temas.join("; ")}.` : ""}${ctx.evento ? ` É dia de ${ctx.evento}: tem que sair nesse dia.` : ""}${notas ? ` Recado: ${notas}` : ""} (itens do cronograma)`;
+    let copiou = false; try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
+    m.onchange = null; fecharModal();
+    const antes = JSON.stringify(CRONO.itens), agora = new Date().toISOString();
+    escolhidos.forEach((it) => { it.status = "pedido"; it.pedido = agora; const t = temas.get(it.id); if (t) it.tema = t; if (notas) it.notas = notas; });
+    desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    if (!(await salvarCrono(`pede ao Claude o dia ${k} (${escolhidos.length} itens)`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); return; }
+    toast("ok", `${escolhidos.length} ${escolhidos.length > 1 ? "pedidos feitos" : "pedido feito"}`, copiou ? "O Claude pega nas próximas rodadas. A mensagem também foi copiada." : "O Claude pega nas próximas rodadas.", 8000);
   };
 }
 function pedirCriacao(it, novo = false) {
@@ -4139,6 +4197,7 @@ document.addEventListener("click", (e) => {
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
   const ad = b.closest("[data-adddia]"); if (ad) { abrirAdicionarDia(ad.dataset.adddia); return; }
+  const pdd = b.closest("[data-pedirdia]"); if (pdd) { pedirDia(pdd.dataset.pedirdia); return; }
   const pd = b.closest("[data-pedir]"); if (pd) { pedirCriacao(CRONO.itens.find((x) => x.id === pd.dataset.pedir)); return; }
   const agb = b.closest("[data-agendarbib]"); if (agb) { abrirVideo(agb.dataset.agendarbib, true); return; }
   const pl = b.closest("[data-plano]"); if (pl) { editarItem(CRONO.itens.find((x) => x.id === pl.dataset.plano)); return; }

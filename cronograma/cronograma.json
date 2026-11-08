@@ -832,6 +832,20 @@
         "facebook"
       ],
       "status": "ideia"
+    },
+    {
+      "id": "fkb7n5b",
+      "data": "2026-11-11",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "pedido",
+      "pedido": "2026-11-08T04:10:14.621Z"
     }
   ],
   "horarios": {

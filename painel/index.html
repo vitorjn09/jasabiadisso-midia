@@ -1027,6 +1027,16 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 .add-acao > .i { color: var(--faint); width: 18px; height: 18px; }
 .add-acao:active { background: var(--surface); }
 .add-acao.pri .af-ic { background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; }
+
+/* planejados na Agenda (ainda sem post) */
+.post.planejado { border-style: dashed; background: color-mix(in srgb, var(--surface) 70%, transparent); cursor: pointer; }
+.post.planejado .hora { gap: 10px; }
+.post.planejado .hora .chip { font: 600 11px/1 Inter, system-ui, sans-serif; padding: 4px 9px; }
+.pl-midia { position: relative; aspect-ratio: 9 / 16; border-radius: 12px; background: var(--surface-2) center/cover no-repeat; display: grid; place-items: center; color: var(--faint); border: 1px dashed var(--border-strong); }
+.pl-midia > .i { width: 26px; height: 26px; }
+.pl-midia .tag { position: absolute; top: 6px; left: 6px; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(0,0,0,.6); color: #fff; }
+.post.planejado.st-pedido .pl-midia { color: var(--info); }
+.post.planejado.st-pronto { border-color: color-mix(in srgb, var(--gold) 50%, transparent); }
 </style>
 </head>
 <body>
@@ -1768,37 +1778,67 @@ $("#mesCal").addEventListener("click", (e) => {
   desenharAgenda();
   if (DIA_FILTRO) depoisDoQuadro(() => $("#lista").scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "start" }));
 });
+/* itens do cronograma que ainda não viraram post (ideia, pedido, pronto...) aparecem na Agenda junto dos posts do dia */
+function planejadosDaAgenda() {
+  if (!cronoCarregou || FILTRO !== "todos") return [];
+  const hoje = chaveDia(new Date()), jaTem = new Map();
+  return (CRONO.itens || []).filter((it) => it.data && (DIA_FILTRO ? it.data === DIA_FILTRO : it.data >= hoje) && !["agendado", "publicado", "pulado"].includes(statusItem(it)))
+    .flatMap((it) => { const hs = horasDo(it); return (hs.length > 1 ? hs : [hs[0] || ""]).map((h, i, todos) => ({ it, h, i, n: todos.length })); })
+    .filter((pl) => { // se o dia já tem post desse formato na agenda, o planejado já virou post: não repete
+      const k = `${pl.it.data}|${pl.it.formato === "stories" ? "story" : pl.it.formato}`;
+      if (!jaTem.has(k)) jaTem.set(k, POSTS.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === pl.it.data && x.post.tipo === k.split("|")[1]).length);
+      const n = jaTem.get(k); if (n > 0) { jaTem.set(k, n - 1); return false; } return true;
+    });
+}
+function cartaoPlanejado({ it, h, i, n }) {
+  const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
+  const txt = st === "pedido" ? "Pedido ao Claude: ele cria e deixa pronto para agendar." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
+  return `<div class="card post planejado st-${st}" data-plano="${esc(it.id)}">
+    <div class="midia pl-midia" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""}>${capa ? "" : ic(st === "pedido" ? "i-zap" : "i-plan")}<span class="tag">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span></div>
+    <div style="min-width:0">
+      <div class="hora">${h ? esc(h) : "--:--"}<span class="chip ${cls}">${rot}</span></div>
+      <div class="pasta">${esc(it.tema || "Tema a definir")}</div>
+      <div class="leg" style="margin-top:4px">${txt}</div>
+    </div></div>`;
+}
 function desenharAgenda() {
   desenharMes();
   const alvo = $("#lista");
   if (!carregou) { alvo.innerHTML = `<div class="posts" style="margin-top:26px">${'<div class="skel" style="height:150px"></div>'.repeat(3)}</div>`; return; }
   let lista = POSTS.filter((x) => FILTRO === "todos" || situacao(x) === FILTRO);
   if (DIA_FILTRO) lista = lista.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === DIA_FILTRO);
-  if (!lista.length) {
+  const planos = planejadosDaAgenda();
+  const barraDia = DIA_FILTRO ? `<div class="dia-barra"><button class="chip" id="limpaDia" style="cursor:pointer">${ic("i-x")}Só ${esc(nomeDia(new Date(DIA_FILTRO + "T12:00:00-03:00")))}</button>${faltaNoDia(DIA_FILTRO).length ? `<span class="chip warn">Falta ${esc(faltaNoDia(DIA_FILTRO).map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</span>` : ""}<button class="btn pri peq" data-adddia="${DIA_FILTRO}">${ic("i-plus")}Adicionar</button></div>` : "";
+  if (!lista.length && !planos.length) {
     alvo.innerHTML = POSTS.length
       ? vazio("i-list", "Nada por aqui", DIA_FILTRO ? "Nenhum post nesse dia." : "Nenhum post nesse filtro.", DIA_FILTRO ? `<button class="btn pri" data-adddia="${DIA_FILTRO}">${ic("i-plus")}Adicionar neste dia</button><button class="btn" id="limpaDia">Ver todos os dias</button>` : "")
       : vazio("i-cal", "A agenda está vazia", "Coloque o primeiro post para o robô publicar.", `<button class="btn pri" data-ir="novo">${ic("i-plus")}Novo post</button>`);
     return;
   }
-  const grupos = new Map();
-  for (const x of lista) { const k = x.post?.quando ? chaveDia(new Date(x.post.quando)) : "sem-data"; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(x); }
-  alvo.innerHTML = (DIA_FILTRO ? `<div class="dia-barra"><button class="chip" id="limpaDia" style="cursor:pointer">${ic("i-x")}Só ${esc(nomeDia(new Date(DIA_FILTRO + "T12:00:00-03:00")))}</button>${faltaNoDia(DIA_FILTRO).length ? `<span class="chip warn">Falta ${esc(faltaNoDia(DIA_FILTRO).map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</span>` : ""}<button class="btn pri peq" data-adddia="${DIA_FILTRO}">${ic("i-plus")}Adicionar</button></div>` : "") +
-    [...grupos].map(([k, xs]) => {
-      const d = xs[0].post?.quando ? new Date(xs[0].post.quando) : null;
-      return `<div class="grupo"><div class="grupo-tit">${d ? esc(nomeDia(d)) : "Sem data"}<small>${xs.length} post${xs.length > 1 ? "s" : ""}</small></div>
-        <div class="posts stagger">${xs.map((x) => {
-          const p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
-          return `<div class="card spot post" data-abrir="${esc(x.pasta)}">
-            ${midiaHTML(x)}
-            <div style="min-width:0">
-              <div class="hora">${q ? esc(F_HORA.format(q)) : "--:--"}</div>
-              <div class="pasta">${esc(x.pasta)}</div>
-              <div class="redes">${(p.redes || []).map((r) => chipRede(r, x.estado[r], p.quando)).join("")}</div>
-              ${x.erros.length ? `<div class="aviso-post">${ic("i-alert")}<span>${x.erros.map(esc).join(" · ")}</span></div>` : ""}
-              <div class="leg">${esc(p.legenda || "")}</div>
-            </div></div>`;
-        }).join("")}</div></div>`;
-    }).join("");
+  // cada dia junta posts e planejados, ordenados pela hora
+  const grupos = new Map(), add = (k, e) => { if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(e); };
+  for (const x of lista) { const q = x.post?.quando ? new Date(x.post.quando) : null; add(q ? chaveDia(q) : "sem-data", { hora: q ? F_HORA.format(q) : "99:99", post: x }); }
+  for (const pl of planos) add(pl.it.data, { hora: pl.h || "99:98", plano: pl });
+  const dias = [...grupos.keys()].sort((a, b) => (a === "sem-data") - (b === "sem-data") || a.localeCompare(b));
+  alvo.innerHTML = barraDia + dias.map((k) => {
+    const es = grupos.get(k).sort((a, b) => a.hora.localeCompare(b.hora));
+    const nP = es.filter((e) => e.post).length, nPl = es.length - nP;
+    const conta = [nP ? `${nP} post${nP > 1 ? "s" : ""}` : "", nPl ? `${nPl} planejado${nPl > 1 ? "s" : ""}` : ""].filter(Boolean).join(" · ");
+    return `<div class="grupo"><div class="grupo-tit">${k === "sem-data" ? "Sem data" : esc(nomeDia(new Date(k + "T12:00:00-03:00")))}<small>${conta}</small></div>
+      <div class="posts stagger">${es.map((e) => {
+        if (e.plano) return cartaoPlanejado(e.plano);
+        const x = e.post, p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
+        return `<div class="card spot post" data-abrir="${esc(x.pasta)}">
+          ${midiaHTML(x)}
+          <div style="min-width:0">
+            <div class="hora">${q ? esc(F_HORA.format(q)) : "--:--"}</div>
+            <div class="pasta">${esc(x.pasta)}</div>
+            <div class="redes">${(p.redes || []).map((r) => chipRede(r, x.estado[r], p.quando)).join("")}</div>
+            ${x.erros.length ? `<div class="aviso-post">${ic("i-alert")}<span>${x.erros.map(esc).join(" · ")}</span></div>` : ""}
+            <div class="leg">${esc(p.legenda || "")}</div>
+          </div></div>`;
+      }).join("")}</div></div>`;
+  }).join("");
 }
 function moverIndicador(cont, ind, ativo) {
   if (!ativo || !ind) return;
@@ -3381,10 +3421,12 @@ function podeCriar(it, hoje) { return !it.biblioteca && ["ideia", "roteiro"].inc
    agendar um arquivo que você já tem, ou só reservar a vaga no plano. */
 const FMT_DIA = [["reel", "Reel", "i-film", "Vídeo vertical"], ["carrossel", "Carrossel", "i-layers", "Imagens em sequência"], ["stories", "3 stories", "i-circle", "Antes, durante e depois do reel"]];
 function temNoDia(k) {
-  const n = { reel: 0, carrossel: 0, stories: 0 };
-  POSTS.forEach((x) => { if (x.post?.quando && chaveDia(new Date(x.post.quando)) === k) { const t = x.post.tipo === "story" ? "stories" : x.post.tipo; if (t in n) n[t]++; } });
-  (CRONO.itens || []).forEach((it) => { if (it.data === k && it.formato in n && !["agendado", "publicado"].includes(statusItem(it))) n[it.formato]++; });
-  return n;
+  // o que já está na agenda e o que está no plano podem ser a mesma peça, então vale o maior dos dois (3 stories na agenda = 1 item "3 stories")
+  const ag = { reel: 0, carrossel: 0, stories: 0 }, pl = { reel: 0, carrossel: 0, stories: 0 };
+  POSTS.forEach((x) => { if (x.post?.quando && chaveDia(new Date(x.post.quando)) === k) { const t = x.post.tipo === "story" ? "stories" : x.post.tipo; if (t in ag) ag[t]++; } });
+  ag.stories = Math.ceil(ag.stories / 3);
+  (CRONO.itens || []).forEach((it) => { if (it.data === k && it.formato in pl && statusItem(it) !== "pulado") pl[it.formato]++; });
+  return Object.fromEntries(Object.keys(ag).map((f) => [f, Math.max(ag[f], pl[f])]));
 }
 function faltaNoDia(k) {
   if (!cronoCarregou || !CRONO.modelo) return [];
@@ -3396,7 +3438,9 @@ function abrirAdicionarDia(k, fmt = "") {
   const titulo = `${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}, ${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}`;
   const cartoes = FMT_DIA.map(([f, rot, icone, sub]) => `<button class="add-fmt ${f === fmt ? "sel" : ""} ${falta.includes(f) ? "falta" : ""}" data-fmt="${f}">
       <span class="af-ic">${ic(icone)}</span><b>${rot}</b><small>${falta.includes(f) ? "Falta neste dia" : n[f] ? `Já tem ${n[f]}` : sub}</small></button>`).join("");
-  const acoes = fmt ? `<div class="add-acoes">
+  const sugestao = fmt ? (horaPadrao(k, fmt, "") || "") : "";
+  const acoes = fmt ? `<label class="campo">${fmt === "stories" ? "Horário do 1º story (vazio usa os horários padrão)" : "Horário"}</label>${seletorHora("adHora", fmt === "stories" ? "" : sugestao)}
+    <div class="add-acoes">
       <button class="add-acao pri" data-acao="pedir"><span class="af-ic">${ic("i-zap")}</span><span><b>Pedir para o Claude criar</b><small>Ele faz o ${FORMATOS[fmt].toLowerCase()} e deixa pronto para você agendar.</small></span>${ic("i-right")}</button>
       <button class="add-acao" data-acao="agendar"><span class="af-ic">${ic("i-upload")}</span><span><b>Já tenho o arquivo</b><small>Abre o Novo post com este dia já escolhido.</small></span>${ic("i-right")}</button>
       <button class="add-acao" data-acao="vaga"><span class="af-ic">${ic("i-plan")}</span><span><b>Só reservar no plano</b><small>Cria a vaga vazia no cronograma para decidir depois.</small></span>${ic("i-right")}</button>
@@ -3409,13 +3453,15 @@ function abrirAdicionarDia(k, fmt = "") {
   m.onclick = async (e) => {
     const f = e.target.closest("[data-fmt]"); if (f) return abrirAdicionarDia(k, f.dataset.fmt);
     const a = e.target.closest("[data-acao]"); if (!a) return;
+    const hora = $("#adHora")?.value || "";
     const it = { id: novoId(), data: k, formato: fmt, tema: "", redes: redesPadrao(fmt), status: "ideia" };
+    if (hora) it.hora = hora;
     if (a.dataset.acao === "pedir") { m.onclick = null; return pedirCriacao(it, true); }
     if (a.dataset.acao === "agendar") {
       m.onclick = null; fecharModal(); irPara("novo");
       const tipo = fmt === "stories" ? "story" : fmt;
       if (NOVO.etapa) resetarNovo();
-      $(`#tipos [data-tipo="${tipo}"]`)?.click(); $("#fData").value = k;
+      $(`#tipos [data-tipo="${tipo}"]`)?.click(); $("#fData").value = k; if (hora) $("#fHora").value = hora;
       return toast("info", "Dia já escolhido", `${FORMATOS[fmt]} para ${titulo}. Falta só o arquivo e a hora.`);
     }
     if (a.dataset.acao === "vaga") {
@@ -3429,7 +3475,7 @@ function pedirCriacao(it, novo = false) {
   const dia = `${NOMES_SEMANA[dataDe(it.data).getUTCDay()].toLowerCase()}, ${dataDe(it.data).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
   const m = $("#modal");
   m.innerHTML = `<div class="ic-topo">${ic("i-zap", "i g")}</div><h2>Pedir para criar</h2>
-    <p><b>${esc(FORMATOS[it.formato] || it.formato)}</b> de ${esc(dia)}.</p>
+    <p><b>${esc(FORMATOS[it.formato] || it.formato)}</b> de ${esc(dia)}${it.hora ? ` às <b>${esc(it.hora)}</b>` : ""}.</p>
     <label class="campo">Tema</label><input class="input" id="pcTema" value="${esc(it.tema || "")}" placeholder="Deixe vazio para o Claude sugerir">
     <label class="campo">Recado (opcional)</label><textarea class="input" id="pcNotas" rows="3" placeholder="Ex.: tom engraçado, falar da fonte…">${esc(it.notas || "")}</textarea>
     <p class="dica">O item fica como “Pedido ao Claude” e a mensagem é copiada. Depois é só colar no chat com o Claude.</p>
@@ -3438,7 +3484,7 @@ function pedirCriacao(it, novo = false) {
   $("#pcOk").onclick = async () => {
     const tema = $("#pcTema").value.trim(), notas = $("#pcNotas").value.trim();
     const redes = (it.redes || []).map((r) => REDES_CRONO[r]?.[0] || r).join(", ");
-    const msg = `Cria o ${(FORMATOS[it.formato] || it.formato).toLowerCase()} de ${dia}${tema ? ` sobre "${tema}"` : " (sugira o tema)"} para ${redes}.${notas ? ` Recado: ${notas}` : ""} (item ${it.id} do cronograma)`;
+    const msg = `Cria o ${(FORMATOS[it.formato] || it.formato).toLowerCase()} de ${dia}${it.hora ? ` às ${it.hora}` : ""}${tema ? ` sobre "${tema}"` : " (sugira o tema)"} para ${redes}.${notas ? ` Recado: ${notas}` : ""} (item ${it.id} do cronograma)`;
     let copiou = false;
     try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
     fecharModal();
@@ -3731,6 +3777,7 @@ document.addEventListener("click", (e) => {
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
   const ad = b.closest("[data-adddia]"); if (ad) { abrirAdicionarDia(ad.dataset.adddia); return; }
+  const pl = b.closest("[data-plano]"); if (pl) { editarItem(CRONO.itens.find((x) => x.id === pl.dataset.plano)); return; }
   if (b.closest("[data-conta]") || b.closest("#btnConta") || b.closest("#btnContaMob")) { abrirConta(); return; }
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharModal(false); fecharGaveta(); abrirMais(false); } });

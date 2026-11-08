@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1211">
 <title>Painel do robô · Sabia dessa?</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,6 +15,9 @@
 <meta name="application-name" content="Robô">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://github.com">
+<link rel="preconnect" href="https://release-assets.githubusercontent.com">
+<link rel="preconnect" href="https://objects.githubusercontent.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* =============================================================== tokens */
@@ -73,6 +76,14 @@ button { font: inherit; color: inherit; }
 .det-video video { width: 100%; aspect-ratio: 9/16; object-fit: cover; border-radius: 14px; background: #000; display: block; }
 .ag-dias { display: flex; gap: 8px; flex-wrap: wrap; }
 .ag-dias .chip { cursor: pointer; padding: 8px 12px; }
+.ap-artes { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; scroll-snap-type: x proximity; }
+.ap-artes::-webkit-scrollbar { display: none; }
+.ap-arte { position: relative; flex: none; width: 128px; aspect-ratio: 4 / 5; border-radius: 12px; overflow: hidden; background: var(--sup-2, rgba(127,127,127,.15)); scroll-snap-align: start; }
+.ap-artes.story .ap-arte { width: 96px; aspect-ratio: 9 / 16; }
+.ap-arte img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ap-arte span { position: absolute; left: 6px; top: 6px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: rgba(0,0,0,.6); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.ap-hora { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.ap-hora > span { width: 64px; flex: none; font-size: 14px; color: var(--muted, inherit); }
 .tt-op { display: flex; gap: 8px; flex-wrap: wrap; }
 .tt-op .chip { cursor: pointer; padding: 8px 12px; }
 @media (max-width: 560px) { .vids { grid-template-columns: repeat(2, 1fr); gap: 10px; } .det-video { grid-template-columns: 120px 1fr; } }
@@ -803,6 +814,10 @@ button, a, [role="button"] { min-height: 44px; }
 .texto-curto { font-size: 14px; line-height: 1.5; padding: 11px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); overflow-wrap: anywhere; }
 .texto-leg { overflow-wrap: anywhere; }
 .hora-sel { display: flex; align-items: center; gap: 8px; }
+html { touch-action: manipulation; }
+@media (max-width: 900px) { .input, textarea.input, select.input { font-size: 16px; } }
+@media (max-width: 480px) { .modal { width: calc(100vw - 20px); padding: 20px 16px; max-height: calc(100dvh - 20px); } }
+@media (max-width: 400px) { .ei-fmts { gap: 4px; } .ei-fmts button { font-size: 11px; padding: 9px 0 7px; } .ei-tema { font-size: 18px; } }
 .hora-sel select { flex: 1 1 0; min-width: 0; height: 48px; padding: 0 12px; font-variant-numeric: tabular-nums; text-align: center; }
 .hora-sel b { color: var(--muted); font: 600 20px Fredoka; }
 .gaveta .pe { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
@@ -854,6 +869,8 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
 .reel-pausa { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; display: grid; place-items: center; background: rgba(0,0,0,.45); opacity: 0; transform: scale(.8); transition: opacity .2s, transform .2s; pointer-events: none; }
 .reel-pausa svg.i { width: 34px; height: 34px; fill: #fff; stroke: none; margin-left: 4px; }
 .reel.pausado .reel-pausa { opacity: 1; transform: none; }
+.reel-carrega { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 3px solid rgba(255,255,255,.25); border-top-color: #fff; animation: gira .8s linear infinite; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.reel.carregando .reel-carrega { opacity: 1; transition-delay: .25s; }
 .reel-palco::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(180deg, transparent, rgba(0,0,0,.75)); pointer-events: none; }
 .reel-info { position: absolute; z-index: 2; left: 14px; right: 84px; bottom: calc(22px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
 .reel-info b { font: 600 19px/1.2 Fredoka; }
@@ -1098,7 +1115,7 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 .ei-info { flex: 1; min-width: 0; }
 .ei-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .ei-meta .chip { padding: 4px 10px; font-size: 12px; }
-.ei-tema { width: 100%; margin-top: 6px; padding: 6px 0; border: 0; border-bottom: 1px dashed var(--border-strong); background: transparent; color: var(--text); font: 600 19px/1.3 Fredoka, system-ui, sans-serif; resize: none; outline: none; }
+.ei-tema { width: 100%; field-sizing: content; min-height: 2.6em; max-height: 6.5em; margin-top: 6px; padding: 6px 0; border: 0; border-bottom: 1px dashed var(--border-strong); background: transparent; color: var(--text); font: 600 19px/1.3 Fredoka, system-ui, sans-serif; resize: none; outline: none; }
 .ei-tema:focus { border-bottom-color: var(--teal); }
 .ei-tema::placeholder { color: var(--faint); font-weight: 500; }
 .ei-passos { margin-top: 16px; }
@@ -1941,6 +1958,7 @@ function cartaoPlanejado({ it, h, i, n }) {
   const vid = videoQueCombina(it);
   const acao = vid ? `<button class="btn peq ouro" data-ligar="${esc(it.id)}|${esc(vid.nome)}">${ic("i-film")}Usar vídeo pronto</button>`
     : st === "pronto" && it.biblioteca ? `<button class="btn peq ouro" data-agendarbib="${esc(it.biblioteca)}">${ic("i-cal")}Agendar</button>`
+    : st === "pronto" && pecaAgendavel(it) ? `<button class="btn peq ouro" data-agendarpeca="${esc(it.id)}">${ic("i-cal")}Agendar</button>`
     : ["ideia", "roteiro", "producao"].includes(st) && !it.biblioteca && i === 0 ? `<button class="btn peq pri" data-pedir="${esc(it.id)}">${ic("i-zap")}Pedir ao Claude</button>` : "";
   return `<div class="card post planejado st-${st}" data-plano="${esc(it.id)}">
     <div class="midia pl-midia" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""}>${capa ? "" : ic(st === "pedido" ? "i-zap" : "i-plan")}<span class="tag">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span></div>
@@ -2023,6 +2041,7 @@ document.addEventListener("change", (e) => {
   const s = e.target.closest("[data-hora]"); if (!s) return;
   const caixa = s.closest(".hora-sel"), [sh, sm] = caixa.querySelectorAll("select");
   if (sh.value && !sm.value) sm.value = "00";
+  if (sm.value && !sh.value) sh.value = (caixa.dataset.padrao || "").split(":")[0] || String(new Date().getHours() + 1).padStart(2, "0").replace("24", "00"); // minuto sem hora: completa a hora
   caixa.querySelector("input").value = sh.value && sm.value ? `${sh.value}:${sm.value}` : "";
 });
 document.addEventListener("click", async (e) => {
@@ -3031,6 +3050,13 @@ $("#bibLista").addEventListener("pointerout", (e) => {
   const v = $("video", c); if (!v) return;
   delete v.dataset.tocando; v.classList.remove("on"); v.pause();
 });
+let AQUECIDO = null; // começa a baixar o vídeo assim que o dedo encosta no cartão
+$("#bibLista").addEventListener("pointerdown", (e) => {
+  const f = e.target.closest("[data-feed]"); if (!f || !f.dataset.feed.startsWith("v:")) return;
+  const b = BIB.find((y) => y.nome === f.dataset.feed.slice(2)); if (!b?.videoUrl || AQUECIDO?.dataset.src === b.videoUrl) return;
+  const v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto"; v.dataset.src = b.videoUrl; v.src = b.videoUrl; AQUECIDO = v;
+  setTimeout(() => { if (AQUECIDO === v) { AQUECIDO = null; v.removeAttribute("src"); v.load(); } }, 2500); // foi só rolagem: para de baixar
+}, { passive: true });
 $("#bibLista").addEventListener("click", (e) => {
   const f = e.target.closest("[data-feed]"); if (f) return abrirReels(f.dataset.feed, +(f.dataset.idx || 0));
   const c = e.target.closest("[data-bib]"); if (c) return abrirVideo(c.dataset.bib);
@@ -3056,7 +3082,7 @@ function slideReel(en, i) {
   return `<section class="reel" data-i="${i}" data-k="v" data-nome="${esc(nome)}">
     <div class="reel-palco">
       <video loop playsinline preload="none" data-src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""}></video>
-      <span class="reel-pausa">${ic("i-play")}</span>
+      <span class="reel-pausa">${ic("i-play")}</span><span class="reel-carrega"></span>
       <div class="reel-info">
         <div class="reel-chips">${chipBib(st)}</div>
         <b>${esc(f.titulo || nome)}</b>
@@ -3087,6 +3113,7 @@ function slideArte(en, i) {
         ${story ? "" : `<p class="reel-leg" data-r="leg" data-leg-pasta="${esc(en.pasta)}"></p>`}
       </div>
       <div class="reel-acoes">
+        ${en.p.s === "pronto" ? `<button data-r="agendar" aria-label="Agendar"><span>${ic("i-cal")}</span><small>Agendar</small></button>` : ""}
         <button data-r="detalhes" aria-label="Informações"><span>${ic("i-info")}</span><small>Info</small></button>
         <a href="${esc(arqs[0].download_url)}" download target="_blank" rel="noopener" aria-label="Baixar" data-baixar><span>${ic("i-down")}</span><small>Baixar</small></a>
       </div>
@@ -3116,15 +3143,21 @@ function mostrarReel(i) {
   REEL_ATUAL = i;
   $("#reelsPos").textContent = `${i + 1} de ${REEL_LISTA.length}`;
   $$("#reelsTrilho .reel").forEach((sl) => {
-    const k = +sl.dataset.i, v = $("video", sl);
+    const k = +sl.dataset.i; let v = $("video", sl);
     if (!v) { // arte: carrega as imagens do item da vez e dos vizinhos
       if (Math.abs(k - i) <= 1) $$("img[data-src]", sl).forEach((im) => { if (!im.getAttribute("src")) im.src = im.dataset.src; });
       if (k === i) carregarLegendaReel(sl);
       return;
     }
-    if (Math.abs(k - i) <= 1 && !v.getAttribute("src")) { v.src = v.dataset.src; v.preload = k === i ? "auto" : "metadata"; }
+    if (k === i && !v.getAttribute("src") && AQUECIDO?.dataset.src === v.dataset.src) { // usa o vídeo que já começou a baixar no toque
+      AQUECIDO.loop = true; AQUECIDO.playsInline = true; if (v.poster) AQUECIDO.poster = v.poster;
+      v.replaceWith(AQUECIDO); v = AQUECIDO; AQUECIDO = null;
+    }
+    if (Math.abs(k - i) <= 1 && !v.getAttribute("src")) { v.preload = k === i || k === i + 1 ? "auto" : "metadata"; v.src = v.dataset.src; }
     if (k === i) {
-      v.muted = !REEL_SOM; v.currentTime = 0;
+      if (!v.dataset.ouve) { v.dataset.ouve = "1"; ["waiting", "loadstart"].forEach((ev) => v.addEventListener(ev, () => sl.classList.add("carregando"))); ["playing", "pause", "error"].forEach((ev) => v.addEventListener(ev, () => sl.classList.remove("carregando"))); }
+      if (v.readyState < 3) sl.classList.add("carregando");
+      v.muted = !REEL_SOM; if (v.currentTime) v.currentTime = 0;
       v.play().then(() => sl.classList.remove("pausado")).catch(() => { v.muted = true; v.play().catch(() => sl.classList.add("pausado")); });
     } else {
       v.pause();
@@ -3168,6 +3201,7 @@ reelBox.addEventListener("click", (e) => {
   }
   if (acao === "c-ant" || acao === "c-prox") { const t = $(".carro-trilho", sl); t.scrollBy({ left: (acao === "c-prox" ? 1 : -1) * t.clientWidth, behavior: "smooth" }); return; }
   if (acao === "detalhes" && sl.dataset.k !== "v") return abrirInfoArte(REEL_LISTA[+sl.dataset.i]);
+  if (acao === "agendar" && sl.dataset.k !== "v") return abrirAgendarPeca(REEL_LISTA[+sl.dataset.i].p.it);
   // Info e Agendar abrem a folha por cima do vídeo; ao fechar, volta para o mesmo vídeo
   if (acao === "agendar" || acao === "detalhes") { v?.pause(); sl.classList.add("pausado"); return abrirVideo(nome, acao === "agendar"); }
   if (e.target.closest(".reel-acoes, a")) return;
@@ -3353,6 +3387,92 @@ async function agendarDaBiblioteca(b) {
   } catch (e) {
     toast("err", "Não agendou", e.message); btn.disabled = false; btn.classList.remove("gira"); btn.innerHTML = `${ic("i-cal")}Agendar`;
     await carregarCronograma();
+  }
+}
+
+/* carrossel e stories prontos em producao/: o mesmo Agendar do reel (dia, hora, redes e legenda) */
+function pastaDaPeca(it) { return (it?.notas || "").match(/^producao\/([^\/\s]+)/)?.[1] || ""; }
+function pecaAgendavel(it) { return !!it && ["stories", "carrossel"].includes(it.formato) && !it.biblioteca && !!pastaDaPeca(it); }
+async function abrirAgendarPeca(it) {
+  if (!pecaAgendavel(it)) return;
+  await carregarProducao();
+  const pasta = pastaDaPeca(it), arqs = PRODUCAO?.[pasta] || [], story = it.formato === "stories";
+  const nome = it.tema || FORMATOS[it.formato];
+  $("#gavRot").textContent = `${story ? `${arqs.length || ""} stories` : "Carrossel"} · agendar`;
+  $("#gavTit").textContent = nome;
+  const dias = []; for (let i = 0; i < 7; i++) dias.push(chaveDia(new Date(Date.now() + i * 864e5)));
+  if (it.data && it.data > dias[dias.length - 1]) dias.push(it.data);
+  const horas = horasDo(it), redesIt = (it.redes || ["instagram", "facebook"]).filter((r) => r === "instagram" || r === "facebook");
+  const artes = arqs.length ? `<div class="ap-artes ${story ? "story" : ""}">${arqs.map((a, k) => `<div class="ap-arte"><img src="${esc(a.download_url)}" alt="${esc(nome)} ${k + 1}" loading="lazy" decoding="async"><span>${k + 1}</span></div>`).join("")}</div>`
+    : `<div class="aviso-post">${ic("i-alert")}<span>As artes ainda não chegaram em producao/${esc(pasta)}.</span></div>`;
+  const horaCampos = story
+    ? arqs.map((_, k) => `<div class="ap-hora"><span>Story ${k + 1}</span>${seletorHora(`apHora${k}`, horas[k] || "")}</div>`).join("")
+    : seletorHora("apHora0", horas[0] || "");
+  $("#gavCorpo").innerHTML = `
+    ${artes}
+    <label class="campo">Dia</label>
+    <div class="ag-dias" id="apDias">${dias.map((k, i) => `<button class="chip" data-d="${k}">${i === 0 ? "Hoje" : i === 1 ? "Amanhã" : esc(F_CURTO.format(dataDe(k)))}</button>`).join("")}</div>
+    <input class="input" type="date" id="apData" style="margin-top:8px">
+    <label class="campo">${story ? "Horários (Brasília)" : "Hora (Brasília)"}</label>${horaCampos}
+    <label class="campo">Redes</label>
+    <div class="redes" id="apRedes">${["instagram", "facebook"].map((r) => `<button class="chip ${redesIt.includes(r) ? "ok" : ""}" data-r="${r}" style="cursor:pointer;padding:8px 12px">${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
+    ${story ? `<p class="aviso-leg" style="margin-top:14px">${ic("i-info")}<span>Story não leva legenda. Cada story sai no seu horário.</span></p>`
+      : `<label class="campo">Legenda</label><textarea class="input" id="apLeg" rows="6" placeholder="Carregando a legenda da pasta…"></textarea>`}
+    <div class="aviso-post" id="apErros" style="margin-top:12px"></div>`;
+  const marca = () => $$("#apDias [data-d]").forEach((c) => c.classList.toggle("ok", c.dataset.d === $("#apData").value));
+  $("#apDias").onclick = (e) => { const c = e.target.closest("[data-d]"); if (c) { $("#apData").value = c.dataset.d; marca(); } };
+  $("#apData").oninput = marca;
+  if (it.data && it.data >= chaveDia(new Date())) { $("#apData").value = it.data; marca(); }
+  $("#apRedes").onclick = (e) => { const c = e.target.closest("[data-r]"); if (c) c.classList.toggle("ok"); };
+  if (!story) legendaDaProducao(pasta).then((t) => { const l = $("#apLeg"); if (l && !l.value) { l.value = t; l.placeholder = t ? "" : "Sem legenda.txt na pasta. Escreva a legenda aqui."; } });
+  $("#gavPe").innerHTML = `<button class="btn fant" id="apVolta">Cancelar</button><button class="btn pri" id="apOk">${ic("i-cal")}Agendar</button>`;
+  $("#apVolta").onclick = () => fecharGaveta();
+  $("#apOk").onclick = () => agendarPeca(it, arqs);
+  $("#veu").classList.add("on"); $("#gaveta").classList.add("on"); $("#gaveta").setAttribute("aria-hidden", "false"); travar();
+}
+async function agendarPeca(it, arqs) {
+  const story = it.formato === "stories", pasta = pastaDaPeca(it), data = $("#apData").value;
+  const horas = (story ? arqs : [0]).map((_, k) => $(`#apHora${k}`)?.value || "");
+  const redes = $$("#apRedes .chip.ok").map((c) => c.dataset.r), agora = new Date();
+  const erros = [];
+  if (!TOKEN) erros.push("conecte o painel ao GitHub primeiro");
+  if (!arqs.length) erros.push("as artes ainda não chegaram");
+  if (!story && (arqs.length < 2 || arqs.length > 10)) erros.push("carrossel precisa de 2 a 10 artes");
+  if (!data) erros.push("escolha o dia");
+  if (horas.some((h) => !h)) erros.push(story ? "escolha o horário de cada story" : "escolha a hora");
+  if (!redes.length) erros.push("marque pelo menos uma rede");
+  if (data && horas.every(Boolean) && horas.some((h) => new Date(`${data}T${h}:00-03:00`) < agora)) erros.push("esse horário já passou");
+  if (erros.length) { $("#apErros").innerHTML = ic("i-alert") + `<span>${erros.map(esc).join(" · ")}</span>`; sacode($("#apOk")); return; }
+  if (it.data && itemFixo(it) && !(await confirmarDataFixa(it.data, data))) return;
+  const quandos = horas.map((h) => `${data}T${h}:00-03:00`);
+  const lista = quandos.map((q, k) => `<li>${story ? `Story ${k + 1}: ` : ""}<b>${esc(F_HORA.format(new Date(q)))}</b></li>`).join("");
+  const ok = await confirmar({ titulo: story ? `Agendar ${arqs.length} stories?` : "Agendar este carrossel?", icone: "i-cal", rotulo: "Agendar",
+    texto: `<p><b>${esc(it.tema || FORMATOS[it.formato])}</b></p><p>${esc(nomeDia(new Date(quandos[0])))} no ${esc(redes.map((r) => NOMES_REDE[r]).join(", "))}.</p><ul>${lista}</ul><p>O robô publica sozinho nesse horário. O cronograma também é atualizado.</p>` });
+  if (!ok) return;
+  const btn = $("#apOk"); btn.disabled = true; btn.classList.add("gira"); btn.innerHTML = `${ic("i-refresh")}Agendando…`;
+  const antes = JSON.stringify(it);
+  try {
+    const arquivos = [], usados = new Set(POSTS.map((x) => x.pasta)), curto = pasta.replace(/^\d{4}-\d\d-\d\d-/, "").replace(/^(carrossel|stories|story)-/, "");
+    const nomePasta = (base) => { let n = base.slice(0, 80); for (let i = 2; usados.has(n); i++) n = `${base}-${i}`.slice(0, 80); usados.add(n); return n; };
+    const legenda = story ? "" : $("#apLeg").value.trim();
+    const grupos = story ? arqs.map((a, k) => ({ arqs: [a], quando: quandos[k], n: k + 1 })) : [{ arqs, quando: quandos[0] }];
+    for (const [g, gr] of grupos.entries()) {
+      btn.innerHTML = `${ic("i-refresh")}Preparando ${g + 1} de ${grupos.length}…`;
+      const dest = nomePasta(`${data}-${story ? "story" : "carrossel"}-${curto}${gr.n ? `-${gr.n}` : ""}`);
+      const midias = gr.arqs.map((a) => a.name.replace(/\.[^.]+$/, "") + ".jpg");
+      for (const [j, a] of gr.arqs.entries()) arquivos.push({ caminho: `agenda/${dest}/${midias[j]}`, base64: await artePraJpg(a.download_url) });
+      const post = ordenar({ quando: gr.quando, tipo: story ? "story" : "carrossel", redes, legenda, midias, origem: `producao/${pasta}` });
+      arquivos.push({ caminho: `agenda/${dest}/post.json`, base64: b64Texto(JSON.stringify(post, null, 2) + "\n") });
+    }
+    it.data = data; it.status = "agendado";
+    if (!story) { if (horas[0] !== horaPadrao(data, it.formato, it.id)) it.hora = horas[0]; else delete it.hora; }
+    arquivos.push({ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") });
+    await commit(`Painel: agenda ${story ? "stories" : "carrossel"} ${curto} para ${data}`, arquivos, [], (f, m) => { btn.innerHTML = `${ic("i-refresh")}${esc(m)}`; });
+    toast("ok", story ? "Stories agendados" : "Carrossel agendado", `${nomeDia(new Date(quandos[0]))}, ${F_HORA.format(new Date(quandos[0]))}`); confete();
+    fecharGaveta(); await carregarAgenda(); desenharBiblioteca(); if (VIEW === "cronograma") desenharCronograma();
+  } catch (e) {
+    Object.keys(it).forEach((c) => delete it[c]); Object.assign(it, JSON.parse(antes));
+    toast("err", "Não agendou", e.message); btn.disabled = false; btn.classList.remove("gira"); btn.innerHTML = `${ic("i-cal")}Agendar`;
   }
 }
 
@@ -3883,6 +4003,7 @@ function proximoPasso(it, st) {
   }
   if (st === "pronto") {
     if (it.biblioteca) return `<div class="ei-passos">${linha("ouro", "i-cal", "Pronto. Falta agendar", "O vídeo está na biblioteca. Escolha o dia e a hora para o robô publicar.", "agendar")}</div>`;
+    if (pecaAgendavel(it)) return `<div class="ei-passos">${linha("ouro", "i-cal", "Pronto. Falta agendar", `As artes estão prontas. Escolha o dia e ${it.formato === "stories" ? "os horários" : "a hora"} para o robô publicar.`, "agendarpeca")}</div>`;
     return `<div class="ei-passos">${linha("ouro", "i-upload", "Pronto. Falta agendar", `Os arquivos estão prontos${(it.notas || "").startsWith("producao/") ? ` em ${esc(it.notas.split(/\s/)[0])}` : ""}. Abre o Novo post com este dia.`, "novo")}</div>`;
   }
   if (st === "agendado") return `<div class="ei-passos">${linha("ok", "i-check", "Na agenda", "Já está com dia e hora para o robô publicar.", "ver")}</div>`;
@@ -3936,6 +4057,7 @@ function editarItem(it, dataInicial) {
       return `<button class="mv-dia ${d === k ? "ok" : ""} ${!novo && d === it.data ? "orig" : ""} ${eventoDoDia(d) ? "evento" : ""}" data-d="${d}" title="${esc(eventoDoDia(d))}"><small>${d === hoje ? "hoje" : NOMES_SEMANA[dt.getUTCDay()].toLowerCase()}</small><b>${dt.getUTCDate()}</b><i>${n > 0 ? "•".repeat(Math.min(n, 3)) : ""}</i>${!novo && d === it.data ? "<em>atual</em>" : ""}</button>`; }).join("");
     depoisDoQuadro(() => centrarDia($("#ciDias")));
     const sug = [...new Set(((CRONO.horarios || {})[f] || []).filter(Boolean))];
+    const hsel = $("#modal .hora-sel"); if (hsel) hsel.dataset.padrao = padrao || sug[0] || "";
     $("#ciHorasSug").innerHTML = (sug.length ? `<small>${f === "stories" ? "Horários dos stories:" : "Horário padrão:"}</small>${sug.map((v) => `<button class="chip ${v === h ? "ok" : ""}" data-hsug="${v}">${v}</button>`).join("")}` : "") +
       `<small class="ei-dica">${h ? "" : f === "stories" ? "Sem hora: os 3 stories usam os horários padrão." : padrao ? `Sem hora: usa o padrão, ${padrao}.` : "Sem hora definida."}</small>`;
     const capa = $("#ciCapa"); if (capa.classList.contains("vazia")) capa.innerHTML = ic(ICONE_FMT[f] || "i-plan");
@@ -3951,6 +4073,7 @@ function editarItem(it, dataInicial) {
     if (passo === "pedir") return pedirCriacao(it);
     if (passo === "ligar") return ligarVideo(it, ps.dataset.nome);
     if (passo === "agendar") return abrirVideo(it.biblioteca, true);
+    if (passo === "agendarpeca") return abrirAgendarPeca(it);
     if (passo === "ver") { DIA_FILTRO = it.data; return irPara("agenda"); }
     if (passo === "novo") {
       irPara("novo"); if (NOVO.etapa) resetarNovo();
@@ -3963,7 +4086,9 @@ function editarItem(it, dataInicial) {
       if (!(await salvarCrono(`cancela o pedido "${it.tema || FORMATOS[it.formato]}"`))) { Object.keys(it).forEach((c) => delete it[c]); Object.assign(it, JSON.parse(antes)); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
     }
   };
-  m.oninput = (e) => { if (e.target.id === "ciData") desenhar(); };
+  const cresce = () => { const t = $("#ciTema"); if (t && !CSS.supports("field-sizing", "content")) { t.style.height = "auto"; t.style.height = t.scrollHeight + "px"; } };
+  requestAnimationFrame(cresce);
+  m.oninput = (e) => { if (e.target.id === "ciData") desenhar(); if (e.target.id === "ciTema") cresce(); };
   m.onchange = (e) => { if (e.target.closest("[data-hora]")) setTimeout(desenhar); };
   fechaModalCb = () => { m.onclick = m.oninput = m.onchange = null; };
   $("#ciRedes").onclick = (e) => { const c = e.target.closest("[data-v]"); if (c) c.classList.toggle("ok"); };
@@ -4232,6 +4357,7 @@ document.addEventListener("click", (e) => {
   const pdd = b.closest("[data-pedirdia]"); if (pdd) { pedirDia(pdd.dataset.pedirdia); return; }
   const pd = b.closest("[data-pedir]"); if (pd) { pedirCriacao(CRONO.itens.find((x) => x.id === pd.dataset.pedir)); return; }
   const agb = b.closest("[data-agendarbib]"); if (agb) { abrirVideo(agb.dataset.agendarbib, true); return; }
+  const agp = b.closest("[data-agendarpeca]"); if (agp) { abrirAgendarPeca(CRONO.itens.find((x) => x.id === agp.dataset.agendarpeca)); return; }
   const pl = b.closest("[data-plano]"); if (pl) { editarItem(CRONO.itens.find((x) => x.id === pl.dataset.plano)); return; }
   if (b.closest("[data-conta]") || b.closest("#btnConta") || b.closest("#btnContaMob")) { abrirConta(); return; }
 });

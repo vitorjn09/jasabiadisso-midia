@@ -891,6 +891,20 @@
       ],
       "status": "pedido",
       "pedido": "2026-11-08T13:21:55.949Z"
+    },
+    {
+      "id": "clod4qu",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-08",
+      "biblioteca": "imagina-se-invisivel",
+      "status": "agendado",
+      "tema": "E se você ficasse invisível?"
     }
   ],
   "horarios": {

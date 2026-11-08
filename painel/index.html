@@ -154,6 +154,9 @@ main { min-width: 0; }
 .saude { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; cursor: pointer; transition: border-color .2s; }
 .saude:hover { border-color: var(--border-strong); }
 .saude small { display: block; color: var(--muted); font-size: 12px; }
+.novo-lat { margin: 0 4px 14px; justify-content: center; }
+.nav-grupo { position: relative; z-index: 1; padding: 14px 14px 4px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); }
+.nav button .pulso { margin-left: auto; width: 8px; height: 8px; }
 .pulso { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); position: relative; flex: none; }
 .pulso.ok { background: var(--ok); } .pulso.err { background: var(--err); } .pulso.run { background: var(--info); }
 .pulso.ok::after, .pulso.run::after, .pulso.err::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: onda 2s infinite; }
@@ -483,12 +486,38 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
   .app { grid-template-columns: minmax(0, 1fr); }
   .side { display: none; }
   main { padding-top: 18px; }
-  .tabbar { display: flex; position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); padding: 6px; border-radius: 22px; background: color-mix(in srgb, var(--surface-solid) 85%, transparent); backdrop-filter: blur(20px); border: 1px solid var(--border-strong); box-shadow: 0 20px 50px -15px rgba(0,0,0,.6); }
-  .tabbar button { flex: 1; border: 0; background: none; padding: 8px 4px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; position: relative; z-index: 1; transition: color .25s; }
-  .tabbar button.ativo { color: var(--text); }
-  .tabbar .ind { position: absolute; top: 6px; bottom: 6px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--border); transition: transform .45s var(--spring), width .45s var(--spring); }
-  .tabbar .mais { flex: none; width: 52px; }
-  .tabbar .mais span { width: 44px; height: 44px; border-radius: 15px; display: grid; place-items: center; background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; box-shadow: 0 10px 20px -8px var(--teal-glow); }
+  .tabbar { display: flex; align-items: flex-end; position: fixed; z-index: 30; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); padding: 6px 6px 7px; border-radius: 26px; background: color-mix(in srgb, var(--surface-solid) 88%, transparent); backdrop-filter: blur(20px); border: 1px solid var(--border-strong); box-shadow: 0 20px 50px -15px rgba(0,0,0,.6); transition: transform .4s var(--ease), opacity .3s; }
+  .tabbar.escondida { transform: translateY(calc(100% + 24px)); opacity: 0; }
+  .tabbar button { flex: 1 1 0; min-width: 0; border: 0; background: none; padding: 4px 2px 2px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; transition: color .25s; }
+  .tabbar .tb-ic { position: relative; width: 52px; height: 32px; border-radius: 16px; display: grid; place-items: center; transition: background .3s var(--ease), transform .35s var(--spring); }
+  .tabbar .tb-ic svg.i { width: 21px; height: 21px; transition: transform .35s var(--spring); }
+  .tabbar .tb-rot { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabbar button.ativo .tb-ic { background: var(--teal-glow); color: var(--teal); }
+  :root[data-theme="light"] .tabbar button.ativo .tb-ic { color: var(--teal-2); }
+  .tabbar button.ativo .tb-rot { font-weight: 700; }
+  .tabbar button:active .tb-ic { transform: scale(.9); }
+  .tabbar .tb-novo { flex: 0 0 64px; align-self: center; }
+  .tabbar .tb-novo .tb-ic { width: 54px; height: 54px; border-radius: 19px; margin-top: -26px; color: #fff; background: linear-gradient(135deg, var(--teal), var(--teal-2)); box-shadow: 0 12px 24px -8px var(--teal-glow), 0 0 0 5px var(--bg); }
+  .tabbar .tb-novo .tb-ic svg.i { width: 26px; height: 26px; }
+  .tabbar .tb-novo.ativo .tb-ic { background: linear-gradient(135deg, var(--gold), #c99a4e); color: #1e1709; }
+  .tabbar .tb-novo.ativo .tb-ic svg.i { transform: rotate(45deg); }
+  .tabbar .tb-alerta { position: absolute; top: 2px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--err); box-shadow: 0 0 0 2px var(--surface-solid); }
+  .tabbar #tbMais.aberto .tb-ic { background: var(--surface-2); }
+  .mais-folha { position: fixed; z-index: 45; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(18px + env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0; background: var(--surface-solid); border-top: 1px solid var(--border-strong); box-shadow: 0 -20px 60px -20px rgba(0,0,0,.6); transform: translateY(105%); transition: transform .45s var(--ease); }
+  .mais-folha.on { transform: none; }
+  .mf-alca { width: 40px; height: 4px; border-radius: 4px; background: var(--border-strong); margin: 0 auto 14px; }
+  .mf-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mf-item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; min-height: 118px; transition: transform .25s var(--spring), border-color .2s; }
+  .mf-item:active { transform: scale(.97); }
+  .mf-item.ativo { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal); }
+  .mf-item b { font: 600 16px/1.2 Fredoka; display: flex; align-items: center; gap: 8px; }
+  .mf-item small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+  .mf-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); color: var(--teal); margin-bottom: 4px; }
+  .mf-item.gold .mf-ic { background: var(--gold-glow); color: var(--gold); } .mf-item.info .mf-ic { background: var(--info-bg); color: var(--info); } .mf-item.ok .mf-ic { background: var(--ok-bg); color: var(--ok); }
+  .mf-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .mf-linha .btn { justify-content: center; }
+  #maisVeu { z-index: 44; }
+  main { padding-bottom: 120px; }
   .c-8, .c-7, .c-6, .c-5, .c-4 { grid-column: span 12; }
   .c-3 { grid-column: span 6; }
   .tipos { grid-template-columns: 1fr 1fr; }
@@ -837,6 +866,44 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 .cdia-cab b { font-size: 20px; font-weight: 600; }
 .cdia-itens { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 #cMes .mdia.tem b { color: var(--text); }
+
+/* ================================================= estilo app no celular: listas compactas no lugar de blocos grandes */
+.seta-acao { display: none; }
+@media (max-width: 700px) {
+  .acoes-robo { gap: 0; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); }
+  .acoes-robo .acao { display: grid; grid-template-columns: 42px 1fr auto; grid-template-rows: auto auto auto; column-gap: 14px; row-gap: 2px; align-items: center; border: 0; border-radius: 0; padding: 14px 16px; background: none; box-shadow: none; }
+  .acoes-robo .acao + .acao { border-top: 1px solid var(--border); }
+  .acoes-robo .acao .ic { grid-row: 1 / 4; width: 42px; height: 42px; border-radius: 13px; }
+  .acoes-robo .acao b { font-size: 16px; }
+  .acoes-robo .acao p { font-size: 12.5px; line-height: 1.4; }
+  .acoes-robo .acao .chip { justify-self: start; margin-top: 4px; font-size: 11px; }
+  .acoes-robo .acao .seta-acao { display: block; grid-column: 3; grid-row: 1 / 4; color: var(--faint); width: 18px; height: 18px; }
+  .acoes-robo .acao.destaque { background: linear-gradient(90deg, rgba(95,179,166,.14), transparent 70%); }
+  .acoes-robo .acao:active { background: var(--surface-2); transform: none; }
+  /* Início: os 4 números numa faixa só */
+  .stat[data-filtro] { grid-column: span 3 !important; padding: 12px 8px !important; gap: 6px; align-items: center; text-align: center; border-radius: 16px; }
+  .stat[data-filtro] .ic { width: 28px; height: 28px; border-radius: 9px; }
+  .stat[data-filtro] .ic .i { width: 15px; height: 15px; }
+  .stat[data-filtro] .num { font-size: 24px; }
+  .stat[data-filtro] .rotulo { font-size: 9.5px !important; letter-spacing: .03em; line-height: 1.2; }
+}
+
+/* ================================================= barra de navegação (celular) */
+@media (max-width: 900px) {
+  .tabbar { transition: transform .35s var(--ease), opacity .35s; will-change: transform; }
+  .tabbar.escondida { transform: translateY(calc(100% + 24px + env(safe-area-inset-bottom))); pointer-events: none; }
+  .tabbar button { -webkit-tap-highlight-color: transparent; }
+  html.com-reels .tabbar { transform: translateY(150%); }
+  #maisFolha [data-view="catalogo"][hidden] { display: none; }
+}
+
+/* Agenda no celular: redes viram só ícones (o nome aparece na gaveta de detalhes) */
+@media (max-width: 700px) {
+  .post .redes { gap: 6px; }
+  .post .redes .chip { padding: 0; width: 30px; height: 30px; justify-content: center; border-radius: 50%; }
+  .post .redes .chip .nm { display: none; }
+  .post .redes .chip .i { margin: 0; width: 15px; height: 15px; }
+}
 </style>
 </head>
 <body>
@@ -850,15 +917,18 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
       <div class="marca">S?</div>
       <div><b>Sabia dessa?</b><small>Painel do robô</small></div>
     </div>
+    <button class="btn pri novo-lat" data-view="novo"><svg class="i"><use href="#i-plus"/></svg>Novo post</button>
     <nav class="nav" id="nav">
       <div class="pilula" id="navPilula"></div>
       <button data-view="inicio" class="ativo"><svg class="i"><use href="#i-home"/></svg>Início</button>
       <button data-view="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda<span class="cont" id="navCont">0</span></button>
+      <div class="nav-grupo">Conteúdo</div>
       <button data-view="biblioteca"><svg class="i"><use href="#i-film"/></svg>Biblioteca<span class="cont" id="navBib">0</span></button>
       <button data-view="cronograma"><svg class="i"><use href="#i-plan"/></svg>Cronograma</button>
+      <div class="nav-grupo">Resultados</div>
       <button data-view="analises"><svg class="i"><use href="#i-chart"/></svg>Análises</button>
-      <button data-view="novo"><svg class="i"><use href="#i-plus"/></svg>Novo post</button>
-      <button data-view="robo"><svg class="i"><use href="#i-bot"/></svg>Robô</button>
+      <div class="nav-grupo">Automação</div>
+      <button data-view="robo"><svg class="i"><use href="#i-bot"/></svg>Robô<span class="pulso" id="pulsoNav"></span></button>
     </nav>
     <div class="rodape">
       <div class="saude" id="saudeLateral" data-ir="robo">
@@ -1125,9 +1195,9 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
       </div>
       <div id="faixaToken3"></div>
       <div class="acoes-robo stagger">
-        <div class="card spot acao" data-rodar="conexao"><div class="ic"><svg class="i g"><use href="#i-plug"/></svg></div><b>Testar conexão</b><p>Confere se o robô ainda entra no Facebook, no Instagram e no YouTube. Não publica nada.</p><span class="chip">Seguro</span></div>
-        <div class="card spot acao" data-rodar="verificar"><div class="ic"><svg class="i g"><use href="#i-list"/></svg></div><b>Verificar posts</b><p>Lê a agenda e aponta arquivo faltando ou formato errado. Não publica nada.</p><span class="chip">Seguro</span></div>
-        <div class="card spot acao destaque" data-rodar="publicar"><div class="ic"><svg class="i g"><use href="#i-send"/></svg></div><b>Publicar agora</b><p>Publica os posts que já passaram da hora. Os de horário futuro continuam esperando.</p><span class="chip warn"><span class="ponto"></span>Publica de verdade</span></div>
+        <div class="card spot acao" data-rodar="conexao"><div class="ic"><svg class="i g"><use href="#i-plug"/></svg></div><b>Testar conexão</b><p>Confere se o robô ainda entra no Facebook, no Instagram e no YouTube. Não publica nada.</p><span class="chip">Seguro</span><svg class="i seta-acao"><use href="#i-right"/></svg></div>
+        <div class="card spot acao" data-rodar="verificar"><div class="ic"><svg class="i g"><use href="#i-list"/></svg></div><b>Verificar posts</b><p>Lê a agenda e aponta arquivo faltando ou formato errado. Não publica nada.</p><span class="chip">Seguro</span><svg class="i seta-acao"><use href="#i-right"/></svg></div>
+        <div class="card spot acao destaque" data-rodar="publicar"><div class="ic"><svg class="i g"><use href="#i-send"/></svg></div><b>Publicar agora</b><p>Publica os posts que já passaram da hora. Os de horário futuro continuam esperando.</p><span class="chip warn"><span class="ponto"></span>Publica de verdade</span><svg class="i seta-acao"><use href="#i-right"/></svg></div>
       </div>
       <div class="card execucao oculto" id="execucao">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px"><h3 id="execTit">Execução</h3><a class="btn fant peq" id="execLink" target="_blank" rel="noopener">Abrir no GitHub<svg class="i"><use href="#i-ext"/></svg></a></div>
@@ -1143,15 +1213,28 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
 </div>
 
 <!-- barra inferior no celular -->
-<nav class="tabbar" id="tabbar">
-  <div class="ind" id="tabInd"></div>
-  <button data-view="inicio" class="ativo"><svg class="i"><use href="#i-home"/></svg>Início</button>
-  <button data-view="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
-  <button data-view="biblioteca"><svg class="i"><use href="#i-film"/></svg>Vídeos</button>
-  <button data-view="cronograma"><svg class="i"><use href="#i-plan"/></svg>Plano</button>
-  <button data-view="analises"><svg class="i"><use href="#i-chart"/></svg>Análises</button>
-  <button data-view="robo"><svg class="i"><use href="#i-bot"/></svg>Robô</button>
+<nav class="tabbar" id="tabbar" aria-label="Navegação">
+  <button data-view="inicio" class="ativo"><span class="tb-ic"><svg class="i"><use href="#i-home"/></svg></span><span class="tb-rot">Início</span></button>
+  <button data-view="agenda"><span class="tb-ic"><svg class="i"><use href="#i-cal"/></svg><i class="tb-alerta" id="tbAlerta" hidden></i></span><span class="tb-rot">Agenda</span></button>
+  <button data-view="novo" class="tb-novo" aria-label="Novo post"><span class="tb-ic"><svg class="i"><use href="#i-plus"/></svg></span></button>
+  <button data-view="biblioteca"><span class="tb-ic"><svg class="i"><use href="#i-film"/></svg></span><span class="tb-rot">Vídeos</span></button>
+  <button id="tbMais" aria-haspopup="dialog" aria-expanded="false"><span class="tb-ic"><svg class="i"><use href="#i-list" id="tbMaisIc"/></svg><i class="tb-alerta" id="tbRobo" hidden></i></span><span class="tb-rot" id="tbMaisRot">Mais</span></button>
 </nav>
+<!-- folha "Mais" no celular -->
+<div class="veu" id="maisVeu"></div>
+<div class="mais-folha" id="maisFolha" role="dialog" aria-label="Mais telas" aria-hidden="true">
+  <div class="mf-alca"></div>
+  <div class="mf-grade">
+    <button data-view="catalogo" class="mf-item gold" hidden><span class="mf-ic"><svg class="i"><use href="#i-trophy"/></svg></span><b>Catálogo do mês</b><small>O mês inteiro e os melhores posts</small></button>
+    <button data-view="cronograma" class="mf-item info"><span class="mf-ic"><svg class="i"><use href="#i-plan"/></svg></span><b>Plano</b><small>O cronograma da semana</small></button>
+    <button data-view="analises" class="mf-item ok"><span class="mf-ic"><svg class="i"><use href="#i-chart"/></svg></span><b>Análises</b><small>Como o perfil está indo</small></button>
+    <button data-view="robo" class="mf-item"><span class="mf-ic"><svg class="i"><use href="#i-bot"/></svg></span><b>Robô <span class="pulso" id="pulsoMais"></span></b><small id="maisRoboSub">Testar e publicar agora</small></button>
+  </div>
+  <div class="mf-linha">
+    <button class="btn" data-conta><svg class="i"><use href="#i-key"/></svg><span id="maisConta">Conta</span></button>
+    <button class="btn" id="maisTema"><svg class="i"><use href="#i-moon"/></svg>Trocar tema</button>
+  </div>
+</div>
 
 <!-- gaveta de detalhes -->
 <div class="veu" id="veu"></div>
@@ -1353,11 +1436,11 @@ function situacao(x) {
 }
 function chipRede(rede, est, quando) {
   const s = est?.status, nome = NOMES_REDE[rede] || rede, i = ic(ICONE_REDE[rede] || "i-dot");
-  if (s === "publicado") return `<span class="chip ok" title="Publicado ${esc(F_COMPLETO.format(new Date(est.em)))}">${i}${nome}</span>`;
-  if (s === "erro") return `<span class="chip warn" title="Erro, tenta de novo">${i}${nome}</span>`;
-  if (s === "falhou") return `<span class="chip err" title="Falhou">${i}${nome}</span>`;
-  if (s === "atrasado") return `<span class="chip err" title="Perdeu a hora">${i}${nome}</span>`;
-  return `<span class="chip ${new Date(quando) <= new Date() ? "info" : ""}">${i}${nome}</span>`;
+  if (s === "publicado") return `<span class="chip ok" title="Publicado ${esc(F_COMPLETO.format(new Date(est.em)))}">${i}<span class="nm">${nome}</span></span>`;
+  if (s === "erro") return `<span class="chip warn" title="Erro, tenta de novo">${i}<span class="nm">${nome}</span></span>`;
+  if (s === "falhou") return `<span class="chip err" title="Falhou">${i}<span class="nm">${nome}</span></span>`;
+  if (s === "atrasado") return `<span class="chip err" title="Perdeu a hora">${i}<span class="nm">${nome}</span></span>`;
+  return `<span class="chip ${new Date(quando) <= new Date() ? "info" : ""}">${i}<span class="nm">${nome}</span></span>`;
 }
 function textoEstado(est, quando) {
   const s = est?.status;
@@ -1503,7 +1586,7 @@ function htmlCalMes({ off, porDia, sel = "", resumo = "", legenda = "", extra = 
   for (let i = 0; i < m.pula; i++) cel += `<div class="mdia fora"></div>`;
   for (let d = 1; d <= m.nDias; d++) {
     const k = `${m.pref}-${String(d).padStart(2, "0")}`, xs = porDia[k] || [];
-    const pontos = xs.slice(0, 4).map((o) => `<i class="${o.cor} ${o.plano ? "plano" : ""} ${o.pub ? "pub" : ""}"></i>`).join("") + (xs.length > 4 ? `<em>+${xs.length - 4}</em>` : "");
+    const pontos = xs.slice(0, 3).map((o) => `<i class="${o.cor} ${o.plano ? "plano" : ""} ${o.pub ? "pub" : ""}"></i>`).join("") + (xs.length > 3 ? `<em>+${xs.length - 3}</em>` : "");
     const capas = xs.filter((o) => o.capa).slice(0, 3).map((o) => `<span class="mcapa ${o.plano ? "plano" : ""}" style="background-image:url('${esc(o.capa)}')"></span>`).join("");
     cel += `<button class="mdia ${k === m.hoje ? "hoje" : ""} ${k < m.hoje ? "passou" : ""} ${k === sel ? "sel" : ""} ${xs.length ? "tem" : ""} ${classe ? classe(k, xs) || "" : ""}" data-mdia="${k}" aria-label="${d}: ${xs.length} item(ns)">
       <b>${d}</b>${xs.length ? `<span class="mcont">${xs.length}</span>` : ""}<div class="mcapas">${capas}</div><div class="mpontos">${pontos}</div>${extra ? extra(k, xs) || "" : ""}</button>`;
@@ -1909,12 +1992,13 @@ async function carregarRuns() {
   try {
     RUNS = (await gh(`/actions/workflows/${WORKFLOW}/runs?per_page=10`)).workflow_runs || [];
     const r = RUNS[0], [cls, txt] = badgeRun(r);
-    ["#pulsoLateral", "#pulsoCard"].forEach((s) => ($(s).className = "pulso " + cls));
+    ["#pulsoLateral", "#pulsoCard", "#pulsoNav", "#pulsoMais"].forEach((s) => $(s) && ($(s).className = "pulso " + cls));
+    $("#tbRobo").hidden = cls !== "err"; $("#maisRoboSub").textContent = "Robô " + txt;
     $("#saudeTit").textContent = "Robô " + txt; $("#roboStatus").textContent = txt[0].toUpperCase() + txt.slice(1);
     const quando = r ? `Última vez ${relativo(r.created_at)} · ${r.event === "schedule" ? "automática" : "pelo painel"}` : "Ainda não rodou";
     $("#saudeSub").textContent = r ? relativo(r.created_at) : "—"; $("#roboUltimo").textContent = quando;
     $("#roboBarras").innerHTML = RUNS.slice().reverse().map((x, i) => { const [c] = badgeRun(x); return `<i class="${c || "neutro"}" style="height:${c === "err" ? 100 : c === "run" ? 70 : 55 + (i % 3) * 15}%;animation-delay:${i * 40}ms" title="${esc(F_COMPLETO.format(new Date(x.created_at)))}"></i>`; }).join("");
-    $("#hist").innerHTML = RUNS.length ? RUNS.map((r) => { const [c, t] = badgeRun(r); const ch = c === "ok" ? "ok" : c === "err" ? "err" : c === "run" ? "info" : "";
+    $("#hist").innerHTML = RUNS.length ? RUNS.map((r) => { const [c, t0] = badgeRun(r), t = c === "err" ? "erro" : c === "ok" ? "ok" : t0; const ch = c === "ok" ? "ok" : c === "err" ? "err" : c === "run" ? "info" : "";
       return `<div><div class="hist-item" data-run="${r.id}"><span class="pulso ${c}" style="${c === "ok" ? "" : ""}"></span><div class="q">${esc(F_COMPLETO.format(new Date(r.created_at)))}<small>${r.event === "schedule" ? "Automática" : "Pelo painel ou GitHub"} · ${esc(relativo(r.created_at))}</small></div><span class="chip ${ch}">${esc(t === "funcionando" ? "ok" : t)}</span>${ic("i-right")}</div><div class="hist-res" id="res-${r.id}"><div></div></div></div>`; }).join("")
       : vazio("i-history", "Nenhuma execução", "O robô ainda não rodou.");
   } catch (e) { $("#hist").innerHTML = `<div class="aviso-post">${ic("i-alert")}<span>${esc(e.message)}</span></div>`; $("#saudeSub").textContent = "sem acesso"; }
@@ -3225,7 +3309,8 @@ function irPara(v) {
   if (!$("#reels")?.hidden) fecharReels();
   if (["agenda", "biblioteca", "cronograma", "analises", "robo"].includes(v) || v === "inicio") local.set("painel-aba", v);
   if (v !== VIEW) { VIEW = v; $$(".view").forEach((s) => s.classList.toggle("ativa", s.id === "v-" + v)); window.scrollTo({ top: 0 }); }
-  $$("#nav [data-view], #tabbar [data-view]").forEach((b) => b.classList.toggle("ativo", b.dataset.view === v));
+  $$("#nav [data-view], #tabbar [data-view], #maisFolha [data-view], .novo-lat").forEach((b) => b.classList.toggle("ativo", b.dataset.view === v));
+  abrirMais(false); $("#tabbar").classList.remove("escondida");
   posicionarNav();
   fecharGaveta();
   if (v === "novo" && NOVO.etapa === ETAPAS) resetarNovo();
@@ -3238,13 +3323,39 @@ function irPara(v) {
     if (v === "cronograma") desenharCronograma();
   });
 }
+/* barra de baixo some ao rolar para baixo e volta ao rolar para cima (mais tela para o conteúdo, como nos apps) */
+{
+  let ultimoY = scrollY, pedido = 0;
+  addEventListener("scroll", () => {
+    if (pedido) return;
+    pedido = requestAnimationFrame(() => {
+      pedido = 0; const y = scrollY, d = y - ultimoY;
+      if (Math.abs(d) < 10) return;
+      if ($("#maisFolha.on")) return;
+      $("#tabbar").classList.toggle("escondida", d > 0 && y > 140 && innerHeight + y < document.documentElement.scrollHeight - 40);
+      ultimoY = y;
+    });
+  }, { passive: true });
+}
 // roda fn depois que o navegador pintar o quadro atual
 function depoisDoQuadro(fn) { requestAnimationFrame(() => setTimeout(fn, 0)); }
 function posicionarNav() {
   const a = $("#nav .ativo"); if (a) { $("#navPilula").style.height = a.offsetHeight + "px"; $("#navPilula").style.transform = `translateY(${a.offsetTop}px)`; }
-  const t = $("#tabbar .ativo"), ind = $("#tabInd");
-  if (t && !t.classList.contains("mais")) { ind.style.opacity = 1; ind.style.width = t.offsetWidth + "px"; ind.style.transform = `translateX(${t.offsetLeft - 6}px)`; } else ind.style.opacity = 0;
+  /* no celular, telas que ficam no "Mais" acendem o botão Mais com o nome e o ícone delas */
+  const NO_MAIS = { catalogo: ["Catálogo", "i-trophy"], cronograma: ["Plano", "i-plan"], analises: ["Análises", "i-chart"], robo: ["Robô", "i-bot"] };
+  const m = NO_MAIS[VIEW], mb = $("#tbMais");
+  if (mb) { mb.classList.toggle("ativo", !!m); $("#tbMaisRot").textContent = m ? m[0] : "Mais"; $("#tbMaisIc").setAttribute("href", "#" + (m ? m[1] : "i-list")); }
 }
+function abrirMais(abrir) {
+  const f = $("#maisFolha"); if (!f) return;
+  $('#maisFolha [data-view="catalogo"]').hidden = !$("#v-catalogo"); // aparece quando a tela do catálogo existir
+  f.classList.toggle("on", abrir); $("#maisVeu").classList.toggle("on", abrir); f.setAttribute("aria-hidden", String(!abrir));
+  $("#tbMais").classList.toggle("aberto", abrir); $("#tbMais").setAttribute("aria-expanded", String(abrir));
+  if (abrir) $("#tabbar").classList.remove("escondida");
+}
+$("#tbMais").onclick = () => abrirMais(!$("#maisFolha").classList.contains("on"));
+$("#maisVeu").onclick = () => abrirMais(false);
+$("#maisTema").onclick = () => $("#btnTema").click();
 document.addEventListener("click", (e) => {
   const b = e.target;
   const ir = b.closest("[data-ir]"); if (ir) { irPara(ir.dataset.ir); return; }
@@ -3258,7 +3369,7 @@ document.addEventListener("click", (e) => {
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
   if (b.closest("[data-conta]") || b.closest("#btnConta") || b.closest("#btnContaMob")) { abrirConta(); return; }
 });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharModal(false); fecharGaveta(); } });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharModal(false); fecharGaveta(); abrirMais(false); } });
 // ondulação nos botões e luz que segue o mouse nos cards
 document.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "mouse") return; // no toque, sem ondulação: ela força um cálculo de layout a cada toque

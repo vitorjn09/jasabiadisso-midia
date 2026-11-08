@@ -37,6 +37,14 @@ Facebook e o canal do YouTube, e grava tudo cifrado em
 e digite a mesma senha no painel (Conectar > Senha das análises). O token da
 Meta precisa das permissões `instagram_manage_insights` e `read_insights`.
 
+A mesma coleta lê os comentários de cada post (até 100 por post, mais
+recentes primeiro) para a aba Análises mostrar, só para leitura. Guarda só o
+texto, a data e as curtidas, sem o nome de quem comentou, e tira os
+comentários do próprio perfil. O robô não responde comentários. Permissões:
+`instagram_manage_comments` (Instagram), `pages_read_user_content` (Facebook)
+e o escopo `youtube.force-ssl` no `YT_REFRESH_TOKEN` (YouTube). Se faltar
+alguma, a rede aparece com o aviso no fim da aba e o resto continua.
+
 ## Biblioteca e cronograma
 
 - `biblioteca/<nome>/`: ficha (`ficha.json`) e capa de cada vídeo pronto. O vídeo fica na Release

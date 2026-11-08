@@ -714,6 +714,26 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .rosca .leg-r div { display: flex; align-items: center; gap: 8px; }
 .rosca .leg-r i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
 .rosca .leg-r b { margin-left: auto; font-variant-numeric: tabular-nums; }
+/* comentários dos vídeos (só leitura) */
+.com-busca { max-width: 300px; }
+.com-lista { display: grid; gap: 10px; margin-top: 14px; }
+.com-post { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.com-post > summary { list-style: none; display: flex; gap: 12px; align-items: center; padding: 10px 12px; cursor: pointer; }
+.com-post > summary::-webkit-details-marker { display: none; }
+.com-post .mini { width: 44px; height: 56px; border-radius: 8px; background: var(--surface-2) center/cover no-repeat; flex: none; }
+.com-post .tit { flex: 1; min-width: 0; }
+.com-post .tit b { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.com-post .tit small { color: var(--faint); font-size: 12px; }
+.com-post .qtd { display: flex; align-items: center; gap: 5px; font: 600 15px Fredoka; color: var(--text); flex: none; }
+.com-post .seta { transition: transform .2s; color: var(--faint); flex: none; }
+.com-post[open] .seta { transform: rotate(90deg); }
+.com-itens { border-top: 1px solid var(--border); padding: 6px 12px 12px; display: grid; gap: 2px; }
+.com-item { padding: 9px 0; border-bottom: 1px dashed var(--border); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.com-item:last-of-type { border-bottom: 0; }
+.com-item .meta { display: block; margin-top: 3px; font-size: 11px; color: var(--faint); }
+.com-item mark { background: color-mix(in srgb, var(--gold) 40%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+.com-rodape { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: var(--faint); }
+.com-rodape a { color: var(--muted); }
 .tops { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; margin-top: 14px; }
 .top { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); text-decoration: none; color: var(--text); transition: transform .3s var(--spring), border-color .25s; display: block; }
 .top:hover { transform: translateY(-4px); border-color: var(--border-strong); }
@@ -2611,6 +2631,7 @@ function confete() {
 
 /* ================================================================ análises */
 let SENHA_AN = local.get("painel-robo-senha-analises");
+let AN_BUSCA = "";
 let AN = null, AN_REDE = "instagram", AN_PER = "d7", AN_ORDEM = "visualizacoes", AN_ORDEM_FB = "visualizacoes", AN_ORDEM_YT = "ordem", anCarregando = false;
 const N = new Intl.NumberFormat("pt-BR");
 const NC = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 });
@@ -2713,6 +2734,35 @@ function ordenarPosts(lista, ordem) {
   return (lista || []).slice().sort((a, b) => (b[ordem] ?? -1) - (a[ordem] ?? -1));
 }
 const metricaDeOrdem = (k) => (k === "recentes" || k === "antigos") ? "visualizacoes" : k;
+/* Comentários de cada post, só para ler e ter ideias de temas. O painel não responde nada. */
+function marcarBusca(texto, termo) {
+  const t = esc(texto); if (!termo) return t;
+  const alvo = esc(termo).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return t.replace(new RegExp(alvo, "gi"), (m) => `<mark>${m}</mark>`);
+}
+function cartaoComentarios(lista, rede) {
+  const termo = AN_BUSCA.trim().toLowerCase();
+  const data = (x) => new Date(x.quando || 0).getTime() || 0;
+  const comCom = (lista || []).filter((x) => x.comentarios > 0).sort((a, b) => data(b) - data(a));
+  const total = comCom.reduce((s, x) => s + (x.comentarios_lista?.length || 0), 0);
+  const blocos = comCom.map((x) => {
+    const coms = (x.comentarios_lista || []).filter((c) => !termo || c.texto.toLowerCase().includes(termo));
+    if (termo && !coms.length) return "";
+    const titulo = x.titulo || (x.legenda || "").split("\n")[0] || NOMES_TIPO[x.tipo] || "Post";
+    const itens = x.comentarios_lista === undefined
+      ? `<div class="vazio" style="padding:14px">A rede tem ${num(x.comentarios)} comentário(s) aqui, mas o texto ainda não veio. Veja o aviso no fim da página.</div>`
+      : coms.map((c) => `<div class="com-item">${marcarBusca(c.texto, termo)}<span class="meta">${c.quando ? esc(F_CURTO.format(new Date(c.quando))) + " · " + esc(relativo(c.quando)) : ""}${c.curtidas ? ` · ${num(c.curtidas)} curtida(s)` : ""}${c.respostas ? ` · ${num(c.respostas)} resposta(s)` : ""}</span></div>`).join("") || `<div class="vazio" style="padding:14px">Só há respostas do próprio perfil.</div>`;
+    return `<details class="com-post"${termo ? " open" : ""}><summary><div class="mini" style="background-image:url('${esc(x.imagem || "")}')"></div>
+      <div class="tit"><b>${esc(titulo)}</b><small>${x.tipo ? esc(NOMES_TIPO[x.tipo] || x.tipo) + " · " : ""}${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}</small></div>
+      <span class="qtd">${ic("i-chat")}${num(termo ? coms.length : x.comentarios)}</span>${ic("i-right", "i seta")}</summary>
+      <div class="com-itens">${itens}<div class="com-rodape"><span>Mais recentes primeiro</span>${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener">Abrir na rede ${ic("i-ext")}</a>` : ""}</div></div></details>`;
+  }).join("");
+  const vazio = !comCom.length ? `<div class="vazio">Nenhum post com comentários ainda.</div>` : !blocos ? `<div class="vazio">Nenhum comentário com “${esc(AN_BUSCA)}”.</div>` : "";
+  return `<div class="card com-card" style="margin-top:16px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <div><h3>${ic("i-chat")}Comentários dos posts</h3><p class="dica" style="margin:2px 0 0">Só para ler e ter ideias de temas. ${num(total)} comentário(s) em ${num(comCom.length)} post(s), do mais novo para o mais antigo.</p></div>
+    <input class="input com-busca" id="anBusca" type="search" placeholder="Buscar palavra nos comentários" value="${esc(AN_BUSCA)}" autocomplete="off"></div>
+    <div class="com-lista" id="anComentarios">${blocos}${vazio}</div></div>`;
+}
 function desenharAnalises() {
   if (!AN) return;
   const segm = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-bottom:16px">
@@ -2741,6 +2791,7 @@ function desenharAnalises() {
         <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM)])}</b><small>${esc({ visualizacoes: "visualizações", alcance: "contas alcançadas", interacoes: "interações", salvos: "salvos", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM)])}</small></div></div>
         <div class="mets"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.salvos)}</b>salvos</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint)">${esc(NOMES_TIPO[x.tipo] || x.tipo)} · ${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.tempo_medio_ms ? ` · ${(x.tempo_medio_ms / 1000).toFixed(1).replace(".", ",")}s assistidos` : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
+    ${cartaoComentarios(ig.posts, "instagram")}
     ${avisos(ig.erros)}`;
   } else if (AN_REDE === "facebook") {
     const fb = AN.facebook || {}, c = fb.conta || {}, d = fb.d28 || {};
@@ -2759,6 +2810,7 @@ function desenharAnalises() {
         <a class="top" href="${esc(x.link || "#")}" target="_blank" rel="noopener"><div class="img" style="background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x[metricaDeOrdem(AN_ORDEM_FB)])}</b><small>${esc({ visualizacoes: "visualizações", interacoes: "interações", reacoes: "reações", compartilhamentos: "compartilhamentos" }[metricaDeOrdem(AN_ORDEM_FB)])}</small></div></div>
         <div class="mets"><div><b>${num(x.reacoes)}</b>reações</div><div><b>${num(x.comentarios)}</b>coment.</div><div><b>${num(x.compartilhamentos)}</b>compart.</div></div>
         <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) : ""}${x.legenda ? " · " + esc(x.legenda) : ""}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum post encontrado.</div>`}</div></div>
+    ${cartaoComentarios(fb.posts, "facebook")}
     ${avisos(fb.erros)}`;
   } else {
     const yt = AN.youtube || {}, c = yt.conta || {};
@@ -2775,6 +2827,7 @@ function desenharAnalises() {
       <a class="top" href="${esc(x.link)}" target="_blank" rel="noopener"><div class="img" style="aspect-ratio:16/10;background-image:url('${esc(x.imagem || "")}')"><span class="pos">${i + 1}</span><div class="big"><b>${num(x.visualizacoes)}</b><small>visualizações</small></div></div>
       <div class="mets" style="grid-template-columns:1fr 1fr"><div><b>${num(x.curtidas)}</b>curtidas</div><div><b>${num(x.comentarios)}</b>coment.</div></div>
       <div style="padding:0 10px 10px;font-size:11px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.quando ? esc(F_CURTO.format(new Date(x.quando))) + " · " : ""}${esc(x.titulo)}</div></a>`).join("") || `<div class="vazio" style="grid-column:1/-1">Nenhum vídeo encontrado.</div>`}</div></div>
+    ${cartaoComentarios(yt.videos, "youtube")}
     ${avisos(yt.erros)}`;
   }
   $("#anCorpo").innerHTML = segm + html;
@@ -2789,6 +2842,13 @@ $("#anCorpo").addEventListener("click", (e) => {
   if (f) { AN_ORDEM_FB = f.dataset.anf; desenharAnalises(); }
   if (y) { AN_ORDEM_YT = y.dataset.anyt; desenharAnalises(); }
   if (r) { AN_REDE = r.dataset.anr; desenharAnalises(); } if (p) { AN_PER = p.dataset.anp; desenharAnalises(); } if (o) { AN_ORDEM = o.dataset.ano; desenharAnalises(); }
+});
+$("#anCorpo").addEventListener("input", (e) => {
+  if (e.target.id !== "anBusca") return;
+  AN_BUSCA = e.target.value;
+  const lista = AN_REDE === "youtube" ? AN.youtube?.videos : AN[AN_REDE]?.posts;
+  const novo = document.createElement("div"); novo.innerHTML = cartaoComentarios(lista, AN_REDE);
+  $("#anComentarios").replaceWith($("#anComentarios", novo));
 });
 $("#anCorpo").addEventListener("pointermove", (e) => {
   const g = e.target.closest(".grafico[data-pts]"); if (!g) return;

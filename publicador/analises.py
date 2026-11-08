@@ -31,6 +31,12 @@ FUSO = dt.timezone(dt.timedelta(hours=-3))
 DIAS_HISTORICO = 120
 ITERACOES = 200_000
 
+# Comentários: só leitura, para dar ideias de temas. O robô não responde nada.
+# Guarda só o texto, a data e as curtidas (sem o nome de quem comentou) e tira
+# os comentários do próprio perfil.
+COMENT_POR_POST = 100
+COMENT_TAMANHO = 500
+
 
 def paginar(r, maximo=300):
     """Junta as páginas da Graph API (segue paging.next) para pegar todos os posts."""
@@ -55,7 +61,31 @@ def numero(v):
             return None
 
 
+def comentario(texto, quando, curtidas=None, respostas=None):
+    return {"texto": str(texto or "").strip()[:COMENT_TAMANHO], "quando": quando,
+            "curtidas": numero(curtidas), "respostas": numero(respostas)}
+
+
+def recentes_primeiro(lista):
+    return sorted((c for c in lista if c["texto"]), key=lambda c: c.get("quando") or "", reverse=True)
+
+
+def aviso_comentarios(erros, rede, e, falta):
+    erros.append(f"{rede} comentários: {limpar(e)} (falta {falta})")
+
+
 # ---------------------------------------------------------------- Instagram
+
+def ig_comentarios(mid, meu_usuario):
+    r = get(f"{mid}/comments", fields="text,username,timestamp,like_count,replies.limit(0).summary(true)", limit=50)
+    lista = []
+    for c in paginar(r, COMENT_POR_POST):
+        if meu_usuario and (c.get("username") or "").lower() == meu_usuario.lower():
+            continue
+        lista.append(comentario(c.get("text"), c.get("timestamp"), c.get("like_count"),
+                                ((c.get("replies") or {}).get("summary") or {}).get("total_count")))
+    return recentes_primeiro(lista)[:COMENT_POR_POST]
+
 
 def ig_total(conta, metrica, desde, ate, erros):
     """Total de uma métrica da conta no período (metric_type=total_value)."""
@@ -148,9 +178,20 @@ def instagram():
                 "salvos": met.get("saved"), "compartilhamentos": met.get("shares"),
                 "interacoes": met.get("total_interactions"),
                 "tempo_medio_ms": met.get("ig_reels_avg_watch_time"),
+                "_id": m["id"],
             })
     except ErroApi as e:
         erros.append(f"instagram posts: {limpar(e)}")
+    sem_acesso = False
+    for x in posts:
+        mid = x.pop("_id")
+        if sem_acesso or not x.get("comentarios"):
+            continue
+        try:
+            x["comentarios_lista"] = ig_comentarios(mid, saida["conta"].get("usuario"))
+        except ErroApi as e:
+            aviso_comentarios(erros, "instagram", e, "a permissão instagram_manage_comments no META_TOKEN")
+            sem_acesso = True
     saida["posts"] = posts
     return saida
 
@@ -190,7 +231,7 @@ def fb_posts(pag, erros):
     except ErroApi as e:
         erros.append(f"facebook posts: {limpar(e)}")
         return posts
-    aviso = False
+    aviso = sem_acesso = False
     for m in paginar(r):
         reacoes = numero((m.get("reactions") or {}).get("summary", {}).get("total_count"))
         coment = numero((m.get("comments") or {}).get("summary", {}).get("total_count"))
@@ -204,13 +245,31 @@ def fb_posts(pag, erros):
             if not aviso:
                 erros.append(f"facebook visualizações dos posts: {limpar(e)}")
                 aviso = True
-        posts.append({
+        item = {
             "quando": m.get("created_time"), "legenda": (m.get("message") or "")[:160],
             "link": m.get("permalink_url"), "imagem": m.get("full_picture"),
             "visualizacoes": views, "reacoes": reacoes, "comentarios": coment, "compartilhamentos": compart,
             "interacoes": (reacoes or 0) + (coment or 0) + compart,
-        })
+        }
+        if coment and not sem_acesso:
+            try:
+                item["comentarios_lista"] = fb_comentarios(m["id"], pag)
+            except ErroApi as e:
+                aviso_comentarios(erros, "facebook", e, "a permissão pages_read_user_content no META_TOKEN")
+                sem_acesso = True
+        posts.append(item)
     return posts
+
+
+def fb_comentarios(post_id, pag):
+    r = get(f"{post_id}/comments", fields="message,created_time,like_count,comment_count,from{id}",
+            filter="toplevel", order="reverse_chronological", limit=50)
+    lista = []
+    for c in paginar(r, COMENT_POR_POST):
+        if (c.get("from") or {}).get("id") == str(pag):
+            continue
+        lista.append(comentario(c.get("message"), c.get("created_time"), c.get("like_count"), c.get("comment_count")))
+    return recentes_primeiro(lista)[:COMENT_POR_POST]
 
 
 # ---------------------------------------------------------------- YouTube
@@ -253,10 +312,41 @@ def youtube():
                                    "imagem": (sn.get("thumbnails", {}).get("medium") or {}).get("url"),
                                    "visualizacoes": numero(s.get("viewCount")), "curtidas": numero(s.get("likeCount")),
                                    "comentarios": numero(s.get("commentCount"))})
+                    videos[-1]["_id"] = v["id"]
+        meu_canal = item.get("id")
+        sem_acesso = False
+        for x in videos:
+            vid = x.pop("_id", None)
+            if sem_acesso or not x.get("comentarios"):
+                continue
+            try:
+                x["comentarios_lista"] = yt_comentarios(api, cab, vid, meu_canal)
+            except ErroApi as e:
+                aviso_comentarios(erros, "youtube", e, "a permissão youtube.force-ssl no YT_REFRESH_TOKEN")
+                sem_acesso = True
         saida["videos"] = videos
     except ErroApi as e:
         erros.append(f"youtube: {limpar(e)}")
     return saida
+
+
+def yt_comentarios(api, cab, vid, meu_canal):
+    lista, pag_token = [], None
+    while len(lista) < COMENT_POR_POST:
+        params = {"part": "snippet", "videoId": vid, "maxResults": "100", "order": "time", "textFormat": "plainText"}
+        if pag_token:
+            params["pageToken"] = pag_token
+        r = _pedir("GET", f"{api}/commentThreads", params, cabecalhos=cab)
+        for t in r.get("items", []):
+            sn = t.get("snippet", {})
+            c = (sn.get("topLevelComment") or {}).get("snippet", {})
+            if meu_canal and (c.get("authorChannelId") or {}).get("value") == meu_canal:
+                continue
+            lista.append(comentario(c.get("textDisplay"), c.get("publishedAt"), c.get("likeCount"), sn.get("totalReplyCount")))
+        pag_token = r.get("nextPageToken")
+        if not pag_token:
+            break
+    return recentes_primeiro(lista)[:COMENT_POR_POST]
 
 
 # ---------------------------------------------------------------- arquivo

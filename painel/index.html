@@ -638,6 +638,62 @@ button, a, [role="button"] { min-height: 44px; }
 @media (display-mode: standalone) {
   body { background-color: var(--bg); }
 }
+
+/* ================================================= gaveta: detalhes mais claros (celular e computador) */
+.card.vid { padding: 0; }
+.sec-tit { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin: 0 0 10px; }
+.det-topo { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; align-items: start; }
+.det-lado { min-width: 0; }
+.det-player { position: relative; border-radius: 16px; overflow: hidden; background: #000; }
+.gaveta .corpo .det-player video { width: 100%; max-width: none; max-height: none; aspect-ratio: 9/16; object-fit: contain; border-radius: 0; margin: 0; }
+.redes-lista { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
+.linha-rede { flex-wrap: wrap; }
+.redes-lista .linha-rede { margin: 0; border: 0; border-radius: 0; background: none; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.redes-lista .linha-rede:last-child { border-bottom: 0; }
+.linha-rede .logo-rede { width: 34px; height: 34px; }
+.linha-rede .info .sub { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); margin-top: 1px; }
+.linha-rede .estado { flex: none; align-self: center; margin-left: auto; }
+.logo-rede.tiktok { background: #111; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+.tt-segm { flex: 1 0 100%; display: flex; gap: 4px; padding: 4px; margin-top: 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
+.tt-segm button { flex: 1 1 0; min-width: 0; min-height: 38px; border: 0; border-radius: 9px; background: none; color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; transition: background .2s, color .2s; }
+.tt-segm button.on { background: var(--surface-solid); color: var(--text); box-shadow: 0 1px 0 var(--border-strong), 0 0 0 1px var(--border-strong); }
+.campo-txt { margin-top: 12px; }
+.campo-txt:first-of-type { margin-top: 0; }
+.campo-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.campo-cab .btn { min-height: 34px; padding: 5px 10px; font-size: 12.5px; }
+.campo-cab .btn svg.i { width: 15px; height: 15px; }
+.texto-curto { font-size: 14px; line-height: 1.5; padding: 11px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); overflow-wrap: anywhere; }
+.texto-leg { overflow-wrap: anywhere; }
+.hora-sel { display: flex; align-items: center; gap: 8px; }
+.hora-sel select { flex: 1 1 0; min-width: 0; height: 48px; padding: 0 12px; font-variant-numeric: tabular-nums; text-align: center; }
+.hora-sel b { color: var(--muted); font: 600 20px Fredoka; }
+.gaveta .pe { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+.gaveta .cab > div { min-width: 0; }
+#gavTit { overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+  /* abas de status: número embaixo do nome, para os quatro caberem sem encostar */
+  #bibFiltros button { flex-direction: column; gap: 0; padding: 6px 2px; font-size: 12.5px; line-height: 1.2; }
+  #bibFiltros button span { font-size: 11px; }
+}
+@media (min-width: 901px) { .gaveta { width: min(600px, calc(100vw - 24px)); } }
+@media (max-width: 900px) { .gaveta { max-height: 92dvh; } }
+@media (max-width: 560px) {
+  /* vídeo em cima, grande o bastante para os controles e o menu do player caberem inteiros */
+  .det-topo { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .det-player { justify-self: center; width: min(100%, calc(min(54dvh, 560px) * 9 / 16)); }
+  .det-topo.agendar .det-player { width: min(62%, calc(min(28dvh, 280px) * 9 / 16)); }
+  .gaveta .corpo { padding: 16px; }
+  .gaveta .pe { padding-left: 16px; padding-right: 16px; }
+  .gaveta .pe .btn { flex: 1 1 0; }
+  .gaveta .pe .btn.perigo { flex: 0 0 auto; }
+  .ag-dias { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 2px; scroll-snap-type: x proximity; }
+  .ag-dias::-webkit-scrollbar { display: none; }
+  .ag-dias .chip { flex: none; scroll-snap-align: start; }
+  .bib-filtros { grid-template-columns: 1fr 1fr; }
+  .bib-filtros label:last-child { grid-column: span 2; }
+  #bibFiltros button { overflow: hidden; }
+  .det-midia .midia { justify-self: center; width: min(100%, 220px); max-width: none; }
+}
 </style>
 </head>
 <body>
@@ -1001,6 +1057,7 @@ button, a, [role="button"] { min-height: 44px; }
   <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></symbol>
   <symbol id="i-plan" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M9 9v12M15 9v12"/></symbol>
   <symbol id="i-tt" viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
   <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
@@ -1157,7 +1214,7 @@ function midiaHTML(x, preferirVideo = false, tag = true) {
   const arq = (n) => x.arquivos.find((a) => a.name === n);
   const t = tag ? `<span class="tag">${esc(NOMES_TIPO[p.tipo] || p.tipo || "?")}</span>` : "";
   const video = (p.midias || []).find((m) => EXT_VIDEO.includes(extensao(m)));
-  if (preferirVideo && video && arq(video)) return `<div class="midia">${t}<video src="${esc(arq(video).download_url)}" ${p.capa && arq(p.capa) ? `poster="${esc(arq(p.capa).download_url)}"` : ""} controls playsinline preload="metadata"></video></div>`;
+  if (preferirVideo && video && arq(video)) return `<div class="midia">${t}<video src="${esc(arq(video).download_url)}" ${p.capa && arq(p.capa) ? `poster="${esc(arq(p.capa).download_url)}"` : ""} controls controlslist="nodownload noplaybackrate" playsinline preload="metadata"></video></div>`;
   const img = [p.capa, ...(p.midias || [])].find((m) => m && EXT_IMAGEM.includes(extensao(m)) && arq(m));
   if (img) return `<div class="midia">${t}<img src="${esc(arq(img).download_url)}" alt="" loading="lazy"></div>`;
   if (video && arq(video)) return `<div class="midia">${t}<video src="${esc(arq(video).download_url)}#t=1" muted playsinline preload="metadata"></video></div>`;
@@ -1305,6 +1362,33 @@ $("#filtros").addEventListener("click", (e) => {
 function aplicarFiltro(f) { FILTRO = f; DIA_FILTRO = ""; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === f)); irPara("agenda"); }
 
 /* ================================================================ gaveta de detalhes */
+// Uma linha por rede: logo, nome, explicação curta e o estado à direita.
+function linhaRede(r, cls, tit, sub, extra = "", abaixo = "") {
+  const nome = r === "tiktok" ? "TikTok" : NOMES_REDE[r], icone = r === "tiktok" ? "i-tt" : ICONE_REDE[r];
+  return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(icone)}</div><div class="info"><b>${nome}</b><span class="sub">${esc(sub)}</span>${extra}</div><span class="chip ${cls} estado"><span class="ponto"></span>${tit}</span>${abaixo}</div>`;
+}
+// Legenda e títulos, cada um com botão de copiar (útil para o TikTok, que é postado à mão).
+function blocoTextos(p) {
+  const campo = (rot, txt, leg) => `<div class="campo-txt"><div class="campo-cab"><span>${rot}</span>${txt ? `<button class="btn fant peq" data-copiar>${ic("i-copy")}Copiar</button>` : ""}</div><div class="${leg ? "texto-leg" : "texto-curto"}">${esc(txt || "(sem legenda)")}</div></div>`;
+  return `<div class="sec-tit" style="margin-top:22px">Textos</div>${campo("Legenda", p.legenda, true)}${p.titulo_facebook ? campo("Título no Facebook", p.titulo_facebook) : ""}${p.titulo_youtube ? campo("Título no YouTube", p.titulo_youtube) : ""}`;
+}
+// Hora e minuto em listas, no lugar do relógio do sistema (que no Android corta o botão "Definir").
+function seletorHora(id, valor = "") {
+  const [h = "", m = ""] = (valor || "").split(":");
+  const ops = (n, atual) => Array.from({ length: n }, (_, i) => String(i).padStart(2, "0")).map((v) => `<option value="${v}" ${v === atual ? "selected" : ""}>${v}</option>`).join("");
+  return `<div class="hora-sel"><input type="hidden" id="${id}" value="${esc(valor || "")}"><select class="input" data-hora="${id}" data-p="h" aria-label="Hora"><option value="">hora</option>${ops(24, h)}</select><b>:</b><select class="input" data-hora="${id}" data-p="m" aria-label="Minuto"><option value="">min</option>${ops(60, m)}</select></div>`;
+}
+document.addEventListener("change", (e) => {
+  const s = e.target.closest("[data-hora]"); if (!s) return;
+  const caixa = s.closest(".hora-sel"), [sh, sm] = caixa.querySelectorAll("select");
+  if (sh.value && !sm.value) sm.value = "00";
+  caixa.querySelector("input").value = sh.value && sm.value ? `${sh.value}:${sm.value}` : "";
+});
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-copiar]"); if (!b) return;
+  const txt = b.closest(".campo-txt").querySelector(".texto-leg, .texto-curto").textContent;
+  try { await navigator.clipboard.writeText(txt); toast("ok", "Copiado", "", 2000); } catch (err) { toast("err", "Não deu para copiar", "Segure o texto e copie à mão."); }
+});
 function abrirGaveta(pasta, editar = false) {
   const x = POSTS.find((y) => y.pasta === pasta); if (!x) return;
   const p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
@@ -1314,7 +1398,7 @@ function abrirGaveta(pasta, editar = false) {
     const local = q ? isoParaLocal(p.quando) : "";
     $("#gavCorpo").innerHTML = `
       <div class="quando-grade"><div><label class="campo" style="margin-top:0">Data</label><input class="input" type="date" id="eData" value="${local.slice(0, 10)}"></div>
-      <div><label class="campo" style="margin-top:0">Hora (Brasília)</label><input class="input" type="time" id="eHora" value="${local.slice(11, 16)}"></div></div>
+      <div><label class="campo" style="margin-top:0">Hora (Brasília)</label>${seletorHora("eHora", local.slice(11, 16))}</div></div>
       <label class="campo">Redes</label>
       <div class="redes" id="eRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ${(p.redes || []).includes(r) ? "ok" : ""}" data-r="${r}" style="cursor:pointer;padding:8px 12px" ${r === "youtube" && p.tipo !== "reel" ? "disabled" : ""}>${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
       <label class="campo">Legenda</label><textarea class="input" id="eLeg">${esc(p.legenda || "")}</textarea>
@@ -1332,13 +1416,11 @@ function abrirGaveta(pasta, editar = false) {
       : midiaHTML(x, true, false);
     $("#gavCorpo").innerHTML = `
       <div class="det-midia">${midia}
-        <div>${(p.redes || []).map((r) => { const [cls, tit, sub] = textoEstado(x.estado[r], p.quando); const est = x.estado[r];
-          return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span>${est?.erro ? `<div class="erro-bloco"><button class="btn peq erro-btn" data-erro>${ic("i-alert")}? Ver erro</button><div class="erro-txt" hidden>${esc(mascarar(est.erro).slice(0, 400))}</div></div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}</div></div>`; }).join("")}</div>
+        <div><div class="sec-tit">Onde vai sair</div><div class="redes-lista">${(p.redes || []).map((r) => { const [cls, tit, sub] = textoEstado(x.estado[r], p.quando); const est = x.estado[r];
+          return linhaRede(r, cls, tit, sub, `${est?.erro ? `<div class="erro-bloco"><button class="btn peq erro-btn" data-erro>${ic("i-alert")}Ver erro</button><div class="erro-txt" hidden>${esc(mascarar(est.erro).slice(0, 400))}</div></div>` : ""}${["falhou", "erro", "atrasado"].includes(est?.status) ? `<div style="margin-top:8px"><button class="btn peq pri" data-reenviar="${esc(x.pasta)}:${r}">${ic("i-send")}Enviar de novo</button></div>` : ""}`); }).join("") || `<p class="dica" style="padding:12px 14px;margin:0">Nenhuma rede marcada.</p>`}</div></div>
       </div>
       ${x.erros.length ? `<div class="aviso-post" style="margin-top:14px">${ic("i-alert")}<span><b>O robô vai ignorar este post:</b> ${x.erros.map(esc).join(" · ")}</span></div>` : ""}
-      <label class="campo">Legenda</label><div class="texto-leg">${esc(p.legenda || "(sem legenda)")}</div>
-      ${p.titulo_facebook ? `<label class="campo">Título no Facebook</label><div>${esc(p.titulo_facebook)}</div>` : ""}
-      ${p.titulo_youtube ? `<label class="campo">Título no YouTube</label><div>${esc(p.titulo_youtube)}</div>` : ""}
+      ${blocoTextos(p)}
       <label class="campo">Arquivos</label><div class="redes">${x.arquivos.map((a) => `<a class="chip" href="${esc(a.download_url)}" target="_blank" rel="noopener">${esc(a.name)}${a.size ? " · " + tamanho(a.size) : ""}</a>`).join("")}</div>`;
     $("#gavPe").innerHTML = `<button class="btn perigo" id="gApaga">${ic("i-trash")}Apagar</button><button class="btn" id="gEdita">${ic("i-edit")}Editar</button>`;
     $("#gApaga").onclick = () => apagarPost(x);
@@ -2250,20 +2332,21 @@ function abrirVideo(nome, agendar = false) {
   const f = b.ficha, st = statusBib(b);
   $("#gavRot").textContent = `${NOMES_TIPO[f.tipo] || "Reel"} · biblioteca`;
   $("#gavTit").textContent = f.titulo || nome;
-  const player = `<video src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""} controls playsinline preload="metadata"></video>`;
+  const player = `<div class="det-player"><video src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""} controls controlslist="nodownload noplaybackrate" playsinline preload="metadata"></video></div>`;
   if (agendar) {
     const dias = []; for (let i = 0; i < 7; i++) dias.push(chaveDia(new Date(Date.now() + i * 864e5)));
     $("#gavCorpo").innerHTML = `
-      <div class="det-video">${player}<div>
+      <div class="det-topo agendar">${player}<div class="det-lado">
         <label class="campo" style="margin-top:0">Dia</label>
         <div class="ag-dias" id="agDias">${dias.map((k, i) => `<button class="chip" data-d="${k}">${i === 0 ? "Hoje" : i === 1 ? "Amanhã" : esc(F_CURTO.format(dataDe(k)))}</button>`).join("")}</div>
         <input class="input" type="date" id="agData" style="margin-top:8px">
-        <label class="campo">Hora (Brasília)</label><input class="input" type="time" id="agHora">
+        <label class="campo">Hora (Brasília)</label>${seletorHora("agHora")}
         <label class="campo">Redes</label>
         <div class="redes" id="agRedes">${Object.keys(NOMES_REDE).map((r) => `<button class="chip ok" data-r="${r}" style="cursor:pointer;padding:8px 12px">${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</button>`).join("")}</div>
         <div class="aviso-post" id="agErros" style="margin-top:12px"></div>
       </div></div>
-      <label class="campo">Legenda</label><textarea class="input" id="agLeg" rows="6">${esc(f.legenda || "")}</textarea>
+      <div class="sec-tit" style="margin-top:22px">Textos</div>
+      <label class="campo" style="margin-top:0">Legenda</label><textarea class="input" id="agLeg" rows="6">${esc(f.legenda || "")}</textarea>
       <label class="campo">Título no Facebook</label><input class="input" id="agFb" value="${esc(f.titulo_facebook || "")}">
       <label class="campo">Título no YouTube</label><input class="input" id="agYt" maxlength="100" value="${esc(f.titulo_youtube || "")}">`;
     const marca = () => $$("#agDias [data-d]").forEach((c) => c.classList.toggle("ok", c.dataset.d === $("#agData").value));
@@ -2278,17 +2361,18 @@ function abrirVideo(nome, agendar = false) {
     const linhas = Object.keys(NOMES_REDE).map((r) => {
       const pr = pub[r];
       const [cls, tit, sub] = pr ? ["ok", "Publicado", F_COMPLETO.format(new Date(pr.em))] : st.s === "agendado" ? ["info", "Agendado", F_COMPLETO.format(new Date(st.quando))] : ["", "Ainda não", "Escolha o dia e a hora em Agendar."];
-      return `<div class="linha-rede"><div class="logo-rede ${r}">${ic(ICONE_REDE[r])}</div><div class="info"><b>${NOMES_REDE[r]}</b><span class="chip ${cls}" style="margin:4px 0"><span class="ponto"></span>${tit}</span><br><span>${esc(sub)}</span></div></div>`;
+      return linhaRede(r, cls, tit, sub);
     }).join("");
     const tts = f.tiktok?.status || "";
     $("#gavCorpo").innerHTML = `
-      <div class="det-video">${player}<div>${linhas}</div></div>
-      <label class="campo">TikTok (vai pelo Metricool)</label>
-      <div class="tt-op" id="ttOp">${[["", "Não vai"], ["pedido", "Quero no TikTok"], ["postado", "Já está no TikTok"]].map(([k, n]) => `<button class="chip ${tts === k ? (k === "postado" ? "ok" : k === "pedido" ? "warn" : "info") : ""}" data-tt="${k}">${ic("i-tt")}${n}</button>`).join("")}</div>
-      ${tts === "pedido" ? `<p class="dica">Peça no chat e eu agendo no Metricool.</p>` : ""}
-      <label class="campo">Legenda</label><div class="texto-leg">${esc(f.legenda || "(sem legenda)")}</div>
-      ${f.titulo_facebook ? `<label class="campo">Título no Facebook</label><div>${esc(f.titulo_facebook)}</div>` : ""}
-      ${f.titulo_youtube ? `<label class="campo">Título no YouTube</label><div>${esc(f.titulo_youtube)}</div>` : ""}
+      <div class="det-topo">${player}<div class="det-lado">
+        <div class="sec-tit">Onde vai sair</div>
+        <div class="redes-lista">${linhas}
+          ${linhaRede("tiktok", tts === "postado" ? "ok" : tts === "pedido" ? "warn" : "", tts === "postado" ? "Postado" : tts === "pedido" ? "Pedido" : "Não vai", tts === "pedido" ? "Peça no chat e eu agendo no Metricool." : "Vai pelo Metricool, não pelo robô.", "",
+            `<div class="tt-segm" id="ttOp" role="group" aria-label="TikTok">${[["", "Não vai"], ["pedido", "Quero"], ["postado", "Já está lá"]].map(([k, n]) => `<button class="${tts === k ? "on" : ""}" data-tt="${k}" aria-pressed="${tts === k}">${n}</button>`).join("")}</div>`)}
+        </div>
+      </div></div>
+      ${blocoTextos(f)}
       ${st.s === "agendado" ? `<div style="margin-top:16px"><button class="btn peq" data-abrir="${esc(st.pasta)}">Ver na agenda${ic("i-right")}</button></div>` : ""}`;
     $("#ttOp").onclick = (e) => { const c = e.target.closest("[data-tt]"); if (c) marcarTikTok(b, c.dataset.tt); };
     $("#gavPe").innerHTML = `<a class="btn fant" href="${esc(b.videoUrl)}" download>${ic("i-down")}Baixar</a><button class="btn pri" id="bAgenda">${ic("i-cal")}${st.s === "pronto" ? "Agendar" : "Agendar de novo"}</button>`;

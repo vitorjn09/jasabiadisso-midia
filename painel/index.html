@@ -620,6 +620,12 @@ html.travado, html.travado body { overflow: hidden; }
 .veu { touch-action: none; }
 .oculto { display: none !important; }
 .topo-mob { display: none !important; }
+@media (max-width: 700px) {
+  .topo .linha-btns { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 4px; width: calc(100% + 32px); scroll-snap-type: x proximity; }
+  .topo .linha-btns::-webkit-scrollbar { display: none; }
+  .topo .linha-btns .btn { flex: none; white-space: nowrap; padding: 9px 13px; font-size: 13px; border-radius: 99px; scroll-snap-align: start; }
+  .topo .linha-btns .btn.pri { order: -1; }
+}
 /* ================================================= modo app (celular) */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
@@ -752,6 +758,85 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
 .an-prog-b { margin-top: 10px; height: 4px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
 .an-prog-b i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--teal), var(--ok)); transition: width 1.2s var(--ease); }
 #btnColetar.gira svg { animation: gira 1s linear infinite; }
+
+/* desempenho: cartões fora da tela não são desenhados até chegar perto (toques e rolagem mais leves) */
+.vids .vid { content-visibility: auto; contain-intrinsic-size: auto 190px auto 420px; }
+.posts .post { content-visibility: auto; contain-intrinsic-size: auto 320px auto 190px; }
+.redes-lista, .texto-leg { contain: content; }
+.reel { content-visibility: auto; contain-intrinsic-size: auto 100vw auto 100dvh; } /* só o vídeo da vez é desenhado */
+.gaveta, .veu { will-change: transform, opacity; }
+
+/* tela cheia: artes (story e carrossel) */
+.reel-palco.arte { cursor: default; display: flex; align-items: center; }
+.carro-trilho { position: absolute; inset: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.carro-trilho::-webkit-scrollbar { display: none; }
+.carro-slide { flex: 0 0 100%; height: 100%; scroll-snap-align: center; display: grid; place-items: center; }
+.carro-slide img { width: 100%; height: 100%; object-fit: contain; display: block; user-select: none; -webkit-user-drag: none; }
+.reel-palco:not(.carro) .carro-slide img { object-fit: cover; }
+.carro-pontos { position: absolute; z-index: 2; left: 0; right: 0; top: calc(64px + env(safe-area-inset-top)); display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.carro-pontos i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.4); transition: background .2s, transform .2s; }
+.carro-pontos i.on { background: #fff; transform: scale(1.25); }
+.carro-seta { position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; min-height: 0; border-radius: 50%; border: 0; background: rgba(0,0,0,.45); color: #fff; display: none; place-items: center; cursor: pointer; }
+.carro-seta.ant { left: 10px; } .carro-seta.prox { right: 10px; }
+.carro-seta[hidden] { display: none !important; }
+@media (pointer: fine) { .carro-seta { display: grid; } }
+.aviso-leg { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--info-bg); color: var(--text); font-size: 13.5px; line-height: 1.5; }
+.aviso-leg svg.i { color: var(--info); margin-top: 1px; }
+
+/* ================================================= calendário do mês */
+.mes { margin-bottom: 18px; padding: 18px; }
+.mes-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.mes-cab > div:first-child { min-width: 0; }
+.mes-nav { flex: none; }
+.mes-cab h3 { font-size: 22px; font-weight: 600; }
+.mes-cab small { color: var(--muted); font-size: 12.5px; }
+.mes-nav { display: flex; gap: 6px; align-items: center; }
+.mes-sem, .mes-grade { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.mes-sem span { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-bottom: 6px; }
+.mdia { position: relative; min-height: 96px; min-width: 0; padding: 8px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; font: inherit; transition: border-color .2s, background .2s, transform .2s var(--spring); }
+.mdia:hover { border-color: var(--border-strong); }
+.mdia:active { transform: scale(.97); }
+.mdia.fora { visibility: hidden; }
+.mdia b { font: 600 17px/1 Fredoka; }
+.mdia.passou { opacity: .55; }
+.mdia.hoje { border-color: var(--teal); background: linear-gradient(180deg, var(--teal-glow), transparent); opacity: 1; }
+.mdia.sel { border-color: var(--gold); background: var(--gold-glow); opacity: 1; box-shadow: 0 0 0 3px var(--gold-glow); }
+.mcont { position: absolute; top: 7px; right: 7px; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 99px; background: var(--surface-2); color: var(--muted); }
+.mcapas { display: flex; gap: 3px; margin-top: auto; }
+.mcapa { width: 24px; height: 32px; border-radius: 5px; background: var(--surface-2) center/cover no-repeat; border: 1px solid var(--border); }
+.mcapa.plano { opacity: .55; filter: grayscale(.4); }
+.mpontos { display: flex; gap: 3px; align-items: center; min-height: 7px; }
+.mcapas:empty { display: none; }
+.mcapas:empty + .mpontos { margin-top: auto; }
+.mpontos i, .mes-leg i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); flex: none; display: inline-block; }
+.mpontos em { font-style: normal; font-size: 9px; font-weight: 700; color: var(--muted); }
+i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story { background: var(--teal); } i.err { background: var(--err); }
+.mpontos i.plano, .mes-leg i.plano { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--teal); }
+.mpontos i.reel.plano { box-shadow: inset 0 0 0 1.5px var(--gold); } .mpontos i.carro.plano { box-shadow: inset 0 0 0 1.5px var(--info); }
+.mes-leg { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+.mes-leg span { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 700px) {
+  .mes { padding: 14px 12px; }
+  .mes-sem, .mes-grade { gap: 4px; }
+  .mdia { min-height: 54px; padding: 6px 2px; align-items: center; gap: 4px; border-radius: 11px; min-height: 0; aspect-ratio: 1 / 1.05; }
+  .mdia b { font-size: 15px; }
+  .mcapas, .mcont { display: none; }
+  .mpontos { display: flex; margin-top: auto; }
+  .mes-cab h3 { font-size: 19px; }
+}
+
+/* ================================================= Plano: Semana | Mês */
+#crono[hidden], #cResumo[hidden], .crono-nav[hidden], #cMesBox[hidden] { display: none; }
+#cVista { width: auto; }
+#cVista button { min-width: 92px; }
+.dica-mes { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13.5px; margin: 6px 4px 0; }
+.dica-mes .i { width: 16px; height: 16px; }
+.cdia-lista { margin-top: 4px; }
+.cdia-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 4px 2px 12px; }
+.cdia-cab small { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.cdia-cab b { font-size: 20px; font-weight: 600; }
+.cdia-itens { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+#cMes .mdia.tem b { color: var(--text); }
 </style>
 </head>
 <body>
@@ -834,6 +919,7 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
         <div><h1>Agenda</h1><p>Tudo o que o robô vai publicar. Toque num post para ver os detalhes.</p></div>
         <button class="btn pri" data-ir="novo"><svg class="i"><use href="#i-plus"/></svg>Novo post</button>
       </div>
+      <div class="card mes" id="mesCal"></div>
       <div class="segm" id="filtros">
         <div class="ind" id="filtroInd"></div>
         <button data-f="todos" class="ativo">Todos <span data-c="todos"></span></button>
@@ -890,6 +976,11 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
         </div>
       </div>
       <div class="crono-topo">
+        <div class="segm" id="cVista">
+          <div class="ind" id="cVistaInd"></div>
+          <button data-cv="semana" class="ativo">Semana</button>
+          <button data-cv="mes">Mês</button>
+        </div>
         <div class="crono-nav">
           <button class="btn ico peq" id="cAntes" aria-label="Semana anterior"><svg class="i"><use href="#i-left"/></svg></button>
           <b id="cSemana"></b>
@@ -899,6 +990,10 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
       </div>
       <div class="crono-resumo" id="cResumo"></div>
       <div class="crono" id="crono"></div>
+      <div id="cMesBox" hidden>
+        <div class="card mes" id="cMes"></div>
+        <div class="cdia-lista" id="cDiaLista"></div>
+      </div>
     </section>
 
     <!-- ============================================ novo post -->
@@ -1382,7 +1477,71 @@ function contar(el, alvo) {
 
 /* ================================================================ agenda */
 let FILTRO = "todos", DIA_FILTRO = "";
+/* ================================================================ calendário do mês (topo da Agenda)
+   Mostra o mês inteiro: o que está agendado ou publicado (bolinha cheia) e o que só está planejado no cronograma (contorno).
+   Tocar num dia mostra só os posts dele; tocar de novo volta a mostrar todos. */
+let MES_OFF = 0;
+function corFmt(t) { return t === "reel" ? "reel" : t === "carrossel" ? "carro" : "story"; }
+function capaPost(x) {
+  const p = x.post || {}, img = x.arquivos.find((f) => f.name === p.capa) || x.arquivos.find((f) => /\.(jpe?g|png|webp)$/i.test(f.name));
+  return img?.download_url || "";
+}
+/* Componente único de calendário do mês (usado na Agenda e no Plano).
+   off: meses a partir do atual. porDia(pref) devolve { "AAAA-MM-DD": [{ cor, plano, pub, capa }] }.
+   Gera o cabeçalho com ‹ › (data-mes) e um botão por dia (data-mdia). */
+function infoMes(off) {
+  const hoje = chaveDia(new Date()), [ah, mh] = hoje.split("-").map(Number);
+  const base = new Date(Date.UTC(ah, mh - 1 + off, 1, 15));
+  const ano = base.getUTCFullYear(), mes = base.getUTCMonth();
+  return { hoje, base, nDias: new Date(Date.UTC(ano, mes + 1, 0)).getUTCDate(), pula: (base.getUTCDay() + 6) % 7,
+    pref: `${ano}-${String(mes + 1).padStart(2, "0")}`, nome: (() => { const t = new Intl.DateTimeFormat("pt-BR", { month: "long", timeZone: "UTC" }).format(base); return `${t[0].toUpperCase()}${t.slice(1)} de ${ano}`; })() };
+}
+function htmlCalMes({ off, porDia, sel = "", resumo = "", legenda = "", extra = null, classe = null }) {
+  /* extra(k, xs): HTML a mais dentro do dia; classe(k, xs): classes a mais no dia (opcionais, para outras telas) */
+  const m = infoMes(off);
+  let cel = "";
+  for (let i = 0; i < m.pula; i++) cel += `<div class="mdia fora"></div>`;
+  for (let d = 1; d <= m.nDias; d++) {
+    const k = `${m.pref}-${String(d).padStart(2, "0")}`, xs = porDia[k] || [];
+    const pontos = xs.slice(0, 4).map((o) => `<i class="${o.cor} ${o.plano ? "plano" : ""} ${o.pub ? "pub" : ""}"></i>`).join("") + (xs.length > 4 ? `<em>+${xs.length - 4}</em>` : "");
+    const capas = xs.filter((o) => o.capa).slice(0, 3).map((o) => `<span class="mcapa ${o.plano ? "plano" : ""}" style="background-image:url('${esc(o.capa)}')"></span>`).join("");
+    cel += `<button class="mdia ${k === m.hoje ? "hoje" : ""} ${k < m.hoje ? "passou" : ""} ${k === sel ? "sel" : ""} ${xs.length ? "tem" : ""} ${classe ? classe(k, xs) || "" : ""}" data-mdia="${k}" aria-label="${d}: ${xs.length} item(ns)">
+      <b>${d}</b>${xs.length ? `<span class="mcont">${xs.length}</span>` : ""}<div class="mcapas">${capas}</div><div class="mpontos">${pontos}</div>${extra ? extra(k, xs) || "" : ""}</button>`;
+  }
+  return `<div class="mes-cab">
+      <div><h3 class="display">${esc(m.nome)}</h3><small>${resumo}</small></div>
+      <div class="mes-nav">${off ? `<button class="btn fant peq" data-mes="0">Hoje</button>` : ""}<button class="btn ico peq" data-mes="-1" aria-label="Mês anterior">${ic("i-left")}</button><button class="btn ico peq" data-mes="1" aria-label="Próximo mês">${ic("i-right")}</button></div>
+    </div>
+    <div class="mes-sem">${["seg", "ter", "qua", "qui", "sex", "sáb", "dom"].map((n) => `<span>${n}</span>`).join("")}</div>
+    <div class="mes-grade">${cel}</div>
+    ${legenda ? `<div class="mes-leg">${legenda}</div>` : ""}`;
+}
+const plural = (n, p, pl = p + "s") => `${n} ${n === 1 ? p : pl}`;
+function desenharMes() {
+  const caixa = $("#mesCal"); if (!caixa) return;
+  const { pref } = infoMes(MES_OFF), porDia = {};
+  const add = (k, o) => { if (k?.startsWith(pref)) (porDia[k] ||= []).push(o); };
+  POSTS.forEach((x) => { if (!x.post?.quando) return; const st = situacao(x);
+    add(chaveDia(new Date(x.post.quando)), { cor: st === "problemas" ? "err" : corFmt(x.post.tipo), pub: st === "publicados", plano: false, capa: capaPost(x) }); });
+  (CRONO.itens || []).forEach((it) => { if (!it.data || !["reel", "stories", "carrossel"].includes(it.formato)) return;
+    const st = statusItem(it); if (st === "agendado" || st === "publicado" || st === "pulado") return; // esses já estão na agenda
+    add(it.data, { cor: corFmt(it.formato), plano: true, capa: capaItem(it) }); });
+  const tot = Object.values(porDia).flat();
+  caixa.innerHTML = htmlCalMes({ off: MES_OFF, porDia, sel: DIA_FILTRO,
+    resumo: `${plural(tot.filter((o) => !o.plano && !o.pub).length, "agendado")} · ${plural(tot.filter((o) => o.pub).length, "publicado")} · ${plural(tot.filter((o) => o.plano).length, "planejado")}`,
+    legenda: `<span><i class="reel"></i>Reel</span><span><i class="story"></i>Story</span><span><i class="carro"></i>Carrossel</span><span><i class="story plano"></i>Só planejado</span><span><i class="err"></i>Problema</span>` });
+}
+$("#mesCal").addEventListener("click", (e) => {
+  const m = e.target.closest("[data-mes]");
+  if (m) { MES_OFF = m.dataset.mes === "0" ? 0 : MES_OFF + +m.dataset.mes; desenharMes(); return; }
+  const d = e.target.closest("[data-mdia]"); if (!d) return;
+  DIA_FILTRO = DIA_FILTRO === d.dataset.mdia ? "" : d.dataset.mdia;
+  if (DIA_FILTRO) { FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo")); }
+  desenharAgenda();
+  if (DIA_FILTRO) depoisDoQuadro(() => $("#lista").scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "start" }));
+});
 function desenharAgenda() {
+  desenharMes();
   const alvo = $("#lista");
   if (!carregou) { alvo.innerHTML = `<div class="posts" style="margin-top:26px">${'<div class="skel" style="height:150px"></div>'.repeat(3)}</div>`; return; }
   let lista = POSTS.filter((x) => FILTRO === "todos" || situacao(x) === FILTRO);
@@ -1433,6 +1592,7 @@ function linhaRede(r, cls, tit, sub, extra = "", abaixo = "") {
 }
 // Legenda e títulos, cada um com botão de copiar (útil para o TikTok, que é postado à mão).
 function blocoTextos(p) {
+  if (p.tipo === "story") return `<div class="sec-tit" style="margin-top:22px">Textos</div><p class="aviso-leg">${ic("i-info")}<span>Story não tem legenda: o Instagram e o Facebook não mostram texto junto do story. O texto vai na própria arte.</span></p>`;
   const campo = (rot, txt, leg) => `<div class="campo-txt"><div class="campo-cab"><span>${rot}</span>${txt ? `<button class="btn fant peq" data-copiar>${ic("i-copy")}Copiar</button>` : ""}</div><div class="${leg ? "texto-leg" : "texto-curto"}">${esc(txt || "(sem legenda)")}</div></div>`;
   return `<div class="sec-tit" style="margin-top:22px">Textos</div>${campo("Legenda", p.legenda, true)}${p.titulo_facebook ? campo("Título no Facebook", p.titulo_facebook) : ""}${p.titulo_youtube ? campo("Título no YouTube", p.titulo_youtube) : ""}`;
 }
@@ -2215,7 +2375,7 @@ function desenharBiblioteca() {
     const q = quandoBib(b);
     if (!passa(bibCategoriaDe(b), q)) return;
     const f = b.ficha, st = statusBib(b);
-    itens.push({ q, nome: b.videoUrl ? b.nome : "", html: `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}">
+    itens.push({ q, feed: b.videoUrl ? { k: "v", chave: "v:" + b.nome, nome: b.nome } : null, html: `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}" ${b.videoUrl ? `data-feed="${esc("v:" + b.nome)}"` : ""}>
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">
         <span class="tag">${esc(NOMES_TIPO[f.tipo] || "Reel")}</span>
         ${b.videoUrl ? `<video muted playsinline loop preload="none" data-src="${esc(b.videoUrl)}"></video><span class="play">${ic("i-play")}</span>` : ""}
@@ -2231,10 +2391,11 @@ function desenharBiblioteca() {
     if (!passa(cat, p.it.data)) return;
     const pasta = (p.it.notas || "").match(/^producao\/([^\/\s]+)/)?.[1];
     const arqs = (PRODUCAO?.[pasta] || []);
-    (arqs.length ? arqs : [null]).forEach((arq, i, todas) => itens.push({ q: p.it.data, html: `<div class="card vid st-${p.s}" data-peca="${esc(pasta || "")}" data-idx="${i}">
+    const story = p.it.formato === "stories";
+    (arqs.length ? arqs : [null]).forEach((arq, i, todas) => { const chave = story ? `s:${pasta}:${i}` : `c:${pasta}`; itens.push({ q: p.it.data, feed: arq ? { k: story ? "s" : "c", chave, pasta, idx: i, p, arqs } : null, html: `<div class="card vid st-${p.s}" data-peca="${esc(pasta || "")}" data-idx="${i}" ${arq ? `data-feed="${esc(chave)}"` : ""}>
       <div class="capa" style="background-image:url('${esc(arq ? arq.download_url : capaItem(p.it))}')"><span class="tag">${esc(FORMATOS[p.it.formato] || p.it.formato)}${todas.length > 1 ? ` ${i + 1}/${todas.length}` : ""}</span></div>
       <div class="info"><b>${esc(p.it.tema || "Sem tema ainda")}</b><div class="chips">${chipPeca(p)}</div></div>
-    </div>` }));
+    </div>` }); });
   });
   /* sem data vai sempre para o fim; com data, a ordem escolhida */
   itens.sort((a, b) => {
@@ -2249,7 +2410,9 @@ function desenharBiblioteca() {
       : vazio("i-film", "Nada nesse filtro", BIB_FILTRO === "prontos" ? "Todos os vídeos já foram agendados ou publicados." : "Nenhum vídeo aqui ainda.");
     return;
   }
-  REEL_LISTA = itens.filter((i) => i.nome).map((i) => i.nome); // ordem da tela, para deslizar de um vídeo ao próximo
+  // ordem da tela, para deslizar de um item ao próximo; o carrossel entra uma vez só (os slides passam para o lado)
+  const vistos = new Set(); REEL_LISTA = [];
+  itens.forEach((i) => { if (i.feed && !vistos.has(i.feed.chave)) { vistos.add(i.feed.chave); REEL_LISTA.push(i.feed); } });
   alvo.innerHTML = `<div class="vids stagger">${itens.map((i) => i.html).join("")}</div>`;
 }
 /* arte da pasta producao/ convertida para JPG (o Instagram não aceita PNG) */
@@ -2377,7 +2540,8 @@ $("#bibLista").addEventListener("pointerout", (e) => {
   delete v.dataset.tocando; v.classList.remove("on"); v.pause();
 });
 $("#bibLista").addEventListener("click", (e) => {
-  const c = e.target.closest("[data-bib]"); if (c) return REEL_LISTA.includes(c.dataset.bib) ? abrirReels(c.dataset.bib) : abrirVideo(c.dataset.bib);
+  const f = e.target.closest("[data-feed]"); if (f) return abrirReels(f.dataset.feed, +(f.dataset.idx || 0));
+  const c = e.target.closest("[data-bib]"); if (c) return abrirVideo(c.dataset.bib);
   const a = e.target.closest("[data-peca]"); if (a) abrirArte(a.dataset.peca, +a.dataset.idx);
 });
 /* ================================================================ reels em tela cheia
@@ -2387,15 +2551,17 @@ let REEL_LISTA = [], REEL_ATUAL = -1, REEL_SOM = true, reelObs = null, reelHist 
 const reelBox = document.createElement("div");
 reelBox.className = "reels"; reelBox.id = "reels"; reelBox.hidden = true;
 reelBox.setAttribute("role", "dialog"); reelBox.setAttribute("aria-modal", "true"); reelBox.setAttribute("aria-label", "Vídeos");
-reelBox.innerHTML = `<div class="reels-topo"><button class="reels-x" data-r="fechar" aria-label="Fechar">${ic("i-x")}</button><b>Vídeos</b><span id="reelsPos"></span></div>
+reelBox.innerHTML = `<div class="reels-topo"><button class="reels-x" data-r="fechar" aria-label="Fechar">${ic("i-x")}</button><b>Biblioteca</b><span id="reelsPos"></span></div>
   <div class="reels-trilho" id="reelsTrilho"></div>
   <div class="reels-setas"><button data-r="ant" aria-label="Vídeo anterior">${ic("i-up")}</button><button data-r="prox" aria-label="Próximo vídeo">${ic("i-down2")}</button></div>`;
 document.body.appendChild(reelBox);
 
-function slideReel(nome, i) {
+function slideReel(en, i) {
+  if (en.k !== "v") return slideArte(en, i);
+  const nome = en.nome;
   const b = BIB.find((y) => y.nome === nome), f = b.ficha, st = statusBib(b);
   const leg = (f.legenda || "").trim();
-  return `<section class="reel" data-i="${i}" data-nome="${esc(nome)}">
+  return `<section class="reel" data-i="${i}" data-k="v" data-nome="${esc(nome)}">
     <div class="reel-palco">
       <video loop playsinline preload="none" data-src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""}></video>
       <span class="reel-pausa">${ic("i-play")}</span>
@@ -2414,18 +2580,44 @@ function slideReel(nome, i) {
     </div>
   </section>`;
 }
-function abrirReels(nome) {
-  const i = Math.max(0, REEL_LISTA.indexOf(nome));
+// story: uma arte por tela; carrossel: os slides passam para o lado, com pontinhos embaixo
+function slideArte(en, i) {
+  const it = en.p.it, story = en.k === "s", arqs = story ? [en.arqs[en.idx]] : en.arqs;
+  const rot = story ? `Story ${en.idx + 1} de ${en.arqs.length}` : `Carrossel · ${arqs.length} slides`;
+  return `<section class="reel" data-i="${i}" data-k="${en.k}" data-pasta="${esc(en.pasta)}">
+    <div class="reel-palco arte ${story ? "" : "carro"}">
+      <div class="carro-trilho">${arqs.map((a, k) => `<div class="carro-slide"><img alt="${esc(it.tema || "")} ${k + 1}" data-src="${esc(a.download_url)}" decoding="async"></div>`).join("")}</div>
+      ${arqs.length > 1 ? `<div class="carro-pontos">${arqs.map((_, k) => `<i class="${k ? "" : "on"}"></i>`).join("")}</div>
+      <button class="carro-seta ant" data-r="c-ant" hidden aria-label="Slide anterior">${ic("i-left")}</button><button class="carro-seta prox" data-r="c-prox" aria-label="Próximo slide">${ic("i-right")}</button>` : ""}
+      <div class="reel-info">
+        <div class="reel-chips"><span class="chip">${esc(rot)}</span>${chipPeca(en.p)}</div>
+        <b>${esc(it.tema || "Sem tema ainda")}</b>
+        ${story ? "" : `<p class="reel-leg" data-r="leg" data-leg-pasta="${esc(en.pasta)}"></p>`}
+      </div>
+      <div class="reel-acoes">
+        <button data-r="detalhes" aria-label="Informações"><span>${ic("i-info")}</span><small>Info</small></button>
+        <a href="${esc(arqs[0].download_url)}" download target="_blank" rel="noopener" aria-label="Baixar" data-baixar><span>${ic("i-down")}</span><small>Baixar</small></a>
+      </div>
+    </div>
+  </section>`;
+}
+function abrirReels(chave, slide = 0) {
+  const i = Math.max(0, REEL_LISTA.findIndex((en) => en.chave === chave));
   $("#reelsTrilho").innerHTML = REEL_LISTA.map(slideReel).join("");
+  const alvo = REEL_LISTA[i];
+  if (alvo?.k === "c" && slide) { const t = $(`.reel[data-i="${i}"] .carro-trilho`); requestAnimationFrame(() => { t.scrollLeft = slide * t.clientWidth; }); }
   reelBox.hidden = false; document.documentElement.classList.add("travado", "com-reels");
   if (!reelHist) { history.pushState({ reels: 1 }, ""); reelHist = true; } // o "voltar" do celular fecha os vídeos
   REEL_ATUAL = -1;
   const trilho = $("#reelsTrilho");
   trilho.scrollTop = i * trilho.clientHeight;
   reelObs?.disconnect();
-  reelObs = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) mostrarReel(+en.target.dataset.i); }), { root: trilho, threshold: 0.6 });
-  $$(".reel", trilho).forEach((sl) => reelObs.observe(sl));
-  mostrarReel(i);
+  depoisDoQuadro(() => { // a tela preta aparece na hora; o vídeo começa a carregar logo depois
+    if (reelBox.hidden) return;
+    reelObs = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) mostrarReel(+en.target.dataset.i); }), { root: trilho, threshold: 0.6 });
+    $$(".reel", trilho).forEach((sl) => reelObs.observe(sl));
+    mostrarReel(i);
+  });
 }
 function mostrarReel(i) {
   if (i === REEL_ATUAL) return;
@@ -2433,6 +2625,11 @@ function mostrarReel(i) {
   $("#reelsPos").textContent = `${i + 1} de ${REEL_LISTA.length}`;
   $$("#reelsTrilho .reel").forEach((sl) => {
     const k = +sl.dataset.i, v = $("video", sl);
+    if (!v) { // arte: carrega as imagens do item da vez e dos vizinhos
+      if (Math.abs(k - i) <= 1) $$("img[data-src]", sl).forEach((im) => { if (!im.getAttribute("src")) im.src = im.dataset.src; });
+      if (k === i) carregarLegendaReel(sl);
+      return;
+    }
     if (Math.abs(k - i) <= 1 && !v.getAttribute("src")) { v.src = v.dataset.src; v.preload = k === i ? "auto" : "metadata"; }
     if (k === i) {
       v.muted = !REEL_SOM; v.currentTime = 0;
@@ -2443,11 +2640,19 @@ function mostrarReel(i) {
     }
   });
 }
+const LEG_CACHE = {};
+async function carregarLegendaReel(sl) {
+  const p = $("[data-leg-pasta]", sl); if (!p || p.dataset.ok) return;
+  p.dataset.ok = "1"; const pasta = p.dataset.legPasta;
+  if (!(pasta in LEG_CACHE)) LEG_CACHE[pasta] = await legendaDaProducao(pasta);
+  p.textContent = LEG_CACHE[pasta];
+}
 function fecharReels(daHistoria = false) {
   if (reelBox.hidden) return;
-  reelObs?.disconnect(); $$("#reelsTrilho video").forEach((v) => { v.pause(); v.removeAttribute("src"); v.load(); });
+  reelObs?.disconnect(); $$("#reelsTrilho video").forEach((v) => v.pause());
   if ($("#gaveta.on")) fecharGaveta();
-  $("#reelsTrilho").innerHTML = ""; reelBox.hidden = true; REEL_ATUAL = -1; document.documentElement.classList.remove("com-reels"); travar();
+  reelBox.hidden = true; REEL_ATUAL = -1; document.documentElement.classList.remove("com-reels"); travar();
+  depoisDoQuadro(() => { if (!reelBox.hidden) return; $$("#reelsTrilho video").forEach((v) => { v.removeAttribute("src"); v.load(); }); $("#reelsTrilho").innerHTML = ""; }); // limpa depois de fechar
   if (reelHist) { reelHist = false; if (!daHistoria) history.back(); }
 }
 function passarReel(d) { const t = $("#reelsTrilho"), n = REEL_ATUAL + d; if (n >= 0 && n < REEL_LISTA.length) t.scrollTo({ top: n * t.clientHeight, behavior: "smooth" }); }
@@ -2469,6 +2674,8 @@ reelBox.addEventListener("click", (e) => {
     $$("#reelsTrilho [data-r='som']").forEach((b) => (b.innerHTML = `<span>${ic(REEL_SOM ? "i-vol" : "i-mudo")}</span><small>${REEL_SOM ? "Som" : "Mudo"}</small>`));
     return;
   }
+  if (acao === "c-ant" || acao === "c-prox") { const t = $(".carro-trilho", sl); t.scrollBy({ left: (acao === "c-prox" ? 1 : -1) * t.clientWidth, behavior: "smooth" }); return; }
+  if (acao === "detalhes" && sl.dataset.k !== "v") return abrirInfoArte(REEL_LISTA[+sl.dataset.i]);
   // Info e Agendar abrem a folha por cima do vídeo; ao fechar, volta para o mesmo vídeo
   if (acao === "agendar" || acao === "detalhes") { v?.pause(); sl.classList.add("pausado"); return abrirVideo(nome, acao === "agendar"); }
   if (e.target.closest(".reel-acoes, a")) return;
@@ -2476,6 +2683,33 @@ reelBox.addEventListener("click", (e) => {
     if (v.paused) { v.play().catch(() => {}); sl.classList.remove("pausado"); } else { v.pause(); sl.classList.add("pausado"); }
   }
 });
+$("#reelsTrilho").addEventListener("scroll", (e) => {
+  const t = e.target; if (!t.classList?.contains("carro-trilho")) return;
+  const k = Math.round(t.scrollLeft / t.clientWidth), sl = t.closest(".reel");
+  $$(".carro-pontos i", sl).forEach((d, j) => d.classList.toggle("on", j === k));
+  const im = $$(".carro-slide img", sl)[k]; const a = $("[data-baixar]", sl); if (im && a) a.href = im.dataset.src;
+  sl.querySelector(".carro-seta.ant")?.toggleAttribute("hidden", k === 0);
+  sl.querySelector(".carro-seta.prox")?.toggleAttribute("hidden", k >= $$(".carro-slide", sl).length - 1);
+}, { capture: true, passive: true });
+// folha de informações de um story ou carrossel
+async function abrirInfoArte(en) {
+  const it = en.p.it, story = en.k === "s";
+  $("#gavRot").textContent = story ? `Story ${en.idx + 1} de ${en.arqs.length} · biblioteca` : "Carrossel · biblioteca";
+  $("#gavTit").textContent = it.tema || "Sem tema ainda";
+  const horas = horasDo(it), quando = it.data ? `${esc(F_CURTO.format(dataDe(it.data)))}${horas.length ? ", " + esc(story ? (horas[en.idx] || horas.join(" · ")) : horas.join(" · ")) : ""}` : "sem data";
+  const [cls, tit] = en.p.s === "publicado" ? ["ok", "Publicado"] : en.p.s === "agendado" ? ["info", "Agendado"] : ["", "Pronto"];
+  const redes = (it.redes || ["instagram", "facebook"]).filter((r) => NOMES_REDE[r] && r !== "youtube");
+  const leg = story ? "" : (LEG_CACHE[en.pasta] ?? (LEG_CACHE[en.pasta] = await legendaDaProducao(en.pasta)));
+  $("#gavCorpo").innerHTML = `
+    <div class="sec-tit">Onde vai sair</div>
+    <div class="redes-lista">${redes.map((r) => linhaRede(r, cls, tit, en.p.s === "pronto" ? `Cronograma: ${quando}` : quando)).join("") || `<p class="dica" style="padding:12px 14px;margin:0">Nenhuma rede marcada.</p>`}</div>
+    ${story ? `<div class="sec-tit" style="margin-top:22px">Textos</div><p class="aviso-leg">${ic("i-info")}<span>Story não tem legenda: o Instagram e o Facebook não mostram texto junto do story. O texto vai na própria arte.</span></p>`
+      : blocoTextos({ legenda: leg })}
+    <label class="campo">Arquivos</label><div class="redes">${(story ? [en.arqs[en.idx]] : en.arqs).map((a) => `<a class="chip" href="${esc(a.download_url)}" target="_blank" rel="noopener">${esc(a.name)}</a>`).join("")}</div>`;
+  $("#gavPe").innerHTML = `<button class="btn" data-ir="cronograma">${ic("i-plan")}Ver no cronograma</button><button class="btn pri" id="gFecha">Fechar</button>`;
+  $("#gFecha").onclick = fecharGaveta;
+  $("#veu").classList.add("on"); $("#gaveta").classList.add("on"); $("#gaveta").setAttribute("aria-hidden", "false"); travar();
+}
 $("#reelsTrilho").addEventListener("timeupdate", (e) => {
   const v = e.target; if (!v.duration) return;
   const barra = v.closest(".reel")?.querySelector(".reel-barra i"); if (barra) barra.style.width = `${(v.currentTime / v.duration) * 100}%`;
@@ -2485,6 +2719,7 @@ addEventListener("keydown", (e) => {
   if (e.key === "Escape") fecharReels();
   else if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); passarReel(1); }
   else if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); passarReel(-1); }
+  else if (e.key === "ArrowRight" || e.key === "ArrowLeft") { $(`#reelsTrilho .reel[data-i="${REEL_ATUAL}"] [data-r="${e.key === "ArrowRight" ? "c-prox" : "c-ant"}"]`)?.click(); }
   else if (e.key === " ") { e.preventDefault(); $(`#reelsTrilho .reel[data-i="${REEL_ATUAL}"] .reel-palco`)?.click(); }
 }, true); // antes dos outros atalhos: o Esc com a folha aberta fecha só a folha
 
@@ -2530,7 +2765,7 @@ function abrirVideo(nome, agendar = false) {
   const f = b.ficha, st = statusBib(b);
   $("#gavRot").textContent = `${NOMES_TIPO[f.tipo] || "Reel"} · biblioteca`;
   $("#gavTit").textContent = f.titulo || nome;
-  const player = `<div class="det-player"><video src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""} controls controlslist="nodownload noplaybackrate" playsinline preload="metadata"></video></div>`;
+  const player = document.documentElement.classList.contains("com-reels") ? "" : `<div class="det-player"><video src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""} controls controlslist="nodownload noplaybackrate" playsinline preload="metadata"></video></div>`;
   if (agendar) {
     const dias = []; for (let i = 0; i < 7; i++) dias.push(chaveDia(new Date(Date.now() + i * 864e5)));
     $("#gavCorpo").innerHTML = `
@@ -2702,7 +2937,75 @@ function ligarNoCronograma(b, data) {
   it.data = data; it.biblioteca = b.nome; it.status = "agendado";
   if (!it.tema) it.tema = b.ficha.titulo || b.nome;
 }
+let CRONO_VISTA = (() => { try { return localStorage.getItem("cronoVista") || "semana"; } catch { return "semana"; } })();
+let CMES_OFF = 0, CDIA = "";
+function cartaoItem(it, h, i, n, hoje) {
+  const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
+  return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
+    <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
+    <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
+    <div class="mini">${h ? `<span class="hora-c">${esc(h)}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+    ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
+  </div>`;
+}
+function cartoesDoDia(k) {
+  const ordem = Object.keys(FORMATOS);
+  return CRONO.itens.filter((x) => x.data === k).flatMap((it) => {
+    const hs = horasDo(it);
+    return (hs.length > 1 ? hs : [hs[0] || null]).map((h, i, todos) => ({ it, h, i, n: todos.length }));
+  }).sort((a, b) => (a.h || "99:99").localeCompare(b.h || "99:99") || ordem.indexOf(a.it.formato) - ordem.indexOf(b.it.formato));
+}
+function desenharCronoMes() {
+  const { pref, hoje } = infoMes(CMES_OFF), porDia = {};
+  const doMes = CRONO.itens.filter((it) => it.data?.startsWith(pref));
+  doMes.forEach((it) => { const st = statusItem(it);
+    (porDia[it.data] ||= []).push({ cor: st === "pulado" ? "err" : corFmt(it.formato), plano: ["ideia", "roteiro", "producao", "pedido"].includes(st), pub: st === "publicado", capa: capaItem(it) }); });
+  const nPub = doMes.filter((x) => statusItem(x) === "publicado").length, nPl = doMes.filter((x) => ["ideia", "roteiro", "producao", "pedido"].includes(statusItem(x))).length;
+  $("#cMes").innerHTML = htmlCalMes({ off: CMES_OFF, porDia, sel: CDIA,
+    resumo: doMes.length ? `${plural(doMes.length, "item", "itens")} · ${plural(nPub, "publicado")} · ${nPl} sem vídeo pronto` : "Mês vazio. Toque num dia para pôr um item.",
+    legenda: `<span><i class="reel"></i>Reel</span><span><i class="story"></i>Stories</span><span><i class="carro"></i>Carrossel</span><span><i class="story plano"></i>Ainda sem vídeo</span><span><i class="err"></i>Não saiu</span>` });
+  const k = CDIA;
+  if (!k) { $("#cDiaLista").innerHTML = `<p class="dica-mes">${ic("i-cal")}Toque num dia para ver e editar o que tem nele.</p>`; return; }
+  const cs = cartoesDoDia(k), dt = dataDe(k);
+  $("#cDiaLista").innerHTML = `<div class="cdia-cab"><div><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}</small><b class="display">${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}</b></div>
+      <button class="btn pri peq" data-add="${k}">${ic("i-plus")}Item</button></div>
+    ${cs.length ? `<div class="cdia-itens" data-cdia="${k}">${cs.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}</div>` : `<p class="dica-mes">Nada planejado nesse dia.</p>`}`;
+}
+function aplicarVistaCrono() {
+  const mes = CRONO_VISTA === "mes";
+  $$("#cVista [data-cv]").forEach((b) => b.classList.toggle("ativo", b.dataset.cv === CRONO_VISTA));
+  moverIndicador($("#cVista"), $("#cVistaInd"), $("#cVista .ativo"));
+  $("#crono").hidden = mes; $("#cResumo").hidden = mes; $(".crono-nav").hidden = mes; $("#cMesBox").hidden = !mes;
+}
+$("#cVista").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-cv]"); if (!b || b.dataset.cv === CRONO_VISTA) return;
+  CRONO_VISTA = b.dataset.cv; try { localStorage.setItem("cronoVista", CRONO_VISTA); } catch {}
+  if (CRONO_VISTA === "mes") { // abre no mês da semana que estava aberta
+    const [a1, m1] = chaveDia(new Date()).split("-").map(Number), [a2, m2] = SEMANA.split("-").map(Number);
+    CMES_OFF = (a2 - a1) * 12 + (m2 - m1);
+  }
+  aplicarVistaCrono(); desenharCronograma();
+});
+$("#cMes").addEventListener("click", (e) => {
+  const m = e.target.closest("[data-mes]");
+  if (m) { CMES_OFF = m.dataset.mes === "0" ? 0 : CMES_OFF + +m.dataset.mes; CDIA = ""; desenharCronoMes(); return; }
+  const d = e.target.closest("[data-mdia]"); if (!d) return;
+  CDIA = CDIA === d.dataset.mdia ? "" : d.dataset.mdia; SEMANA = segundaDe(CDIA || chaveDia(new Date()));
+  desenharCronoMes();
+  if (CDIA && innerWidth <= 700) depoisDoQuadro(() => $("#cDiaLista").scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "nearest" }));
+});
+$("#cDiaLista").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-criar]"); if (c) return pedirCriacao(CRONO.itens.find((x) => x.id === c.dataset.criar));
+  const a = e.target.closest("[data-add]"); if (a) return editarItem(null, a.dataset.add);
+  const it = e.target.closest("[data-item]"); if (it) editarItem(CRONO.itens.find((x) => x.id === it.dataset.item));
+});
 function desenharCronograma() {
+  aplicarVistaCrono();
+  if (CRONO_VISTA === "mes") {
+    if (!cronoCarregou) { $("#cMes").innerHTML = '<div class="skel" style="height:360px"></div>'; return; }
+    if (cronoErro) { $("#cMes").innerHTML = vazio("i-alert", "Não consegui ler o cronograma", esc(cronoErro)); return; }
+    return desenharCronoMes();
+  }
   const fim = somaDias(SEMANA, 6);
   $("#cSemana").textContent = `${dataDe(SEMANA).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })} a ${dataDe(fim).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
   if (!cronoCarregou) { $("#crono").innerHTML = '<div class="skel" style="height:220px"></div>'.repeat(7); return; }
@@ -2724,15 +3027,7 @@ function desenharCronograma() {
     }).sort((a, b) => (a.h || "99:99").localeCompare(b.h || "99:99") || ordem.indexOf(a.it.formato) - ordem.indexOf(b.it.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${cartoes.map(({ it, h, i, n }) => {
-        const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
-        return `<div class="citem st-${st}" draggable="true" data-item="${esc(it.id)}">
-          <div class="l1"><span class="fmt">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span><span class="chip ${cls}">${rot}</span></div>
-          <div class="tema ${it.tema ? "" : "vazio-t"}">${esc(it.tema || "Sem tema ainda")}</div>
-          <div class="mini">${h ? `<span class="hora-c">${esc(h)}</span>` : ""}${(it.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
-          ${podeCriar(it, hoje) ? `<button class="criar" data-criar="${esc(it.id)}">${ic("i-zap")}Criar</button>` : ""}
-        </div>`;
-      }).join("")}
+      ${cartoes.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;
   }).join("");
@@ -2927,17 +3222,24 @@ function editarItem(it, dataInicial) {
 /* ================================================================ navegação */
 let VIEW = "inicio";
 function irPara(v) {
+  if (!$("#reels")?.hidden) fecharReels();
   if (["agenda", "biblioteca", "cronograma", "analises", "robo"].includes(v) || v === "inicio") local.set("painel-aba", v);
   if (v !== VIEW) { VIEW = v; $$(".view").forEach((s) => s.classList.toggle("ativa", s.id === "v-" + v)); window.scrollTo({ top: 0 }); }
   $$("#nav [data-view], #tabbar [data-view]").forEach((b) => b.classList.toggle("ativo", b.dataset.view === v));
   posicionarNav();
-  if (v === "agenda") { desenharAgenda(); requestAnimationFrame(() => moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo"))); }
-  if (v === "novo" && NOVO.etapa === ETAPAS) resetarNovo();
-  if (v === "analises") { if (AN) { desenharAnalises(); } else carregarAnalises(); }
-  if (v === "biblioteca") { desenharBiblioteca(); requestAnimationFrame(() => moverIndicador($("#bibFiltros"), $("#bibFiltros .ind"), $("#bibFiltros .ativo"))); }
-  if (v === "cronograma") desenharCronograma();
   fecharGaveta();
+  if (v === "novo" && NOVO.etapa === ETAPAS) resetarNovo();
+  // Responde ao toque primeiro (aba marcada e tela trocada) e só depois monta o conteúdo, para o toque não parecer travado.
+  depoisDoQuadro(() => {
+    if (VIEW !== v) return; // trocou de aba de novo antes de montar
+    if (v === "agenda") { desenharAgenda(); requestAnimationFrame(() => moverIndicador($("#filtros"), $("#filtroInd"), $("#filtros .ativo"))); }
+    if (v === "analises") { if (AN) { desenharAnalises(); } else carregarAnalises(); }
+    if (v === "biblioteca") { desenharBiblioteca(); requestAnimationFrame(() => moverIndicador($("#bibFiltros"), $("#bibFiltros .ind"), $("#bibFiltros .ativo"))); }
+    if (v === "cronograma") desenharCronograma();
+  });
 }
+// roda fn depois que o navegador pintar o quadro atual
+function depoisDoQuadro(fn) { requestAnimationFrame(() => setTimeout(fn, 0)); }
 function posicionarNav() {
   const a = $("#nav .ativo"); if (a) { $("#navPilula").style.height = a.offsetHeight + "px"; $("#navPilula").style.transform = `translateY(${a.offsetTop}px)`; }
   const t = $("#tabbar .ativo"), ind = $("#tabInd");
@@ -2959,12 +3261,14 @@ document.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharModal(false); fecharGaveta(); } });
 // ondulação nos botões e luz que segue o mouse nos cards
 document.addEventListener("pointerdown", (e) => {
+  if (e.pointerType !== "mouse") return; // no toque, sem ondulação: ela força um cálculo de layout a cada toque
   const b = e.target.closest(".btn"); if (!b || reduzido) return;
   const r = b.getBoundingClientRect(), s = Math.max(r.width, r.height), o = document.createElement("span");
   o.className = "ripple"; o.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
   b.appendChild(o); setTimeout(() => o.remove(), 600);
 });
 document.addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse") return;
   const c = e.target.closest?.(".spot"); if (!c) return;
   const r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px");
 });

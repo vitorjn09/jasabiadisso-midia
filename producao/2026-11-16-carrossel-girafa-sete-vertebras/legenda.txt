@@ -1,0 +1,13 @@
+CARROSSEL · SEGUNDA 16/11/2026 · CURIOSIDADE DO DIA · A GIRAFA TEM 7 OSSOS NO PESCOÇO
+4 slides em 1080×1350 (4:5). Postar na ordem 16-11-slide-01 a 16-11-slide-04 (a capa é o 01).
+Ordem do dia: este carrossel sai ANTES do Reel de hoje ("A girafa tem 7 vértebras no pescoço, igual a você"). É o esquenta: conta que o seu pescoço, o da girafa e o do rato têm 7 ossos e deixa a pergunta (como cabem quase 2 metros?). Guarda para o vídeo os 25 cm de cada osso e o truque da vértebra do peito.
+Horário sugerido: por volta de 12:15, antes do Reel. Não publicado nem agendado.
+
+Legenda:
+O seu pescoço e o da girafa têm uma coisa igual 🦒 Arrasta pra ver o quê, e a pergunta que fica: como cabem quase 2 metros nisso? O vídeo completo sai hoje no perfil. Você já sabia disso? 👇
+
+Hashtags (máximo de 5):
+#curiosidades #girafa #animais #ciencia #jasabiadisso
+
+Fatos: os mesmos do roteiro checado do Reel (produção/girafa-sete-vertebras/roteiro-girafa-sete-vertebras.txt): girafas têm 7 vértebras no pescoço, como quase todos os mamíferos, inclusive humanos e ratos (San Diego Zoo Wildlife Alliance; Snopes); pescoço de cerca de 1,8 a 2 m.
+Ilustrações recortadas do próprio Reel. Para refazer: abrir carrossel.html e tirar print de cada <section> em 1080×1350.

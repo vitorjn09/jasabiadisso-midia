@@ -1164,6 +1164,10 @@ button.ei-passo:active { transform: scale(.98); }
 .pd-item .pd-tema { grid-column: 2 / -1; margin-top: 2px; padding: 9px 12px; font-size: 14px; }
 .pd-item.off { opacity: .5; }
 .pd-item.off .pd-tema { pointer-events: none; }
+
+.ei-mini { flex: none; width: 38px; height: 52px; border-radius: 9px; background: var(--surface) center/cover no-repeat; }
+#modal { overflow-x: hidden; }
+.plano-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -1932,8 +1936,11 @@ function tituloPost(x) {
 }
 function cartaoPlanejado({ it, h, i, n }) {
   const st = statusItem(it), [rot, cls] = ST_CRONO[st], capa = capaItem(it);
-  const txt = st === "pedido" ? "O Claude vai criar e deixar pronto." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
-  const acao = st === "pronto" && it.biblioteca ? `<button class="btn peq ouro" data-agendarbib="${esc(it.biblioteca)}">${ic("i-cal")}Agendar</button>`
+  const vidTxt = videoQueCombina(it);
+  const txt = vidTxt ? `Já tem vídeo pronto: “${vidTxt.ficha.titulo || vidTxt.nome}”.` : st === "pedido" ? "O Claude vai criar e deixar pronto." : st === "pronto" ? "Pronto. Falta agendar." : "Só no plano, ainda sem arquivo.";
+  const vid = videoQueCombina(it);
+  const acao = vid ? `<button class="btn peq ouro" data-ligar="${esc(it.id)}|${esc(vid.nome)}">${ic("i-film")}Usar vídeo pronto</button>`
+    : st === "pronto" && it.biblioteca ? `<button class="btn peq ouro" data-agendarbib="${esc(it.biblioteca)}">${ic("i-cal")}Agendar</button>`
     : ["ideia", "roteiro", "producao"].includes(st) && !it.biblioteca && i === 0 ? `<button class="btn peq pri" data-pedir="${esc(it.id)}">${ic("i-zap")}Pedir ao Claude</button>` : "";
   return `<div class="card post planejado st-${st}" data-plano="${esc(it.id)}">
     <div class="midia pl-midia" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""}>${capa ? "" : ic(st === "pedido" ? "i-zap" : "i-plan")}<span class="tag">${esc(FORMATOS[it.formato] || it.formato)}${n > 1 ? ` ${i + 1}/${n}` : ""}</span></div>
@@ -2089,6 +2096,7 @@ $("#veu").onclick = fecharGaveta; $("#gavFechar").onclick = fecharGaveta;
 
 const F_DIA_MES = fmt({ weekday: "short", day: "numeric", month: "short" });
 function rotuloQuando(k, h) { return `${k === chaveDia(new Date()) ? "Hoje" : F_DIA_MES.format(new Date(k + "T12:00:00-03:00")).replace(/\./g, "")}${h ? ` · ${h}` : ""}`; }
+function centrarDia(fila) { const sel = fila?.querySelector(".ok"); if (sel) fila.scrollLeft = sel.offsetLeft - (fila.clientWidth - sel.offsetWidth) / 2; }
 let EDITANDO = null;
 function desenharMover(x) {
   EDITANDO = x;
@@ -2106,7 +2114,7 @@ function desenharMover(x) {
   const conta = (d) => POSTS.filter((y) => y !== x && y.post?.quando && chaveDia(new Date(y.post.quando)) === d).length;
   $("#eDias").innerHTML = lista.map((d) => { const dt = dataDe(d), n = conta(d);
     return `<button class="mv-dia ${d === k ? "ok" : ""} ${d === k0 ? "orig" : ""} ${eventoDoDia(d) ? "evento" : ""}" data-d="${d}" title="${esc(eventoDoDia(d))}"><small>${d === hoje ? "hoje" : NOMES_SEMANA[dt.getUTCDay()].toLowerCase()}</small><b>${dt.getUTCDate()}</b><i>${n ? "•".repeat(Math.min(n, 3)) : ""}</i>${d === k0 ? "<em>atual</em>" : ""}</button>`; }).join("");
-  depoisDoQuadro(() => { const sel = $("#eDias .ok"); if (sel) sel.scrollIntoView({ block: "nearest", inline: "nearest" }); });
+  depoisDoQuadro(() => centrarDia($("#eDias")));
   $$("#eHorasSug [data-hsug]").forEach((c) => c.classList.toggle("ok", c.dataset.hsug === h));
   // o que já tem no dia escolhido
   const linha = (y, extra = "") => `<b>${esc(F_HORA.format(new Date(y.post.quando)))}</b> ${esc(NOMES_TIPO[y.post.tipo] || y.post.tipo)} · ${esc(y.pasta.replace(/^\d{4}-\d\d-\d\d-/, "").replace(/^(story|reel|carrossel|imagem)-/, "").replace(/-/g, " "))}${extra}`;
@@ -2865,7 +2873,7 @@ function desenharBiblioteca() {
         ${b.videoUrl ? `<video muted playsinline loop preload="none" data-src="${esc(b.videoUrl)}"></video><span class="play">${ic("i-play")}</span>` : ""}
         <span class="dur">${esc(duracao(f.duracao))}</span>
       </div>
-      <div class="info"><b>${esc(f.titulo || b.nome)}</b><div class="chips">${chipBib(st)}${chipTikTok(f)}</div></div>
+      <div class="info"><b>${esc(f.titulo || b.nome)}</b><div class="chips">${chipBib(st)}${(() => { if (st.s !== "pronto") return ""; const it = (CRONO.itens || []).find((x) => x.biblioteca === b.nome); return it?.data ? `<span class="chip plano-chip">${ic("i-plan")}${esc(NOMES_SEMANA[dataDe(it.data).getUTCDay()])} ${esc(it.data.slice(8, 10) + "/" + it.data.slice(5, 7))}</span>` : `<span class="chip plano-chip">Sem dia</span>`; })()}${chipTikTok(f)}</div></div>
     </div>` });
   });
   /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
@@ -3841,9 +3849,31 @@ function pedirCriacao(it, novo = false) {
     else { m.innerHTML = `<h2>Copie e cole no chat</h2><textarea class="input" rows="5" readonly onclick="this.select()">${esc(msg)}</textarea><div class="btns"><button class="btn pri" data-fecha>Pronto</button></div>`; abrirModal(); }
   };
 }
+const PALAVRAS_FRACAS = new Set("a o as os um uma de da do das dos e é em no na nos nas que com por para pra se seu sua tem igual voce você mais como".split(" "));
+const palavras = (t) => new Set(String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !PALAVRAS_FRACAS.has(w)));
+function videoQueCombina(it) {
+  if (!it || it.biblioteca || !["reel", "story"].includes(it.formato) || !bibCarregou) return null;
+  const st = statusItem(it); if (["agendado", "publicado"].includes(st)) return null;
+  const ligados = new Set((CRONO.itens || []).map((x) => x.biblioteca).filter(Boolean)), pt = palavras(it.tema);
+  let melhor = null, nota = 0;
+  for (const b of BIB) {
+    if (ligados.has(b.nome) || statusBib(b).s !== "pronto" || (b.ficha.tipo || "reel") !== it.formato) continue;
+    const pb = palavras(`${b.ficha.titulo || ""} ${b.nome.replace(/-/g, " ")}`), comum = [...pt].filter((w) => pb.has(w)).length;
+    if (comum > nota) { nota = comum; melhor = b; }
+  }
+  return nota >= 2 ? melhor : null;
+}
+async function ligarVideo(it, nome) {
+  const antes = JSON.stringify(it); it.biblioteca = nome; it.status = "pronto";
+  desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); if (VIEW === "biblioteca") desenharBiblioteca();
+  const b = BIB.find((y) => y.nome === nome);
+  if (!(await salvarCrono(`liga o vídeo "${b?.ficha?.titulo || nome}" ao ${(FORMATOS[it.formato] || "").toLowerCase()} de ${it.data}`))) { Object.keys(it).forEach((c) => delete it[c]); Object.assign(it, JSON.parse(antes)); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
+}
 const ICONE_FMT = { reel: "i-film", carrossel: "i-layers", stories: "i-circle", story: "i-circle", imagem: "i-image" };
 /* o próximo passo de um item, no topo da folha: pedir, aguardar, agendar ou ver na agenda */
 function proximoPasso(it, st) {
+  const vid = videoQueCombina(it);
+  if (vid) return `<div class="ei-passos"><button class="ei-passo ouro" data-passo="ligar" data-nome="${esc(vid.nome)}">${vid.capaUrl ? `<span class="ei-mini" style="background-image:url('${esc(vid.capaUrl)}')"></span>` : `<span class="af-ic">${ic("i-film")}</span>`}<span><b>Vídeo pronto na biblioteca</b><small>“${esc(vid.ficha.titulo || vid.nome)}” combina com este item. Toque para usar.</small></span>${ic("i-right")}</button></div>`;
   const fmtN = (FORMATOS[it.formato] || "conteúdo").toLowerCase();
   const linha = (cls, icone, tit, sub, passo, seta = true) => `<${passo ? `button data-passo="${passo}"` : "div"} class="ei-passo ${cls}"><span class="af-ic">${ic(icone)}</span><span><b>${tit}</b><small>${sub}</small></span>${passo && seta ? ic("i-right") : ""}</${passo ? "button" : "div"}>`;
   if (st === "pedido") {
@@ -3904,7 +3934,7 @@ function editarItem(it, dataInicial) {
     lista.sort();
     $("#ciDias").innerHTML = lista.map((d) => { const dt = dataDe(d), n = Object.values(temNoDia(d)).reduce((a, b) => a + b, 0) - (!novo && d === it.data ? 1 : 0);
       return `<button class="mv-dia ${d === k ? "ok" : ""} ${!novo && d === it.data ? "orig" : ""} ${eventoDoDia(d) ? "evento" : ""}" data-d="${d}" title="${esc(eventoDoDia(d))}"><small>${d === hoje ? "hoje" : NOMES_SEMANA[dt.getUTCDay()].toLowerCase()}</small><b>${dt.getUTCDate()}</b><i>${n > 0 ? "•".repeat(Math.min(n, 3)) : ""}</i>${!novo && d === it.data ? "<em>atual</em>" : ""}</button>`; }).join("");
-    depoisDoQuadro(() => { const sel = $("#ciDias .ok"); if (sel) sel.scrollIntoView({ block: "nearest", inline: "center" }); });
+    depoisDoQuadro(() => centrarDia($("#ciDias")));
     const sug = [...new Set(((CRONO.horarios || {})[f] || []).filter(Boolean))];
     $("#ciHorasSug").innerHTML = (sug.length ? `<small>${f === "stories" ? "Horários dos stories:" : "Horário padrão:"}</small>${sug.map((v) => `<button class="chip ${v === h ? "ok" : ""}" data-hsug="${v}">${v}</button>`).join("")}` : "") +
       `<small class="ei-dica">${h ? "" : f === "stories" ? "Sem hora: os 3 stories usam os horários padrão." : padrao ? `Sem hora: usa o padrão, ${padrao}.` : "Sem hora definida."}</small>`;
@@ -3919,6 +3949,7 @@ function editarItem(it, dataInicial) {
     const ps = e.target.closest("[data-passo]"); if (!ps || novo) return;
     const passo = ps.dataset.passo; m.onclick = null; fecharModal();
     if (passo === "pedir") return pedirCriacao(it);
+    if (passo === "ligar") return ligarVideo(it, ps.dataset.nome);
     if (passo === "agendar") return abrirVideo(it.biblioteca, true);
     if (passo === "ver") { DIA_FILTRO = it.data; return irPara("agenda"); }
     if (passo === "novo") {
@@ -4197,6 +4228,7 @@ document.addEventListener("click", (e) => {
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
   const ad = b.closest("[data-adddia]"); if (ad) { abrirAdicionarDia(ad.dataset.adddia); return; }
+  const lg = b.closest("[data-ligar]"); if (lg) { const [id, nome] = lg.dataset.ligar.split("|"); const it = CRONO.itens.find((x) => x.id === id); if (it) ligarVideo(it, nome); return; }
   const pdd = b.closest("[data-pedirdia]"); if (pdd) { pedirDia(pdd.dataset.pedirdia); return; }
   const pd = b.closest("[data-pedir]"); if (pd) { pedirCriacao(CRONO.itens.find((x) => x.id === pd.dataset.pedir)); return; }
   const agb = b.closest("[data-agendarbib]"); if (agb) { abrirVideo(agb.dataset.agendarbib, true); return; }

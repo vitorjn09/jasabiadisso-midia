@@ -947,7 +947,8 @@
         "tiktok"
       ],
       "status": "pedido",
-      "pedido": "2026-11-08T15:55:44.344Z"
+      "pedido": "2026-11-08T15:55:44.344Z",
+      "hora": "11:26"
     }
   ],
   "horarios": {

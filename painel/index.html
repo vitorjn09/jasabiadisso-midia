@@ -509,31 +509,26 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .podio .txt small { font-size: 11.5px; opacity: .85; }
 .podio .txt span { display: block; margin-top: 6px; font-size: 12.5px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .podio .vaga { aspect-ratio: 4/5; border-radius: 18px; border: 1px dashed var(--border-strong); display: grid; place-items: center; color: var(--faint); font-size: 12px; text-align: center; padding: 10px; }
-/* calendário do mês */
-.catmes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
-.catmes .sem { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; text-align: center; font-weight: 600; padding-bottom: 2px; }
-.catdia { position: relative; aspect-ratio: 1/1.05; border-radius: 14px; border: 1px solid var(--border); background: var(--surface) center/cover no-repeat; overflow: hidden; cursor: pointer; padding: 0; text-align: left; color: var(--text); transition: transform .25s var(--spring), border-color .2s, box-shadow .25s; }
-.catdia:hover { transform: translateY(-3px); border-color: var(--border-strong); }
-.catdia.fora { opacity: .28; pointer-events: none; }
-.catdia.capa { color: #fff; }
-.catdia.capa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.1) 40%, rgba(0,0,0,.78)); }
-.catdia.hoje { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal), 0 12px 30px -16px var(--teal-glow); }
-.catdia.hoje:not(.capa) { background: linear-gradient(180deg, var(--teal-glow), transparent); }
-.catdia.sel { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
-.catdia.top1, .catdia.top2, .catdia.top3 { border-color: var(--gold); }
-.catdia > * { position: relative; z-index: 1; }
-.catdia .n { position: absolute; top: 7px; left: 9px; font: 600 18px/1 Fredoka; }
-.catdia .med { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font: 700 11px Fredoka; color: #1e1709; background: var(--gold); }
-.catdia .pe { position: absolute; left: 8px; right: 8px; bottom: 7px; display: flex; flex-direction: column; gap: 4px; }
-.catdia .pe b { font: 600 13px/1 Fredoka; display: flex; align-items: center; gap: 4px; }
-.catdia .pe b svg.i { width: 12px; height: 12px; }
-.catdia .pontos { display: flex; gap: 3px; height: 6px; }
-.catdia .pontos i { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
-.catdia .pontos i.reel { background: var(--gold); } .catdia .pontos i.carrossel { background: var(--info); } .catdia .pontos i.feito { box-shadow: 0 0 0 1.5px var(--ok); }
-.catdia .calor { position: absolute; left: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, var(--teal), var(--gold)); z-index: 2; border-radius: 0 3px 0 0; }
-.cat-legenda { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12px; color: var(--muted); }
-.cat-legenda span { display: inline-flex; align-items: center; gap: 6px; }
-.cat-legenda i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: inline-block; }
+/* calendário do mês: usa o componente .mes/.mdia (htmlCalMes) com extras do catálogo */
+#catCal { padding: 20px; }
+#catCal .mes-cab small { display: block; margin-top: 2px; }
+#catCal .mes-nav { display: none; } /* o mês troca nas setas do topo da tela */
+#catCal .mdia { min-height: 0; aspect-ratio: 1 / 1.05; overflow: hidden; }
+#catCal .mdia > b, #catCal .mdia > .mpontos, #catCal .mdia > .mcapas { position: relative; z-index: 1; }
+#catCal .mdia > .mcont, #catCal .mdia > .cat-med, #catCal .mdia > .cat-v, #catCal .mdia > .cat-calor { z-index: 1; }
+#catCal .mdia .cat-fundo { position: absolute; inset: 0; z-index: 0; background: center/cover no-repeat; }
+#catCal .mdia .cat-fundo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.08) 40%, rgba(0,0,0,.8)); }
+#catCal .mdia.cat-com-capa { color: #fff; opacity: 1; }
+#catCal .mdia.cat-com-capa .mcont { background: rgba(0,0,0,.5); color: #fff; }
+#catCal .mdia.cat-top { border-color: var(--gold); }
+#catCal .mdia.sel { box-shadow: 0 0 0 2px var(--gold); }
+#catCal .cat-med { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font: 700 11px Fredoka; color: #1e1709; background: var(--gold); }
+#catCal .mdia.cat-top .mcont { display: none; }
+#catCal .cat-v { position: absolute; left: 8px; bottom: 20px; font: 600 13px/1 Fredoka; display: flex; align-items: center; gap: 4px; }
+#catCal .cat-v svg.i { width: 12px; height: 12px; }
+#catCal .cat-calor { position: absolute; left: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, var(--teal), var(--gold)); border-radius: 0 3px 0 0; }
+#catCal .mpontos i.pub { box-shadow: 0 0 0 1.5px var(--ok); }
+.cat-med-leg { width: 14px; height: 14px; border-radius: 50%; display: inline-grid; place-items: center; font: 700 9px Fredoka; color: #1e1709; background: var(--gold); }
 /* lista completa */
 .cat-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 14px; margin-top: 14px; }
 .citem-c { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-align: left; padding: 0; cursor: pointer; display: flex; flex-direction: column; transition: transform .3s var(--spring), border-color .25s; }
@@ -564,16 +559,15 @@ label.campo { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 
 .cat-inicio .linha b { color: var(--text); font-family: Fredoka; font-size: 16px; }
 @media (max-width: 1100px) { .cat-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) {
-  .catmes { gap: 4px; } .catdia { border-radius: 10px; aspect-ratio: 4/5; } .catdia .n { font-size: 14px; top: 5px; left: 6px; }
-  .catdia .pe { left: 5px; right: 5px; bottom: 6px; } .catdia .pe b { display: none; } .catdia .med { width: 16px; height: 16px; font-size: 9px; top: 4px; right: 4px; }
-  .catdia .pontos { gap: 2px; height: 5px; } .catdia .pontos i { width: 5px; height: 5px; }
+  #catCal { padding: 14px 12px; } #catCal .mdia { aspect-ratio: 4/5; } #catCal .cat-v { display: none; }
+  #catCal .mes-cab small { display: none; }
   .podio { gap: 10px; grid-template-columns: 1fr 1fr; grid-template-areas: "a a" "b c"; }
   .podio .lugar.p1 { grid-area: a; aspect-ratio: 16/11; } .podio .p2 { grid-area: b; } .podio .p3 { grid-area: c; }
   .podio > :nth-child(1) { grid-area: b; } .podio > :nth-child(2) { grid-area: a; } .podio > :nth-child(3) { grid-area: c; }
   .podio .lugar:not(.p1), .podio .vaga { aspect-ratio: 1/1.1; }
   .podio .txt { left: 10px; right: 10px; bottom: 10px; } .podio .txt b { font-size: 22px; } .podio .p1 .txt b { font-size: 32px; }
   .podio .txt span { font-size: 11.5px; } .podio .medalha { width: 28px; height: 28px; font-size: 13px; top: 8px; left: 8px; }
-  .catdia .med { display: none; }
+  #catCal .cat-med { display: none; }
   .cat-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } .cat-kpi.melhor { grid-column: span 3; }
   .cat-kpis .card { padding: 14px 12px; } .cat-kpis .rotulo { font-size: 10.5px; letter-spacing: .05em; } .cat-kpi .sub { white-space: normal; font-size: 11px; line-height: 1.3; }
   .cat-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -3468,6 +3462,7 @@ function catalogoDoMes(mes) {
   });
   return itens.sort((a, b) => a.data.localeCompare(b.data) || Object.keys(FORMATOS).indexOf(a.formato) - Object.keys(FORMATOS).indexOf(b.formato));
 }
+function catOff() { const [a, m] = CAT_MES.split("-").map(Number), [ah, mh] = chaveDia(new Date()).split("-").map(Number); return (a - ah) * 12 + (m - mh); }
 function rankCatalogo(itens) { return itens.filter((x) => x.n[CAT_METRICA] != null).sort((a, b) => b.n[CAT_METRICA] - a.n[CAT_METRICA]); }
 async function abrirCatalogo() {
   desenharCatalogo();
@@ -3509,29 +3504,20 @@ function desenharCatalogo() {
       : `<div class="vazio" style="padding:26px 10px">${AN ? "Nenhum post deste mês tem números ainda." : "Abra as análises para ver quem lidera o mês."}</div>`}
   </div>`;
 
-  /* calendário */
-  const [a, m] = CAT_MES.split("-").map(Number), diasMes = new Date(Date.UTC(a, m, 0)).getUTCDate();
-  const primeiro = `${CAT_MES}-01`, offset = (dataDe(primeiro).getUTCDay() + 6) % 7;
-  const porDia = {}; itens.forEach((x) => (porDia[x.data] = porDia[x.data] || []).push(x));
+  /* calendário: o mesmo componente da Agenda e do Plano (htmlCalMes), com capa grande, views, medalha e calor por dia */
+  const porDia = {}; itens.forEach((x) => (porDia[x.data] ||= []).push(x));
   const valorDia = (k) => somaN(...(porDia[k] || []).map((x) => x.n[CAT_METRICA]));
   const maxDia = Math.max(1, ...Object.keys(porDia).map((k) => valorDia(k) || 0));
   const topDias = Object.keys(porDia).filter((k) => valorDia(k) != null).sort((x, y) => valorDia(y) - valorDia(x)).slice(0, 3);
-  let cel = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((s) => `<div class="sem">${s}</div>`).join("");
-  for (let i = 0; i < offset; i++) cel += `<div class="catdia fora"></div>`;
-  for (let dia = 1; dia <= diasMes; dia++) {
-    const k = `${CAT_MES}-${String(dia).padStart(2, "0")}`, xs = porDia[k] || [];
-    const capa = (xs.find((x) => x.formato === "reel" && x.capa) || xs.find((x) => x.capa))?.capa || "";
-    const v = valorDia(k), t = topDias.indexOf(k);
-    const pontos = xs.slice(0, 5).map((x) => `<i class="${x.formato === "reel" ? "reel" : x.formato === "carrossel" ? "carrossel" : ""} ${x.status === "publicado" ? "feito" : ""}"></i>`).join("");
-    cel += `<button class="catdia ${capa ? "capa" : ""} ${k === hoje ? "hoje" : ""} ${CAT_DIA === k ? "sel" : ""} ${t >= 0 ? "top" + (t + 1) : ""}" data-catd="${k}" ${capa ? `style="background-image:url('${esc(capa)}')"` : ""} title="${xs.length} item(ns)${v != null ? ` · ${num(v)} ${esc(nomeM)}` : ""}">
-      <span class="n">${dia}</span>${t >= 0 ? `<span class="med">${t + 1}</span>` : ""}
-      <div class="pe">${v != null ? `<b>${ic(icM)}${num(v)}</b>` : ""}<div class="pontos">${pontos}</div></div>
-      ${v != null ? `<span class="calor" style="width:${Math.max(8, Math.round(v / maxDia * 100))}%"></span>` : ""}</button>`;
-  }
-  html += `<div class="card cat-sec"><div class="cat-cab"><h3>${ic("i-cal")}Mês inteiro</h3><span class="dica" style="margin:0">Toque num dia para ver o que saiu nele.</span></div>
-    <div class="catmes">${cel}</div>
-    <div class="cat-legenda"><span><i style="background:var(--gold)"></i>Reel</span><span><i style="background:var(--info)"></i>Carrossel</span><span><i></i>Stories</span><span><i style="background:transparent;box-shadow:0 0 0 1.5px var(--ok)"></i>Já saiu</span><span><i style="border-radius:2px;width:16px;height:3px;background:linear-gradient(90deg,var(--teal),var(--gold))"></i>${esc(nomeM)} do dia</span></div>
-  </div>`;
+  const capaDia = (k) => { const xs = porDia[k] || []; return (xs.find((x) => x.formato === "reel" && x.capa) || xs.find((x) => x.capa))?.capa || ""; };
+  const cal = {};
+  Object.entries(porDia).forEach(([k, xs]) => (cal[k] = xs.map((x) => ({ cor: x.formato === "reel" ? "reel" : x.formato === "carrossel" ? "carro" : "story", pub: x.status === "publicado", plano: !["publicado", "agendado"].includes(x.status), capa: "" }))));
+  html += `<div class="card cat-sec mes" id="catCal">${htmlCalMes({ off: catOff(), porDia: cal, sel: CAT_DIA,
+    resumo: `Toque num dia para ver o que saiu nele · ${esc(nomeM)} do dia na barra de baixo`,
+    legenda: `<span><i class="reel"></i>Reel</span><span><i class="carro"></i>Carrossel</span><span><i class="story"></i>Stories</span><span><i class="story plano"></i>Só planejado</span><span><span class="cat-med-leg">1</span>Melhores dias</span>`,
+    classe: (k) => [capaDia(k) ? "cat-com-capa" : "", topDias.includes(k) ? "cat-top" : ""].join(" "),
+    extra: (k) => { const v = valorDia(k), tp = topDias.indexOf(k), c = capaDia(k);
+      return `${c ? `<span class="cat-fundo" style="background-image:url('${esc(c)}')"></span>` : ""}${tp >= 0 ? `<span class="cat-med">${tp + 1}</span>` : ""}${v != null ? `<span class="cat-v">${ic(icM)}${num(v)}</span><span class="cat-calor" style="width:${Math.max(8, Math.round(v / maxDia * 100))}%"></span>` : ""}`; } })}</div>`;
 
   /* catálogo completo */
   let lista = itens.filter((x) => CAT_FMT === "todos" || x.formato === CAT_FMT);
@@ -3564,12 +3550,14 @@ function desenharCatalogo() {
 }
 let CAT_ITENS = [];
 $("#catCorpo").addEventListener("click", (e) => {
-  const m = e.target.closest("[data-catm]"), f = e.target.closest("[data-catf]"), o = e.target.closest("[data-cato]"), d = e.target.closest("[data-catd]"), c = e.target.closest("[data-cat]");
+  const m = e.target.closest("[data-catm]"), f = e.target.closest("[data-catf]"), o = e.target.closest("[data-cato]"), d = e.target.closest("[data-catd], [data-mdia]"), c = e.target.closest("[data-cat]");
+  const nav = e.target.closest("#catCal [data-mes]");
+  if (nav) { CAT_MES = nav.dataset.mes === "0" ? chaveDia(new Date()).slice(0, 7) : mesSoma(CAT_MES, +nav.dataset.mes); CAT_DIA = ""; CAT_TUDO = false; desenharCatalogo(); return; }
   if (e.target.closest("#catMais")) { CAT_TUDO = true; desenharCatalogo(); return; }
   if (m) { CAT_METRICA = m.dataset.catm; desenharCatalogo(); return; }
   if (f) { CAT_FMT = f.dataset.catf; desenharCatalogo(); return; }
   if (o) { CAT_ORDEM = o.dataset.cato; desenharCatalogo(); return; }
-  if (d) { const novo = d.dataset.catd; CAT_DIA = CAT_DIA === novo ? "" : novo; desenharCatalogo(); if (CAT_DIA) $("#catLista")?.scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "start" }); return; }
+  if (d) { const novo = d.dataset.catd ?? d.dataset.mdia; CAT_DIA = CAT_DIA === novo ? "" : novo; desenharCatalogo(); if (CAT_DIA) $("#catLista")?.scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "start" }); return; }
   if (c) {
     const x = CAT_ITENS.find((y) => y.id === c.dataset.cat); if (!x) return;
     if (x.biblioteca && BIB.some((b) => b.nome === x.biblioteca)) { REEL_LISTA = CAT_ITENS.filter((y) => y.biblioteca && BIB.some((b) => b.nome === y.biblioteca)).map((y) => y.biblioteca); abrirReels(x.biblioteca); return; }

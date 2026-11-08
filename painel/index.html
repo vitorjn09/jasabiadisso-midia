@@ -1004,6 +1004,29 @@ i.reel { background: var(--gold); } i.carro { background: var(--info); } i.story
   .post .redes .chip .nm { display: none; }
   .post .redes .chip .i { margin: 0; width: 15px; height: 15px; }
 }
+
+/* ================================================= adicionar conteúdo num dia */
+.dia-barra { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.dia-barra .btn { margin-left: auto; }
+.add-fmts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.add-fmt { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px 12px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; font: inherit; text-align: center; transition: border-color .2s, transform .2s var(--spring), background .2s; }
+.add-fmt:active { transform: scale(.96); }
+.add-fmt b { font: 600 15px/1.2 Fredoka; }
+.add-fmt small { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+.add-fmt .af-ic { margin-bottom: 4px; }
+.add-fmt.falta { border-color: color-mix(in srgb, var(--gold) 55%, transparent); }
+.add-fmt.falta small { color: var(--gold); font-weight: 600; }
+.add-fmt.sel { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 14%, var(--surface-2)); box-shadow: 0 0 0 1px var(--teal); }
+.af-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--surface); color: var(--teal); flex: none; }
+.add-acoes { display: flex; flex-direction: column; margin-top: 14px; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+.add-acao { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border: 0; background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; font: inherit; }
+.add-acao + .add-acao { border-top: 1px solid var(--border); }
+.add-acao > span:nth-child(2) { flex: 1; min-width: 0; }
+.add-acao b { display: block; font-size: 14.5px; }
+.add-acao small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+.add-acao > .i { color: var(--faint); width: 18px; height: 18px; }
+.add-acao:active { background: var(--surface); }
+.add-acao.pri .af-ic { background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; }
 </style>
 </head>
 <body>
@@ -1753,13 +1776,13 @@ function desenharAgenda() {
   if (DIA_FILTRO) lista = lista.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === DIA_FILTRO);
   if (!lista.length) {
     alvo.innerHTML = POSTS.length
-      ? vazio("i-list", "Nada por aqui", DIA_FILTRO ? "Nenhum post nesse dia." : "Nenhum post nesse filtro.", DIA_FILTRO ? `<button class="btn" id="limpaDia">Ver todos os dias</button>` : "")
+      ? vazio("i-list", "Nada por aqui", DIA_FILTRO ? "Nenhum post nesse dia." : "Nenhum post nesse filtro.", DIA_FILTRO ? `<button class="btn pri" data-adddia="${DIA_FILTRO}">${ic("i-plus")}Adicionar neste dia</button><button class="btn" id="limpaDia">Ver todos os dias</button>` : "")
       : vazio("i-cal", "A agenda está vazia", "Coloque o primeiro post para o robô publicar.", `<button class="btn pri" data-ir="novo">${ic("i-plus")}Novo post</button>`);
     return;
   }
   const grupos = new Map();
   for (const x of lista) { const k = x.post?.quando ? chaveDia(new Date(x.post.quando)) : "sem-data"; if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(x); }
-  alvo.innerHTML = (DIA_FILTRO ? `<div style="margin-top:16px"><button class="chip" id="limpaDia" style="cursor:pointer">${ic("i-x")}Só ${esc(nomeDia(new Date(DIA_FILTRO + "T12:00:00-03:00")))}</button></div>` : "") +
+  alvo.innerHTML = (DIA_FILTRO ? `<div class="dia-barra"><button class="chip" id="limpaDia" style="cursor:pointer">${ic("i-x")}Só ${esc(nomeDia(new Date(DIA_FILTRO + "T12:00:00-03:00")))}</button>${faltaNoDia(DIA_FILTRO).length ? `<span class="chip warn">Falta ${esc(faltaNoDia(DIA_FILTRO).map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</span>` : ""}<button class="btn pri peq" data-adddia="${DIA_FILTRO}">${ic("i-plus")}Adicionar</button></div>` : "") +
     [...grupos].map(([k, xs]) => {
       const d = xs[0].post?.quando ? new Date(xs[0].post.quando) : null;
       return `<div class="grupo"><div class="grupo-tit">${d ? esc(nomeDia(d)) : "Sem data"}<small>${xs.length} post${xs.length > 1 ? "s" : ""}</small></div>
@@ -3176,7 +3199,7 @@ function desenharCronoMes() {
   if (!k) { $("#cDiaLista").innerHTML = `<p class="dica-mes">${ic("i-cal")}Toque num dia para ver e editar o que tem nele.</p>`; return; }
   const cs = cartoesDoDia(k), dt = dataDe(k);
   $("#cDiaLista").innerHTML = `<div class="cdia-cab"><div><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}</small><b class="display">${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}</b></div>
-      <button class="btn pri peq" data-add="${k}">${ic("i-plus")}Item</button></div>
+      <button class="btn pri peq" data-adddia="${k}">${ic("i-plus")}Adicionar</button></div>
     ${cs.length ? `<div class="cdia-itens" data-cdia="${k}">${cs.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}</div>` : `<p class="dica-mes">Nada planejado nesse dia.</p>`}`;
 }
 function aplicarVistaCrono() {
@@ -3353,7 +3376,55 @@ $("#cLimpa").onclick = async () => {
 
 /* pedir ao Claude para criar o conteúdo de um item sem vídeo */
 function podeCriar(it, hoje) { return !it.biblioteca && ["ideia", "roteiro"].includes(statusItem(it)) && it.data >= hoje; }
-function pedirCriacao(it) {
+/* ================================================================ adicionar conteúdo num dia (Agenda e Plano)
+   Mostra o que o dia já tem, o que falta pelo modelo da semana e deixa: pedir ao Claude para criar,
+   agendar um arquivo que você já tem, ou só reservar a vaga no plano. */
+const FMT_DIA = [["reel", "Reel", "i-film", "Vídeo vertical"], ["carrossel", "Carrossel", "i-layers", "Imagens em sequência"], ["stories", "3 stories", "i-circle", "Antes, durante e depois do reel"]];
+function temNoDia(k) {
+  const n = { reel: 0, carrossel: 0, stories: 0 };
+  POSTS.forEach((x) => { if (x.post?.quando && chaveDia(new Date(x.post.quando)) === k) { const t = x.post.tipo === "story" ? "stories" : x.post.tipo; if (t in n) n[t]++; } });
+  (CRONO.itens || []).forEach((it) => { if (it.data === k && it.formato in n && !["agendado", "publicado"].includes(statusItem(it))) n[it.formato]++; });
+  return n;
+}
+function faltaNoDia(k) {
+  if (!cronoCarregou || !CRONO.modelo) return [];
+  const n = temNoDia(k), modelo = CRONO.modelo[String(dataDe(k).getUTCDay())] || [];
+  return [...new Set(modelo)].filter((f) => f in n && !n[f]);
+}
+function abrirAdicionarDia(k, fmt = "") {
+  const m = $("#modal"), n = temNoDia(k), falta = faltaNoDia(k), dt = dataDe(k), hoje = chaveDia(new Date());
+  const titulo = `${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}, ${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}`;
+  const cartoes = FMT_DIA.map(([f, rot, icone, sub]) => `<button class="add-fmt ${f === fmt ? "sel" : ""} ${falta.includes(f) ? "falta" : ""}" data-fmt="${f}">
+      <span class="af-ic">${ic(icone)}</span><b>${rot}</b><small>${falta.includes(f) ? "Falta neste dia" : n[f] ? `Já tem ${n[f]}` : sub}</small></button>`).join("");
+  const acoes = fmt ? `<div class="add-acoes">
+      <button class="add-acao pri" data-acao="pedir"><span class="af-ic">${ic("i-zap")}</span><span><b>Pedir para o Claude criar</b><small>Ele faz o ${FORMATOS[fmt].toLowerCase()} e deixa pronto para você agendar.</small></span>${ic("i-right")}</button>
+      <button class="add-acao" data-acao="agendar"><span class="af-ic">${ic("i-upload")}</span><span><b>Já tenho o arquivo</b><small>Abre o Novo post com este dia já escolhido.</small></span>${ic("i-right")}</button>
+      <button class="add-acao" data-acao="vaga"><span class="af-ic">${ic("i-plan")}</span><span><b>Só reservar no plano</b><small>Cria a vaga vazia no cronograma para decidir depois.</small></span>${ic("i-right")}</button>
+    </div>` : `<p class="dica" style="margin-top:12px">Escolha o formato.</p>`;
+  m.innerHTML = `<div class="ic-topo">${ic("i-plus", "i g")}</div><h2>Adicionar em ${esc(titulo)}</h2>
+    <p>${falta.length ? `Pelo modelo da semana, falta <b>${esc(falta.map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</b> neste dia.` : "Este dia já tem tudo o que o modelo da semana pede. Dá para adicionar mais."}</p>
+    <div class="add-fmts">${cartoes}</div>${acoes}
+    <div class="btns"><button class="btn fant" data-fecha>Fechar</button></div>`;
+  if (!$("#modal.on")) abrirModal();
+  m.onclick = async (e) => {
+    const f = e.target.closest("[data-fmt]"); if (f) return abrirAdicionarDia(k, f.dataset.fmt);
+    const a = e.target.closest("[data-acao]"); if (!a) return;
+    const it = { id: novoId(), data: k, formato: fmt, tema: "", redes: redesPadrao(fmt), status: "ideia" };
+    if (a.dataset.acao === "pedir") { m.onclick = null; return pedirCriacao(it, true); }
+    if (a.dataset.acao === "agendar") {
+      m.onclick = null; fecharModal(); irPara("novo");
+      const tipo = fmt === "stories" ? "story" : fmt;
+      if (NOVO.etapa) resetarNovo();
+      $(`#tipos [data-tipo="${tipo}"]`)?.click(); $("#fData").value = k;
+      return toast("info", "Dia já escolhido", `${FORMATOS[fmt]} para ${titulo}. Falta só o arquivo e a hora.`);
+    }
+    if (a.dataset.acao === "vaga") {
+      m.onclick = null; fecharModal(); CRONO.itens.push(it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+      if (!(await salvarCrono(`reserva ${FORMATOS[fmt].toLowerCase()} em ${k}`))) { CRONO.itens = CRONO.itens.filter((x) => x !== it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
+    }
+  };
+}
+function pedirCriacao(it, novo = false) {
   if (!it) return;
   const dia = `${NOMES_SEMANA[dataDe(it.data).getUTCDay()].toLowerCase()}, ${dataDe(it.data).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit" })}`;
   const m = $("#modal");
@@ -3372,9 +3443,13 @@ function pedirCriacao(it) {
     try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
     fecharModal();
     const antes = JSON.stringify(it);
+    if (novo) CRONO.itens.push(it);
     Object.assign(it, { status: "pedido", pedido: new Date().toISOString() }); if (tema) it.tema = tema; if (notas) it.notas = notas;
-    desenharCronograma();
-    if (!(await salvarCrono(`pede ao Claude "${tema || FORMATOS[it.formato]}"`))) { Object.keys(it).forEach((k) => delete it[k]); Object.assign(it, JSON.parse(antes)); desenharCronograma(); }
+    desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    if (!(await salvarCrono(`pede ao Claude "${tema || FORMATOS[it.formato]}"`))) {
+      if (novo) CRONO.itens = CRONO.itens.filter((x) => x !== it); else { Object.keys(it).forEach((k) => delete it[k]); Object.assign(it, JSON.parse(antes)); }
+      desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    }
     if (copiou) toast("ok", "Mensagem copiada", "Cole no chat com o Claude.", 8000);
     else { m.innerHTML = `<h2>Copie e cole no chat</h2><textarea class="input" rows="5" readonly onclick="this.select()">${esc(msg)}</textarea><div class="btns"><button class="btn pri" data-fecha>Pronto</button></div>`; abrirModal(); }
   };
@@ -3655,6 +3730,7 @@ document.addEventListener("click", (e) => {
   const fi = b.closest("[data-filtro]"); if (fi) { aplicarFiltro(fi.dataset.filtro); return; }
   const di = b.closest("[data-dia]"); if (di) { DIA_FILTRO = di.dataset.dia; FILTRO = "todos"; $$("#filtros [data-f]").forEach((x) => x.classList.toggle("ativo", x.dataset.f === "todos")); irPara("agenda"); return; }
   if (b.closest("#limpaDia")) { DIA_FILTRO = ""; desenharAgenda(); return; }
+  const ad = b.closest("[data-adddia]"); if (ad) { abrirAdicionarDia(ad.dataset.adddia); return; }
   if (b.closest("[data-conta]") || b.closest("#btnConta") || b.closest("#btnContaMob")) { abrirConta(); return; }
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") { fecharModal(false); fecharGaveta(); abrirMais(false); } });

@@ -378,13 +378,14 @@
       "id": "t5nps92",
       "data": "2026-11-16",
       "formato": "carrossel",
-      "tema": "",
+      "tema": "A girafa tem 7 vértebras no pescoço, igual a você",
       "redes": [
         "instagram",
         "facebook",
         "tiktok"
       ],
-      "status": "ideia"
+      "status": "pedido",
+      "pedido": "2026-11-08T10:26:43.603Z"
     },
     {
       "id": "ad32wau",

@@ -949,6 +949,21 @@
       "status": "pedido",
       "pedido": "2026-11-08T15:55:44.344Z",
       "hora": "11:26"
+    },
+    {
+      "id": "n4gpb0k",
+      "data": "2026-11-18",
+      "formato": "reel",
+      "tema": "",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "status": "pedido",
+      "hora": "18:14",
+      "pedido": "2026-11-09T11:35:58.883Z"
     }
   ],
   "horarios": {

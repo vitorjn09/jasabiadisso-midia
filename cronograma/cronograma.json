@@ -955,16 +955,16 @@
       "id": "n4gpb0k",
       "data": "2026-11-18",
       "formato": "reel",
-      "tema": "",
+      "tema": "A cenoura era roxa antes de ser laranja",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
+      "status": "pronto",
       "hora": "18:14",
-      "pedido": "2026-11-09T11:35:58.883Z"
+      "biblioteca": "cenoura-roxa"
     }
   ],
   "horarios": {

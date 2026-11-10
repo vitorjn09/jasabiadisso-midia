@@ -918,7 +918,8 @@
         "tiktok"
       ],
       "status": "agendado",
-      "biblioteca": "cavalo-marinho-pai"
+      "biblioteca": "cavalo-marinho-pai",
+      "hora": "11:36"
     },
     {
       "id": "67hq787",
@@ -932,7 +933,7 @@
         "tiktok"
       ],
       "status": "pronto",
-      "hora": "12:25",
+      "hora": "11:36",
       "biblioteca": "cavalo-marinho-pai",
       "notas": "Pedido repetido do i08gdce: mesmo vídeo (biblioteca cavalo-marinho-pai)."
     },

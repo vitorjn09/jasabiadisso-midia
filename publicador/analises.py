@@ -178,13 +178,13 @@ def instagram():
                 "salvos": met.get("saved"), "compartilhamentos": met.get("shares"),
                 "interacoes": met.get("total_interactions"),
                 "tempo_medio_ms": met.get("ig_reels_avg_watch_time"),
-                "_id": m["id"],
+                "id": m["id"],
             })
     except ErroApi as e:
         erros.append(f"instagram posts: {limpar(e)}")
     sem_acesso = False
     for x in posts:
-        mid = x.pop("_id")
+        mid = x["id"]
         if sem_acesso or not x.get("comentarios"):
             continue
         try:
@@ -250,6 +250,7 @@ def fb_posts(pag, erros):
             "link": m.get("permalink_url"), "imagem": m.get("full_picture"),
             "visualizacoes": views, "reacoes": reacoes, "comentarios": coment, "compartilhamentos": compart,
             "interacoes": (reacoes or 0) + (coment or 0) + compart,
+            "id": m.get("id"),
         }
         if coment and not sem_acesso:
             try:
@@ -311,12 +312,11 @@ def youtube():
                                    "link": f"https://youtube.com/shorts/{v['id']}",
                                    "imagem": (sn.get("thumbnails", {}).get("medium") or {}).get("url"),
                                    "visualizacoes": numero(s.get("viewCount")), "curtidas": numero(s.get("likeCount")),
-                                   "comentarios": numero(s.get("commentCount"))})
-                    videos[-1]["_id"] = v["id"]
+                                   "comentarios": numero(s.get("commentCount")), "id": v["id"]})
         meu_canal = item.get("id")
         sem_acesso = False
         for x in videos:
-            vid = x.pop("_id", None)
+            vid = x.get("id")
             if sem_acesso or not x.get("comentarios"):
                 continue
             try:

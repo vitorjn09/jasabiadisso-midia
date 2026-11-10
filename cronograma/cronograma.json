@@ -917,8 +917,8 @@
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-08T14:33:07.489Z"
+      "status": "pronto",
+      "biblioteca": "cavalo-marinho-pai"
     },
     {
       "id": "67hq787",
@@ -931,9 +931,10 @@
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-08T14:42:32.137Z",
-      "hora": "12:25"
+      "status": "pronto",
+      "hora": "12:25",
+      "biblioteca": "cavalo-marinho-pai",
+      "notas": "Pedido repetido do i08gdce: mesmo vídeo (biblioteca cavalo-marinho-pai)."
     },
     {
       "id": "t1gi2wu",

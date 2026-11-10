@@ -4,3 +4,5 @@ Cada vídeo pronto tem uma pasta com `ficha.json` (título, legenda, títulos da
 O vídeo em si fica na Release `biblioteca` do GitHub, fora do repositório, para ele não crescer.
 
 Para agendar, use a aba Biblioteca do painel. O robô baixa o vídeo da Release na hora de postar.
+
+A ficha pode ter `imagina_se`: uma lista de ideias de "Imagina se" do mesmo tema (só nos vídeos "Você sabia"). O painel mostra a primeira como sugestão no botão "Imagina se".

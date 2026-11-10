@@ -908,6 +908,64 @@ html.com-reels .gaveta .det-topo { grid-template-columns: minmax(0, 1fr); }
 .reel-acoes [data-r="agendar"] span { background: linear-gradient(135deg, var(--teal), var(--teal-2)); border-color: transparent; }
 .reel-barra { position: absolute; z-index: 2; left: 0; right: 0; bottom: env(safe-area-inset-bottom); height: 3px; background: rgba(255,255,255,.2); }
 .reel-barra i { display: block; height: 100%; width: 0; background: #fff; transition: width .25s linear; }
+/* números como no Instagram: nos cartões e na coluna da direita do vídeo */
+.ig-nums { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.ig-nums span { display: inline-flex; align-items: center; gap: 5px; }
+.ig-nums b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ig-nums svg.i { width: 16px; height: 16px; }
+.vid .info .ig-nums { margin: 6px 0 8px; gap: 4px 10px; font-size: 12px; }
+.vid .info .ig-nums svg.i { width: 14px; height: 14px; }
+.vid .capa .views { position: absolute; left: 10px; bottom: 10px; z-index: 1; display: inline-flex; align-items: center; gap: 4px; color: #fff; font: 700 13px Inter; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.vid .capa .views svg.i { width: 15px; height: 15px; }
+.reel-acoes button.met { width: 56px; gap: 2px; }
+.reel-acoes button.met span { width: 40px; height: 40px; background: none; border: 0; }
+.reel-acoes button.met svg.i { width: 30px; height: 30px; stroke-width: 1.9; filter: drop-shadow(0 1px 3px rgba(0,0,0,.55)); }
+.reel-acoes button.met small { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.reel-acoes .sep { width: 26px; height: 1px; background: rgba(255,255,255,.28); margin: 2px 0; }
+.reel-acoes button.imag span { background: linear-gradient(135deg, #e3bd78, #c8954a); border-color: transparent; color: #1b1406; }
+.reel-acoes button.imag.ja span { background: rgba(0,0,0,.4); border-color: rgba(227,189,120,.7); color: #e3bd78; }
+.reel-perfil { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.reel-perfil .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, var(--teal), var(--gold)); box-shadow: 0 0 0 2px #fff; }
+.reel-perfil .av svg.i { width: 16px; height: 16px; color: #fff; }
+.reel-perfil b { font: 600 14px Inter; }
+.reel-perfil small { color: rgba(255,255,255,.75); font-size: 13px; }
+.reel-chips .chip .nm { display: none; }
+@media (max-height: 700px) { .reel-acoes { gap: 8px; } .reel-acoes span { width: 42px; height: 42px; } .reel-acoes button.met span { width: 36px; height: 36px; } }
+.reels-folha { position: absolute; z-index: 5; left: 50%; bottom: 0; width: min(100%, 560px); max-height: 72dvh; transform: translate(-50%, 105%); transition: transform .4s var(--ease); background: var(--surface-solid); color: var(--text); border-radius: 22px 22px 0 0; box-shadow: 0 -20px 60px rgba(0,0,0,.5); display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
+.reels-folha.on { transform: translate(-50%, 0); }
+.reels-folha .rf-alca { width: 40px; height: 4px; border-radius: 99px; background: var(--border-strong); margin: 8px auto 0; }
+.reels-folha .rf-cab { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px 6px 18px; border-bottom: 1px solid var(--border); }
+.reels-folha .rf-cab b { font: 600 16px Inter; }
+.reels-folha .reels-x { background: transparent; color: var(--muted); }
+.reels-folha .rf-corpo { overflow-y: auto; padding: 12px 18px 18px; overscroll-behavior: contain; }
+.rf-tab { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.rf-tab th { font-weight: 600; color: var(--muted); padding: 4px 2px 8px; text-align: right; }
+.rf-tab th svg.i { display: block; width: 18px; height: 18px; margin: 0 0 2px auto; }
+.rf-tab th span { font-size: 11px; }
+.rf-tab td { padding: 9px 2px; text-align: right; border-top: 1px solid var(--border); }
+.rf-tab td:first-child { text-align: left; display: flex; align-items: center; gap: 6px; }
+.rf-tab td:first-child svg.i { width: 16px; height: 16px; }
+.rf-tab tr.tot td { font-weight: 700; }
+.rf-extra { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.rf-extra b { color: var(--text); }
+.rf-sec { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 16px 0 6px; }
+.rf-sec b { font-size: 14px; } .rf-sec small { color: var(--faint); font-size: 12px; }
+.rf-com { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.rf-com p { margin: 0; font-size: 14px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; }
+.rf-com small { display: inline-flex; align-items: center; gap: 3px; color: var(--faint); font-size: 12px; margin-top: 3px; }
+.rf-com small svg.i { width: 12px; height: 12px; }
+.rf-rede { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); }
+.rf-rede svg.i { width: 15px; height: 15px; }
+.rf-vazio { padding: 18px 0; text-align: center; color: var(--muted); font-size: 14px; }
+.rf-ver { margin-top: 12px; }
+/* Imagina se do mesmo tema */
+.is-card { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(227,189,120,.35); background: linear-gradient(135deg, rgba(227,189,120,.12), transparent); }
+.is-card > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.is-card b { font-size: 14px; } .is-card small { color: var(--muted); font-size: 12.5px; }
+.is-ic { flex: none; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: rgba(227,189,120,.18); color: var(--gold); }
+.is-sug, .is-dias { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.is-sug .chip, .is-dias .chip { cursor: pointer; padding: 7px 11px; text-align: left; }
+.is-sug .chip { white-space: normal; line-height: 1.35; max-width: 100%; }
 .reels-setas { position: absolute; z-index: 3; right: 24px; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; }
 .reels-setas button { width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.1); color: #fff; display: grid; place-items: center; cursor: pointer; }
 .reels-setas button:hover { background: rgba(255,255,255,.2); }
@@ -1612,6 +1670,9 @@ button.ei-passo:active { transform: scale(.98); }
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-playo" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" stroke-linejoin="round"/></symbol>
+  <symbol id="i-repost" viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></symbol>
+  <symbol id="i-bubble" viewBox="0 0 24 24"><path d="M8.5 16a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 18.3 7.5 4.25 4.25 0 1 1 18 16z"/><circle cx="7" cy="19.5" r="1.4"/><circle cx="4" cy="22" r=".8"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 19 5"/></symbol>
   <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></symbol>
@@ -1989,7 +2050,7 @@ function cartaoPlanejado({ it, h, i, n }) {
     </div></div>`;
 }
 function desenharAgenda() {
-  desenharMes();
+  desenharMes(); pedirNumeros();
   const alvo = $("#lista");
   if (!carregou) { alvo.innerHTML = `<div class="posts" style="margin-top:26px">${'<div class="skel" style="height:150px"></div>'.repeat(3)}</div>`; return; }
   let lista = POSTS.filter((x) => FILTRO === "todos" || situacao(x) === FILTRO);
@@ -2014,13 +2075,14 @@ function desenharAgenda() {
     return `<div class="grupo"><div class="grupo-tit">${k === "sem-data" ? "Sem data" : esc(nomeDia(new Date(k + "T12:00:00-03:00")))}<small>${conta}</small>${k !== "sem-data" && FILTRO === "todos" ? botaoPedirDia(k) : ""}</div>
       <div class="posts stagger">${es.map((e) => {
         if (e.plano) return cartaoPlanejado(e.plano);
-        const x = e.post, p = x.post || {}, q = p.quando ? new Date(p.quando) : null;
-        return `<div class="card spot post" data-abrir="${esc(x.pasta)}">
+        const x = e.post, p = x.post || {}, q = p.quando ? new Date(p.quando) : null, saiu = publicadoEm(x);
+        return `<div class="card spot post" ${saiu ? `data-feedp="${esc(x.pasta)}"` : `data-abrir="${esc(x.pasta)}"`}>
           ${midiaHTML(x)}
           <div style="min-width:0">
             <div class="hora">${q ? esc(F_HORA.format(q)) : "--:--"}</div>
             ${(() => { const [sub, tit] = tituloPost(x); return `<div class="titulo-post">${sub ? `<small>${esc(sub)}</small>` : ""}${esc(tit)}</div>`; })()}
             <div class="redes">${(p.redes || []).map((r) => chipRede(r, x.estado[r], p.quando)).join("")}</div>
+            ${saiu ? linhaNumeros(numerosPost(x)) : ""}
             ${x.erros.length ? `<div class="aviso-post">${ic("i-alert")}<span>${x.erros.map(esc).join(" · ")}</span></div>` : ""}
             <div class="leg">${esc(p.legenda || "")}</div>
           </div></div>`;
@@ -2654,6 +2716,7 @@ async function carregarAnalises() {
     try { AN = await decifrar(cif, SENHA_AN); } catch { cadeado(true); return; }
     $("#anAtual").textContent = `Atualizado ${relativo(AN.atualizado)} · ${F_COMPLETO.format(new Date(AN.atualizado))}`;
     desenharCardCatalogo(); if (VIEW === "catalogo") desenharCatalogo();
+    if ($("#reels")?.hidden) { if (VIEW === "agenda" && carregou) desenharAgenda(); if (VIEW === "biblioteca" && bibCarregou) desenharBiblioteca(); }
     desenharAnalises();
   } catch (e) { corpo.innerHTML = vazio("i-alert", "Não consegui ler as análises", esc(e.message)); }
   finally { anCarregando = false; }
@@ -2663,7 +2726,7 @@ function cadeado(errou = false) {
     <h2 style="font-size:20px">${errou ? "Senha não confere" : "Os números estão trancados"}</h2>
     <p style="color:var(--muted);font-size:14px">${errou ? "A senha guardada aqui não abre as análises. Digite a mesma senha do segredo ANALISES_SENHA." : "Digite a senha das análises (a mesma do segredo ANALISES_SENHA). Ela fica guardada só neste navegador."}</p>
     <div style="display:flex;gap:8px;margin-top:14px"><input class="input" type="password" id="anSenha" placeholder="Senha das análises" autocomplete="off"><button class="btn pri" id="anAbre">Abrir</button></div></div>`;
-  const abre = () => { const s = $("#anSenha").value; if (!s) return sacode($("#anSenha")); SENHA_AN = s; local.set("painel-robo-senha-analises", s); carregarAnalises(); };
+  const abre = () => { const s = $("#anSenha").value; if (!s) return sacode($("#anSenha")); SENHA_AN = s; local.set("painel-robo-senha-analises", s); anTentou = true; carregarAnalises(); };
   $("#anAbre").onclick = abre; $("#anSenha").onkeydown = (e) => { if (e.key === "Enter") abre(); };
 }
 function delta(atual, antes) {
@@ -2927,7 +2990,7 @@ function tempoDe(q) {
 }
 function diaDaSemana(q) { const t = tempoDe(q); return t ? new Date(t).getDay() : null; }
 function desenharBiblioteca() {
-  const alvo = $("#bibLista");
+  const alvo = $("#bibLista"); pedirNumeros();
   if (!bibCarregou) { alvo.innerHTML = `<div class="vids">${'<div class="skel" style="aspect-ratio:9/16"></div>'.repeat(4)}</div>`; return; }
   if (bibErro) { alvo.innerHTML = vazio("i-alert", "Não consegui ler a biblioteca", esc(bibErro)); return; }
   const grupo = { pronto: "prontos", agendado: "agendados", publicado: "publicados" };
@@ -2945,14 +3008,15 @@ function desenharBiblioteca() {
     if (BIB_FILTRO !== "todos" && grupo[statusBib(b).s] !== BIB_FILTRO) return;
     const q = quandoBib(b);
     if (!passa(bibCategoriaDe(b), q)) return;
-    const f = b.ficha, st = statusBib(b);
+    const f = b.ficha, st = statusBib(b), nb = st.s === "publicado" ? numerosBib(b) : null;
     itens.push({ q, feed: b.videoUrl ? { k: "v", chave: "v:" + b.nome, nome: b.nome } : null, html: `<div class="card vid st-${st.s}" data-bib="${esc(b.nome)}" ${b.videoUrl ? `data-feed="${esc("v:" + b.nome)}"` : ""}>
       <div class="capa" style="background-image:url('${esc(b.capaUrl)}')">
         <span class="tag">${esc(NOMES_TIPO[f.tipo] || "Reel")}</span>
         ${b.videoUrl ? `<video muted playsinline loop preload="none" data-src="${esc(b.videoUrl)}"></video><span class="play">${ic("i-play")}</span>` : ""}
         <span class="dur">${esc(duracao(f.duracao))}</span>
+        ${nb ? `<span class="views">${ic("i-playo")}${num(nb.views ?? 0)}</span>` : ""}
       </div>
-      <div class="info"><b>${esc(f.titulo || b.nome)}</b><div class="chips">${chipBib(st)}${(() => { if (st.s !== "pronto") return ""; const it = (CRONO.itens || []).find((x) => x.biblioteca === b.nome); return it?.data ? `<span class="chip plano-chip">${ic("i-plan")}${esc(NOMES_SEMANA[dataDe(it.data).getUTCDay()])} ${esc(it.data.slice(8, 10) + "/" + it.data.slice(5, 7))}</span>` : `<span class="chip plano-chip">Sem dia</span>`; })()}${chipTikTok(f)}</div></div>
+      <div class="info"><b>${esc(f.titulo || b.nome)}</b>${linhaNumeros(nb)}<div class="chips">${chipBib(st)}${(() => { if (st.s !== "pronto") return ""; const it = (CRONO.itens || []).find((x) => x.biblioteca === b.nome); return it?.data ? `<span class="chip plano-chip">${ic("i-plan")}${esc(NOMES_SEMANA[dataDe(it.data).getUTCDay()])} ${esc(it.data.slice(8, 10) + "/" + it.data.slice(5, 7))}</span>` : `<span class="chip plano-chip">Sem dia</span>`; })()}${chipTikTok(f)}</div></div>
     </div>` });
   });
   /* cada arte da pasta vira um cartão: um story por cartão, todos os slides do carrossel */
@@ -3129,32 +3193,70 @@ let REEL_LISTA = [], REEL_ATUAL = -1, REEL_SOM = true, reelObs = null, reelHist 
 const reelBox = document.createElement("div");
 reelBox.className = "reels"; reelBox.id = "reels"; reelBox.hidden = true;
 reelBox.setAttribute("role", "dialog"); reelBox.setAttribute("aria-modal", "true"); reelBox.setAttribute("aria-label", "Vídeos");
-reelBox.innerHTML = `<div class="reels-topo"><button class="reels-x" data-r="fechar" aria-label="Fechar">${ic("i-x")}</button><b>Biblioteca</b><span id="reelsPos"></span></div>
+reelBox.innerHTML = `<div class="reels-topo"><button class="reels-x" data-r="fechar" aria-label="Fechar">${ic("i-x")}</button><b id="reelsTit">Vídeos</b><span id="reelsPos"></span></div>
   <div class="reels-trilho" id="reelsTrilho"></div>
+  <div class="reels-folha" id="reelsFolha" role="dialog" aria-label="Números e comentários"></div>
   <div class="reels-setas"><button data-r="ant" aria-label="Vídeo anterior">${ic("i-up")}</button><button data-r="prox" aria-label="Próximo vídeo">${ic("i-down2")}</button></div>`;
 document.body.appendChild(reelBox);
 
 function slideReel(en, i) {
+  if (en.k === "p") return slidePost(en, i);
   if (en.k !== "v") return slideArte(en, i);
   const nome = en.nome;
   const b = BIB.find((y) => y.nome === nome), f = b.ficha, st = statusBib(b);
-  const leg = (f.legenda || "").trim();
+  const leg = (f.legenda || "").trim(), n = numerosBib(b);
+  const em = Object.values(f.publicado || {}).map((v) => v.em).filter(Boolean).sort()[0];
   return `<section class="reel" data-i="${i}" data-k="v" data-nome="${esc(nome)}">
     <div class="reel-palco">
       <video loop playsinline preload="none" data-src="${esc(b.videoUrl)}" ${b.capaUrl ? `poster="${esc(b.capaUrl)}"` : ""}></video>
       <span class="reel-pausa">${ic("i-play")}</span><span class="reel-carrega"></span>
       <div class="reel-info">
+        ${n ? perfilReel(em) : ""}
         <div class="reel-chips">${chipBib(st)}</div>
         <b>${esc(f.titulo || nome)}</b>
         ${leg ? `<p class="reel-leg" data-r="leg">${esc(leg)}</p>` : ""}
       </div>
       <div class="reel-acoes">
+        ${acoesNumeros(n)}${n ? `<i class="sep"></i>` : ""}
+        ${botaoImagina(b)}
         <button data-r="som" aria-label="Som"><span>${ic(REEL_SOM ? "i-vol" : "i-mudo")}</span><small>${REEL_SOM ? "Som" : "Mudo"}</small></button>
         <button data-r="agendar" aria-label="Agendar"><span>${ic("i-cal")}</span><small>${st.s === "pronto" ? "Agendar" : "De novo"}</small></button>
         <button data-r="detalhes" aria-label="Informações"><span>${ic("i-info")}</span><small>Info</small></button>
-        <a href="${esc(b.videoUrl)}" download aria-label="Baixar"><span>${ic("i-down")}</span><small>Baixar</small></a>
+        ${n ? "" : `<a href="${esc(b.videoUrl)}" download aria-label="Baixar"><span>${ic("i-down")}</span><small>Baixar</small></a>`}
       </div>
       <div class="reel-barra"><i></i></div>
+    </div>
+  </section>`;
+}
+/* post da agenda que já saiu: o vídeo (ou as artes) com os números, como no Reels; Info abre as informações de sempre */
+function slidePost(en, i) {
+  const x = POSTS.find((y) => y.pasta === en.pasta), p = x.post || {}, n = numerosPost(x);
+  const b = p.biblioteca ? BIB.find((y) => y.nome === p.biblioteca) : null;
+  const arq = (m) => x.arquivos.find((a) => a.name === m);
+  const video = (p.midias || []).find((m) => EXT_VIDEO.includes(extensao(m)) && arq(m));
+  const capa = p.capa && arq(p.capa) ? arq(p.capa).download_url : "";
+  const imgs = (p.midias || []).filter((m) => EXT_IMAGEM.includes(extensao(m)) && arq(m)).map((m) => arq(m).download_url);
+  const [sub, tit] = tituloPost(x), leg = (p.legenda || "").trim();
+  const em = Object.values(x.estado || {}).map((v) => v.em).filter(Boolean).sort()[0] || p.quando;
+  const palco = video
+    ? `<div class="reel-palco"><video loop playsinline preload="none" data-src="${esc(arq(video).download_url)}" ${capa ? `poster="${esc(capa)}"` : ""}></video><span class="reel-pausa">${ic("i-play")}</span><span class="reel-carrega"></span>`
+    : `<div class="reel-palco arte ${imgs.length > 1 ? "carro" : ""}"><div class="carro-trilho">${(imgs.length ? imgs : [capa]).map((u, k) => `<div class="carro-slide"><img alt="${esc(tit)} ${k + 1}" data-src="${esc(u)}" decoding="async"></div>`).join("")}</div>
+      ${imgs.length > 1 ? `<div class="carro-pontos">${imgs.map((_, k) => `<i class="${k ? "" : "on"}"></i>`).join("")}</div><button class="carro-seta ant" data-r="c-ant" hidden aria-label="Slide anterior">${ic("i-left")}</button><button class="carro-seta prox" data-r="c-prox" aria-label="Próximo slide">${ic("i-right")}</button>` : ""}`;
+  return `<section class="reel" data-i="${i}" data-k="p" data-pasta="${esc(x.pasta)}" ${b ? `data-bib="${esc(b.nome)}"` : ""}>
+    ${palco}
+      <div class="reel-info">
+        ${perfilReel(em)}
+        <div class="reel-chips"><span class="chip">${esc(NOMES_TIPO[p.tipo] || p.tipo || "Post")}${sub ? " · " + esc(sub) : ""}</span>${(p.redes || []).map((r) => chipRede(r, x.estado[r], p.quando)).join("")}</div>
+        <b>${esc(tit)}</b>
+        ${leg && p.tipo !== "story" ? `<p class="reel-leg" data-r="leg">${esc(leg)}</p>` : ""}
+      </div>
+      <div class="reel-acoes">
+        ${acoesNumeros(n)}${n ? `<i class="sep"></i>` : ""}
+        ${b ? botaoImagina(b) : ""}
+        ${video ? `<button data-r="som" aria-label="Som"><span>${ic(REEL_SOM ? "i-vol" : "i-mudo")}</span><small>${REEL_SOM ? "Som" : "Mudo"}</small></button>` : ""}
+        <button data-r="detalhes" aria-label="Informações"><span>${ic("i-info")}</span><small>Info</small></button>
+      </div>
+      ${video ? `<div class="reel-barra"><i></i></div>` : ""}
     </div>
   </section>`;
 }
@@ -3180,8 +3282,9 @@ function slideArte(en, i) {
     </div>
   </section>`;
 }
-function abrirReels(chave, slide = 0) {
+function abrirReels(chave, slide = 0, titulo = "") {
   const i = Math.max(0, REEL_LISTA.findIndex((en) => en.chave === chave));
+  $("#reelsTit").textContent = titulo || (VIEW === "agenda" ? "Agenda" : VIEW === "catalogo" ? "Catálogo" : "Vídeos"); fecharFolhaNumeros();
   $("#reelsTrilho").innerHTML = REEL_LISTA.map(slideReel).join("");
   const alvo = REEL_LISTA[i];
   if (alvo?.k === "c" && slide) { const t = $(`.reel[data-i="${i}"] .carro-trilho`); requestAnimationFrame(() => { t.scrollLeft = slide * t.clientWidth; }); }
@@ -3235,7 +3338,7 @@ async function carregarLegendaReel(sl) {
 function fecharReels(daHistoria = false) {
   if (reelBox.hidden) return;
   reelObs?.disconnect(); $$("#reelsTrilho video").forEach((v) => v.pause());
-  if ($("#gaveta.on")) fecharGaveta();
+  if ($("#gaveta.on")) fecharGaveta(); fecharFolhaNumeros();
   reelBox.hidden = true; REEL_ATUAL = -1; document.documentElement.classList.remove("com-reels"); travar();
   depoisDoQuadro(() => { if (!reelBox.hidden) return; $$("#reelsTrilho video").forEach((v) => { v.removeAttribute("src"); v.load(); }); $("#reelsTrilho").innerHTML = ""; }); // limpa depois de fechar
   if (reelHist) { reelHist = false; if (!daHistoria) history.back(); }
@@ -3244,6 +3347,7 @@ function passarReel(d) { const t = $("#reelsTrilho"), n = REEL_ATUAL + d; if (n 
 addEventListener("popstate", () => {
   if (!reelHist) return;
   if ($("#gaveta.on")) { fecharGaveta(); history.pushState({ reels: 1 }, ""); return; } // "voltar" fecha primeiro a folha de informações
+  if ($("#reelsFolha.on")) { fecharFolhaNumeros(); history.pushState({ reels: 1 }, ""); return; }
   fecharReels(true);
 });
 reelBox.addEventListener("click", (e) => {
@@ -3251,6 +3355,16 @@ reelBox.addEventListener("click", (e) => {
   const nome = sl?.dataset.nome, v = sl && $("video", sl);
   const acao = el?.dataset.r;
   if (acao === "fechar") return fecharReels();
+  if (acao === "folha-x") return fecharFolhaNumeros();
+  if (acao === "nums-todos") return abrirFolhaNumeros($("#reelsFolha")._n, "nums");
+  if (e.target.closest("#reelsFolha")) return;
+  if ($("#reelsFolha.on")) { fecharFolhaNumeros(); if (!acao) return; }
+  if (acao === "nums" || acao === "coments") {
+    const en = REEL_LISTA[+sl.dataset.i], n = en.k === "p" ? numerosPost(POSTS.find((y) => y.pasta === en.pasta)) : numerosBib(BIB.find((y) => y.nome === en.nome));
+    return abrirFolhaNumeros(n, acao);
+  }
+  if (acao === "imagina") { v?.pause(); sl.classList.add("pausado"); return pedirImaginaSe(sl.dataset.nome || sl.dataset.bib); }
+  if (acao === "detalhes" && sl.dataset.k === "p") { v?.pause(); sl.classList.add("pausado"); return abrirGaveta(sl.dataset.pasta); }
   if (acao === "ant") return passarReel(-1);
   if (acao === "prox") return passarReel(1);
   if (acao === "leg") return el.classList.toggle("aberta");
@@ -3302,6 +3416,7 @@ $("#reelsTrilho").addEventListener("timeupdate", (e) => {
 }, true);
 addEventListener("keydown", (e) => {
   if (reelBox.hidden || $("#gaveta.on") || $("#modal.on")) return;
+  if (e.key === "Escape" && $("#reelsFolha.on")) { e.stopPropagation(); return fecharFolhaNumeros(); }
   if (e.key === "Escape") fecharReels();
   else if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); passarReel(1); }
   else if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); passarReel(-1); }
@@ -3393,8 +3508,11 @@ function abrirVideo(nome, agendar = false) {
             `<div class="tt-segm" id="ttOp" role="group" aria-label="TikTok">${[["", "Não vai"], ["pedido", "Quero"], ["postado", "Já está lá"]].map(([k, n]) => `<button class="${tts === k ? "on" : ""}" data-tt="${k}" aria-pressed="${tts === k}">${n}</button>`).join("")}</div>`)}
         </div>
       </div></div>
+      ${(() => { const n = numerosBib(b); return n ? `<div class="sec-tit" style="margin-top:22px">Números</div>${linhaNumeros(n)}` : ""; })()}
+      ${blocoImagina(b)}
       ${blocoTextos(f)}
       ${st.s === "agendado" ? `<div style="margin-top:16px"><button class="btn peq" data-abrir="${esc(st.pasta)}">Ver na agenda${ic("i-right")}</button></div>` : ""}`;
+    $("#gavCorpo").onclick = (e) => { if (e.target.closest("[data-imagina]")) { fecharGaveta(); pedirImaginaSe(nome); } };
     $("#ttOp").onclick = (e) => { const c = e.target.closest("[data-tt]"); if (c) marcarTikTok(b, c.dataset.tt); };
     $("#gavPe").innerHTML = `<a class="btn fant" href="${esc(b.videoUrl)}" download>${ic("i-down")}Baixar</a><button class="btn pri" id="bAgenda">${ic("i-cal")}${st.s === "pronto" ? "Agendar" : "Agendar de novo"}</button>`;
     $("#bAgenda").onclick = () => abrirVideo(nome, true);
@@ -4329,7 +4447,7 @@ $("#catCorpo").addEventListener("click", (e) => {
   if (d) { const novo = d.dataset.catd; CAT_DIA = CAT_DIA === novo ? "" : novo; desenharCatalogo(); if (CAT_DIA) $("#catLista")?.scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "start" }); return; }
   if (c) {
     const x = CAT_ITENS.find((y) => y.id === c.dataset.cat); if (!x) return;
-    if (x.biblioteca && BIB.some((b) => b.nome === x.biblioteca)) { REEL_LISTA = CAT_ITENS.filter((y) => y.biblioteca && BIB.some((b) => b.nome === y.biblioteca)).map((y) => y.biblioteca); abrirReels(x.biblioteca); return; }
+    if (x.biblioteca && BIB.some((b) => b.nome === x.biblioteca)) { REEL_LISTA = [...new Set(CAT_ITENS.filter((y) => y.biblioteca && BIB.some((b) => b.nome === y.biblioteca && b.videoUrl)).map((y) => y.biblioteca))].map((nome) => ({ k: "v", chave: "v:" + nome, nome })); abrirReels("v:" + x.biblioteca); return; }
     if (x.link) { window.open(x.link, "_blank", "noopener"); return; }
     toast("info", x.tema || "Item do cronograma", "Ainda sem vídeo nem post publicado.");
   }
@@ -4350,6 +4468,164 @@ function desenharCardCatalogo() {
 
 /* ================================================================ navegação */
 let VIEW = "inicio";
+/* ================================================================ números de cada post (como no Instagram)
+   O mesmo post sai no Instagram, no Facebook e no YouTube. Aqui os números das análises são ligados
+   ao post da agenda ou ao vídeo da biblioteca: primeiro pelo id que o robô guardou ao publicar,
+   depois pelo começo da legenda no mesmo dia (para as coletas antigas, que ainda não tinham o id). */
+let anTentou = false;
+function pedirNumeros() { if (!AN && SENHA_AN && !anCarregando && !anTentou) { anTentou = true; carregarAnalises(); } }
+function acharNumeros(ids, legenda, quando) {
+  if (!AN) return null;
+  const t0 = quando ? new Date(quando).getTime() : 0, perto = (p, dias) => !t0 || (p.quando && Math.abs(new Date(p.quando).getTime() - t0) <= dias * 864e5);
+  const leg = inicioLeg(legenda).slice(0, 30), mesmaLeg = (p) => leg.length >= 12 && inicioLeg(p.legenda).slice(0, 30) === leg;
+  const igL = AN.instagram?.posts || [], fbL = AN.facebook?.posts || [], ytL = AN.youtube?.videos || [];
+  const ig = (ids.instagram && igL.find((p) => p.id === ids.instagram)) || (!ids.instagram ? null : igL.find((p) => !p.id && perto(p, 1) && mesmaLeg(p))) || null;
+  const fb = (ids.facebook && fbL.find((p) => p.id && (p.id === ids.facebook || String(p.id).endsWith("_" + ids.facebook)))) || (!ids.facebook ? null : fbL.find((p) => perto(p, 1) && mesmaLeg(p))) || null;
+  const yt = (ids.youtube && ytL.find((p) => p.id === ids.youtube || String(p.link || "").endsWith("/" + ids.youtube))) || null;
+  if (!ig && !fb && !yt) return null;
+  const coments = [["instagram", ig], ["facebook", fb], ["youtube", yt]].flatMap(([r, p]) => (p?.comentarios_lista || []).map((c) => ({ ...c, rede: r })))
+    .sort((a, b) => (new Date(b.quando || 0).getTime() || 0) - (new Date(a.quando || 0).getTime() || 0));
+  return {
+    ig, fb, yt, coments,
+    views: somaN(ig?.visualizacoes, fb?.visualizacoes, yt?.visualizacoes),
+    curtidas: somaN(ig?.curtidas, fb?.reacoes, yt?.curtidas),
+    comentarios: somaN(ig?.comentarios, fb?.comentarios, yt?.comentarios),
+    reposts: somaN(ig?.compartilhamentos, fb?.compartilhamentos),
+    salvos: somaN(ig?.salvos),
+  };
+}
+function idsDe(obj) { const o = {}; Object.entries(obj || {}).forEach(([r, v]) => { if (v?.id && (v.status === undefined || v.status === "publicado")) o[r] = v.id; }); return o; }
+function numerosPost(x) {
+  const ids = idsDe(x.estado); if (!Object.keys(ids).length) return null;
+  const em = Object.values(x.estado || {}).map((v) => v.em).filter(Boolean).sort()[0];
+  return acharNumeros(ids, x.post?.legenda, em || x.post?.quando);
+}
+function numerosBib(b) {
+  const ids = idsDe(b.ficha.publicado); if (!Object.keys(ids).length) return null;
+  const em = Object.values(b.ficha.publicado || {}).map((v) => v.em).filter(Boolean).sort()[0];
+  return acharNumeros(ids, b.ficha.legenda, em);
+}
+function publicadoEm(x) { return Object.values(x.estado || {}).some((v) => v.status === "publicado"); }
+/* a linha de números dos cartões: visualizações, curtidas, comentários e compartilhamentos */
+function linhaNumeros(n) {
+  if (!n) return "";
+  const it = (icone, v, t) => `<span title="${t}">${ic(icone)}<b>${num(v ?? 0)}</b></span>`;
+  return `<div class="ig-nums">${it("i-playo", n.views, "Visualizações")}${it("i-heart", n.curtidas, "Curtidas")}${it("i-chat", n.comentarios, "Comentários")}${it("i-repost", n.reposts, "Compartilhamentos")}</div>`;
+}
+/* coluna da direita do vídeo, igual ao Reels: curtir, comentar, compartilhar e visualizações */
+function acoesNumeros(n) {
+  if (!n) return "";
+  const b = (r, icone, v, rot) => `<button class="met" data-r="${r}" aria-label="${rot}"><span>${ic(icone)}</span><small>${num(v ?? 0)}</small></button>`;
+  return b("nums", "i-heart", n.curtidas, "Curtidas") + b("coments", "i-chat", n.comentarios, "Comentários") + b("nums", "i-repost", n.reposts, "Compartilhamentos") + b("nums", "i-playo", n.views, "Visualizações");
+}
+function perfilReel(quando) {
+  const u = AN?.instagram?.conta?.usuario;
+  return `<div class="reel-perfil"><span class="av">${ic("i-zap")}</span><b>${esc(u ? "@" + u : "jasabiadisso")}</b>${quando ? `<small>· ${esc(relativo(quando))}</small>` : ""}</div>`;
+}
+/* folha que sobe por cima do vídeo: números por rede e os comentários (só leitura) */
+function abrirFolhaNumeros(n, foco = "nums") {
+  const f = $("#reelsFolha"); if (!f || !n) return;
+  const linha = (r, p, c) => p ? `<tr><td>${ic(ICONE_REDE[r])}${NOMES_REDE[r]}</td>${c.map((v) => `<td>${num(v)}</td>`).join("")}</tr>` : "";
+  const tabela = `<table class="rf-tab"><thead><tr><th></th><th>${ic("i-playo")}<span>Views</span></th><th>${ic("i-heart")}<span>Curtidas</span></th><th>${ic("i-chat")}<span>Coment.</span></th><th>${ic("i-repost")}<span>Compart.</span></th></tr></thead><tbody>
+    ${linha("instagram", n.ig, [n.ig?.visualizacoes, n.ig?.curtidas, n.ig?.comentarios, n.ig?.compartilhamentos])}
+    ${linha("facebook", n.fb, [n.fb?.visualizacoes, n.fb?.reacoes, n.fb?.comentarios, n.fb?.compartilhamentos])}
+    ${linha("youtube", n.yt, [n.yt?.visualizacoes, n.yt?.curtidas, n.yt?.comentarios, null])}
+    <tr class="tot"><td>Total</td><td>${num(n.views)}</td><td>${num(n.curtidas)}</td><td>${num(n.comentarios)}</td><td>${num(n.reposts)}</td></tr></tbody></table>`;
+  const extra = [n.ig?.alcance != null ? `<span><b>${num(n.ig.alcance)}</b> contas alcançadas</span>` : "", n.salvos != null ? `<span><b>${num(n.salvos)}</b> salvos</span>` : "", n.ig?.tempo_medio_ms ? `<span><b>${(n.ig.tempo_medio_ms / 1000).toFixed(1).replace(".", ",")} s</b> assistidos em média</span>` : ""].filter(Boolean).join("");
+  const coms = n.coments.length ? n.coments.map((c) => `<div class="rf-com"><span class="rf-rede">${ic(ICONE_REDE[c.rede])}</span><div><p>${esc(c.texto)}</p><small>${c.quando ? esc(relativo(c.quando)) : ""}${c.curtidas ? ` · ${ic("i-heart")}${num(c.curtidas)}` : ""}${c.respostas ? ` · ${num(c.respostas)} resposta(s)` : ""}</small></div></div>`).join("")
+    : `<div class="rf-vazio">${n.comentarios ? "A rede conta comentário aqui, mas o texto ainda não veio. Veja o aviso na aba Análises." : "Ninguém comentou ainda."}</div>`;
+  f.innerHTML = `<div class="rf-alca"></div><div class="rf-cab"><b>${foco === "coments" ? `${num(n.comentarios ?? 0)} comentário(s)` : "Números deste post"}</b><button class="reels-x" data-r="folha-x" aria-label="Fechar">${ic("i-x")}</button></div>
+    <div class="rf-corpo">${foco === "coments" ? "" : tabela + (extra ? `<div class="rf-extra">${extra}</div>` : "")}
+      <div class="rf-sec">${foco === "coments" ? "" : `<b>Comentários</b>`}<small>Só para ler. O painel não responde nada.</small></div>${coms}
+      ${foco === "coments" ? `<button class="btn peq rf-ver" data-r="nums-todos">${ic("i-chart")}Ver os números por rede</button>` : ""}</div>`;
+  f.classList.add("on"); f._n = n;
+  $$("#reelsTrilho video").forEach((v) => { if (!v.paused) { v.pause(); v.closest(".reel")?.classList.add("pausado"); } });
+}
+function fecharFolhaNumeros() { $("#reelsFolha")?.classList.remove("on"); }
+/* toque num post da agenda que já saiu: abre o vídeo em tela cheia; deslizar passa pelos outros que já saíram, na ordem da lista */
+function abrirFeedAgenda(pasta) {
+  REEL_LISTA = $$("#lista [data-feedp]").map((c) => ({ k: "p", chave: "p:" + c.dataset.feedp, pasta: c.dataset.feedp }));
+  if (!REEL_LISTA.some((en) => en.pasta === pasta)) REEL_LISTA = [{ k: "p", chave: "p:" + pasta, pasta }];
+  abrirReels("p:" + pasta, 0, "Agenda");
+}
+
+/* ================================================================ Imagina se do mesmo tema
+   Cada vídeo "Você sabia" pode virar um segundo vídeo "Imagina se" com o mesmo assunto (o mel que nunca
+   estraga vira "imagina se a sua missão fosse criar um alimento que dura milhares de anos").
+   A ideia sugerida vem do campo imagina_se da ficha; o pedido entra no plano e a mensagem é copiada para o chat. */
+function ehImaginaSe(b) { const f = b?.ficha || {}; return /^imagina-se/.test(b?.nome || "") || /#imaginase/i.test(f.legenda || "") || /^(e se|imagina se)\b/i.test(f.titulo || ""); }
+function podeImaginar(b) { return !!b && (b.ficha.tipo || "reel") === "reel" && !ehImaginaSe(b); }
+function imaginaPedido(b) { return (CRONO.itens || []).find((it) => it.origem === b.nome); }
+function sugestoesImagina(b) {
+  const f = b.ficha, s = Array.isArray(f.imagina_se) ? f.imagina_se : f.imagina_se ? [f.imagina_se] : [];
+  return s.filter(Boolean).map((x) => String(x).trim());
+}
+function botaoImagina(b) {
+  if (!podeImaginar(b)) return "";
+  const ja = imaginaPedido(b);
+  return `<button class="imag ${ja ? "ja" : ""}" data-r="imagina" aria-label="Fazer um Imagina se deste tema"><span>${ic("i-bubble")}</span><small>${ja ? "Pedido" : "Imagina se"}</small></button>`;
+}
+function blocoImagina(b) {
+  if (!podeImaginar(b)) return "";
+  const ja = imaginaPedido(b), sug = sugestoesImagina(b)[0];
+  return `<div class="is-card ${ja ? "ja" : ""}"><span class="is-ic">${ic("i-bubble")}</span><div><b>${ja ? "Imagina se já pedido" : "Vira um “Imagina se”"}</b>
+    <small>${ja ? `${esc(ja.tema || "")} · ${esc(F_CURTO.format(dataDe(ja.data)))}` : sug ? `Sugestão: ${esc(sug)}` : "O mesmo tema, agora em ficção com “você”."}</small></div>
+    <button class="btn peq ${ja ? "" : "pri"}" data-imagina>${ja ? "Ver no plano" : "Pedir"}</button></div>`;
+}
+/* vaga de reel do plano que ainda não tem tema nem vídeo: o Imagina se entra nela */
+function vagaReel(k) { return (CRONO.itens || []).find((it) => it.data === k && it.formato === "reel" && !it.biblioteca && !it.tema && ["ideia", "roteiro"].includes(statusItem(it))); }
+function proximoDiaSemReel() {
+  const hoje = chaveDia(new Date());
+  for (let i = 1; i <= 30; i++) { const k = somaDias(hoje, i); if (vagaReel(k)) return k; }
+  for (let i = 1; i <= 30; i++) { const k = somaDias(hoje, i); if (!temNoDia(k).reel) return k; }
+  return somaDias(hoje, 1);
+}
+async function pedirImaginaSe(nome) {
+  const b = BIB.find((y) => y.nome === nome); if (!podeImaginar(b)) return;
+  if (!cronoCarregou) await carregarCronograma();
+  const ja = imaginaPedido(b);
+  if (ja) { if (!$("#reels").hidden) fecharReels(); return editarItem(ja); }
+  const f = b.ficha, sug = sugestoesImagina(b), hoje = chaveDia(new Date());
+  let dia = proximoDiaSemReel();
+  const dias = []; for (let i = 1; i <= 7; i++) dias.push(somaDias(hoje, i));
+  if (!dias.includes(dia)) dias.push(dia);
+  const rotDia = (k) => `${k === somaDias(hoje, 1) ? "Amanhã" : NOMES_SEMANA[dataDe(k).getUTCDay()]} ${k.slice(8, 10)}/${k.slice(5, 7)}${vagaReel(k) ? " · vaga livre" : temNoDia(k).reel ? " · reel extra" : ""}`;
+  const m = $("#modal");
+  m.innerHTML = `<div class="ic-topo">${ic("i-bubble", "i g")}</div><h2>Fazer um “Imagina se” deste tema</h2>
+    <p>De <b>${esc(f.titulo || nome)}</b> sai um segundo vídeo, de ficção, com o mesmo assunto. Um tema vira dois vídeos.</p>
+    <label class="campo">Ideia do vídeo</label><input class="input" id="isTema" value="${esc(sug[0] || "")}" placeholder="Deixe vazio para o Claude sugerir">
+    ${sug.length > 1 ? `<div class="is-sug">${sug.map((s, i) => `<button class="chip ${i ? "" : "ok"}" data-sug="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : ""}
+    <label class="campo">Dia no plano</label><p class="dica" style="margin:0">“Vaga livre” é o reel do dia que ainda não tem tema: o Imagina se entra nele. Nos outros dias ele vira um reel a mais.</p>
+    <div class="is-dias" id="isDias">${dias.map((k) => `<button class="chip ${k === dia ? "ok" : ""}" data-isd="${k}">${esc(rotDia(k))}</button>`).join("")}</div>
+    <label class="campo">Recado (opcional)</label><textarea class="input" id="isNotas" rows="2" placeholder="Ex.: terminar com A ou B, falar da fonte…"></textarea>
+    <p class="dica">Entra no plano como “Pedido ao Claude” e a mensagem é copiada. Depois é só colar no chat.</p>
+    <div class="btns"><button class="btn fant" data-fecha>Cancelar</button><button class="btn pri" id="isOk">${ic("i-zap")}Pedir</button></div>`;
+  abrirModal();
+  m.onclick = (e) => {
+    const s = e.target.closest("[data-sug]"); if (s) { $("#isTema").value = s.dataset.sug; $$("#modal [data-sug]").forEach((c) => c.classList.toggle("ok", c === s)); return; }
+    const d = e.target.closest("[data-isd]"); if (d) { dia = d.dataset.isd; $$("#isDias [data-isd]").forEach((c) => c.classList.toggle("ok", c === d)); }
+  };
+  $("#isOk").onclick = async () => {
+    m.onclick = null;
+    const tema = $("#isTema").value.trim(), recado = $("#isNotas").value.trim();
+    const diaTxt = `${NOMES_SEMANA[dataDe(dia).getUTCDay()].toLowerCase()}, ${dia.slice(8, 10)}/${dia.slice(5, 7)}`;
+    const vaga = vagaReel(dia), antes = vaga ? JSON.stringify(vaga) : "";
+    const it = Object.assign(vaga || { id: novoId(), data: dia, formato: "reel", redes: redesPadrao("reel") }, { tema: tema || `Imagina se: ${f.titulo || nome}`, status: "pedido", pedido: new Date().toISOString(), origem: nome,
+      notas: `Imagina se do mesmo tema do vídeo "${f.titulo || nome}" (biblioteca/${nome}). Seguir o modelo do quadro Imagina se.${recado ? " Recado: " + recado : ""}` });
+    const msg = `Cria um reel "Imagina se" para ${diaTxt}${tema ? ` sobre "${tema}"` : " (sugira a situação)"}. É o par do vídeo "${f.titulo || nome}" (Você sabia, biblioteca ${nome}): o mesmo tema, agora em ficção com "você".${recado ? ` Recado: ${recado}` : ""} (item ${it.id} do cronograma)`;
+    let copiou = false; try { await navigator.clipboard.writeText(msg); copiou = true; } catch (e) {}
+    fecharModal();
+    if (!vaga) CRONO.itens.push(it);
+    if (VIEW === "cronograma") desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    if (!(await salvarCrono(`pede um Imagina se de "${f.titulo || nome}"`))) {
+      if (vaga) { Object.keys(vaga).forEach((k) => delete vaga[k]); Object.assign(vaga, JSON.parse(antes)); } else CRONO.itens = CRONO.itens.filter((x) => x !== it);
+      if (VIEW === "cronograma") desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); return;
+    }
+    $$(`#reelsTrilho .reel [data-r="imagina"]`).forEach((bt) => { const sl = bt.closest(".reel"); if ((sl.dataset.nome || sl.dataset.bib) === nome) { bt.classList.add("ja"); $("small", bt).textContent = "Pedido"; } });
+    if (copiou) toast("ok", "Imagina se pedido", `Entrou no plano para ${diaTxt}. A mensagem foi copiada: cole no chat com o Claude.`, 9000);
+    else { m.innerHTML = `<h2>Copie e cole no chat</h2><textarea class="input" rows="5" readonly onclick="this.select()">${esc(msg)}</textarea><div class="btns"><button class="btn pri" data-fecha>Pronto</button></div>`; abrirModal(); }
+  };
+}
 function irPara(v) {
   if (!$("#reels")?.hidden) fecharReels();
   if (["agenda", "biblioteca", "cronograma", "analises", "catalogo", "robo"].includes(v) || v === "inicio") local.set("painel-aba", v);
@@ -4405,6 +4681,7 @@ document.addEventListener("click", (e) => {
   const b = e.target;
   const ir = b.closest("[data-ir]"); if (ir) { irPara(ir.dataset.ir); return; }
   const v = b.closest("[data-view]"); if (v) { irPara(v.dataset.view); return; }
+  const fp = b.closest("[data-feedp]"); if (fp) { abrirFeedAgenda(fp.dataset.feedp); return; }
   const ab = b.closest("[data-abrir]"); if (ab) { abrirGaveta(ab.dataset.abrir); return; }
   const ro = b.closest("[data-rodar]"); if (ro) { rodar(ro.dataset.rodar); return; }
   const re = b.closest("[data-reenviar]"); if (re) { rodar("publicar", re.dataset.reenviar); return; }

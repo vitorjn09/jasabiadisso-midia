@@ -868,29 +868,29 @@
       "id": "zdljybp",
       "data": "2026-11-12",
       "formato": "reel",
-      "tema": "imagine se",
+      "tema": "Imagina se: só um superpoder",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-08T13:21:39.705Z"
+      "status": "pronto",
+      "biblioteca": "imagina-se-superpoder"
     },
     {
       "id": "kaxn4db",
       "data": "2026-11-14",
       "formato": "reel",
-      "tema": "imagina se",
+      "tema": "Imagina se: você acordasse no Rio em 1889",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-08T13:21:55.949Z"
+      "status": "pronto",
+      "biblioteca": "imagina-se-1889"
     },
     {
       "id": "clod4qu",
@@ -941,16 +941,17 @@
       "id": "t1gi2wu",
       "data": "2026-11-14",
       "formato": "reel",
-      "tema": "imagine se",
+      "tema": "Imagina se: você acordasse no Rio em 1889",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-08T15:55:44.344Z",
-      "hora": "11:26"
+      "status": "pronto",
+      "hora": "11:26",
+      "biblioteca": "imagina-se-1889",
+      "notas": "Pedido repetido do kaxn4db: mesmo vídeo (biblioteca imagina-se-1889)."
     },
     {
       "id": "n4gpb0k",

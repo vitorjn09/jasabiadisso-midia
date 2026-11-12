@@ -326,6 +326,20 @@
       "hora": "11:36",
       "biblioteca": "cavalo-marinho-pai",
       "notas": "Pedido repetido do i08gdce: mesmo vídeo (biblioteca cavalo-marinho-pai)."
+    },
+    {
+      "id": "cykubnk",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-13",
+      "biblioteca": "sexta-feira-13-adulto",
+      "status": "agendado",
+      "tema": "Sexta-feira 13: um medo bem mais novo do que parece"
     }
   ],
   "horarios": {

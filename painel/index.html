@@ -2295,10 +2295,10 @@ async function apagarPost(x) {
     texto: `<p>A pasta <b>${esc(x.pasta)}</b> sai da agenda.${x.post?.biblioteca ? " O vídeo continua na biblioteca." : ""}</p><p>${publicado ? "O que já foi publicado continua nas redes." : "Ele não vai ser publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>${tiraPlano ? `<p>Ele também sai do plano (<b>${esc(it.tema || FORMATOS[it.formato])}</b>), para não voltar para a Agenda como pronto.</p><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;cursor:pointer"><input type="checkbox" id="apManter"> Deixar no plano como pronto para agendar de novo</label>` : ""}` });
   if (!ok) return;
   manterNoPlano = !!$("#apManter")?.checked;
-  const antesPlano = tiraPlano ? JSON.stringify(CRONO.itens) : "";
+  const antesPlano = tiraPlano ? JSON.stringify({ itens: CRONO.itens, dispensados: CRONO.dispensados }) : "";
   if (tiraPlano) {
     if (manterNoPlano) { if (it.status === "agendado") it.status = "pronto"; }
-    else CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id);
+    else { CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); dispensar([it]); }
   }
   const plano = tiraPlano ? [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }] : [];
   try {
@@ -2306,7 +2306,7 @@ async function apagarPost(x) {
     const sha = await commit(`Painel: remove ${x.pasta} da agenda${tiraPlano && !manterNoPlano ? " e do plano" : ""}`, plano, x.arquivos.filter((a) => a.path).map((a) => a.path));
     tirarDaTela([x.pasta]);
     toast("ok", "Post apagado", tiraPlano ? (manterNoPlano ? "ficou no plano como pronto" : "saiu do plano também") : x.pasta); fecharGaveta(); carregarAgenda(sha);
-  } catch (e) { if (tiraPlano) CRONO.itens = JSON.parse(antesPlano); toast("err", "Não apagou", e.message); }
+  } catch (e) { if (tiraPlano) Object.assign(CRONO, JSON.parse(antesPlano)); toast("err", "Não apagou", e.message); }
 }
 /* tira da tela na hora o que acabou de ser apagado (a leitura do GitHub logo depois do commit pode ainda trazer a pasta) */
 function tirarDaTela(pastas) {
@@ -4017,8 +4017,9 @@ $("#cLimpa").onclick = async () => {
   const ok = await confirmar({ titulo: "Apagar a estrutura desta semana?", icone: "i-trash", perigo: true, rotulo: "Apagar", texto: `<p>Apago <b>${vazios.length}</b> vaga(s) vazia(s) desta semana.</p><p>Só saem as vagas sem tema, sem vídeo, sem notas e com status Ideia. O que já tem conteúdo fica como está, e as outras semanas não são mexidas.</p>` });
   if (!ok) return;
   const antes = CRONO.itens;
-  CRONO.itens = CRONO.itens.filter((x) => !vazios.includes(x)); desenharCronograma();
-  if (!(await salvarCrono(`apaga ${vazios.length} vaga(s) vazias da semana de ${SEMANA}`))) { CRONO.itens = antes; desenharCronograma(); }
+  const antesDisp = JSON.stringify(CRONO.dispensados || {});
+  CRONO.itens = CRONO.itens.filter((x) => !vazios.includes(x)); dispensar(vazios); desenharCronograma();
+  if (!(await salvarCrono(`apaga ${vazios.length} vaga(s) vazias da semana de ${SEMANA}`))) { CRONO.itens = antes; CRONO.dispensados = JSON.parse(antesDisp); desenharCronograma(); }
 };
 
 /* pedir ao Claude para criar o conteúdo de um item sem vídeo */
@@ -4111,8 +4112,19 @@ function temNoDia(k) {
 }
 function faltaNoDia(k) {
   if (!cronoCarregou || !CRONO.modelo) return [];
-  const n = temNoDia(k), modelo = CRONO.modelo[String(dataDe(k).getUTCDay())] || [];
-  return [...new Set(modelo)].filter((f) => f in n && !n[f]);
+  const n = temNoDia(k), modelo = CRONO.modelo[String(dataDe(k).getUTCDay())] || [], fora = (CRONO.dispensados || {})[k] || [];
+  return [...new Set(modelo)].filter((f) => f in n && !n[f] && !fora.includes(f));
+}
+/* o que o Vitor tirou de propósito de um dia não volta a ser cobrado como "falta" pelo modelo da semana */
+function dispensar(itens) {
+  CRONO.dispensados ||= {};
+  for (const it of itens) {
+    if (!it?.data || !it.formato) continue;
+    const l = (CRONO.dispensados[it.data] ||= []);
+    if (!l.includes(it.formato)) l.push(it.formato);
+  }
+  const hoje = chaveDia(new Date()); // dias que já passaram não precisam mais da anotação
+  for (const k of Object.keys(CRONO.dispensados)) if (k < hoje) delete CRONO.dispensados[k];
 }
 function abrirAdicionarDia(k, fmt = "") {
   const m = $("#modal"), n = temNoDia(k), falta = faltaNoDia(k), dt = dataDe(k), hoje = chaveDia(new Date());
@@ -4128,7 +4140,7 @@ function abrirAdicionarDia(k, fmt = "") {
       <button class="add-acao" data-acao="vaga"><span class="af-ic">${ic("i-plan")}</span><span><b>Só reservar no plano</b><small>Cria a vaga vazia no cronograma para decidir depois.</small></span>${ic("i-right")}</button>
     </div>` : `<p class="dica" style="margin-top:12px">Escolha o formato.</p>`;
   m.innerHTML = `<div class="ic-topo">${ic("i-plus", "i g")}</div><h2>Adicionar em ${esc(titulo)}</h2>
-    <p>${falta.length ? `Pelo modelo da semana, falta <b>${esc(falta.map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</b> neste dia.` : "Este dia já tem tudo o que o modelo da semana pede. Dá para adicionar mais."}</p>
+    <p>${falta.length ? `Pelo modelo da semana, falta <b>${esc(falta.map((f) => FORMATOS[f].toLowerCase()).join(" e "))}</b> neste dia.` : "Nada pendente neste dia. Dá para adicionar mais."}</p>
     <div class="add-fmts">${cartoes}</div>${acoes}
     <div class="btns"><button class="btn fant" data-fecha>Fechar</button></div>`;
   if (!$("#modal.on")) abrirModal();
@@ -4392,6 +4404,7 @@ function editarItem(it, dataInicial) {
     // a hora mostrada no editor de um item que já virou post vem da agenda; só conta como mudança se for outra
     if (!novo && x.hora && !it.hora && postsQueAndamJunto(it).length && horasDo(it)[0] === x.hora) delete x.hora;
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
+    { const d = (CRONO.dispensados || {})[x.data]; if (d && d.includes(x.formato)) CRONO.dispensados[x.data] = d.filter((f) => f !== x.formato); }
     if (!novo && !x.hora) delete it.hora;
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);
     desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
@@ -4408,16 +4421,17 @@ function editarItem(it, dataInicial) {
     if (!ok) return;
     const apagarAgenda = ligados.length && !!$("#tpAgenda")?.checked;
     const antes = JSON.stringify(CRONO.itens);
-    CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
+    const antesDisp = JSON.stringify(CRONO.dispensados || {});
+    CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); dispensar([it]); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
     const msg = `tira "${it.tema || FORMATOS[it.formato]}"`;
-    if (!apagarAgenda) { if (!(await salvarCrono(msg))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); } return; }
-    if (!TOKEN) { CRONO.itens = JSON.parse(antes); desenharCronograma(); return toast("err", "Conecte o painel primeiro", "Clique em Conectar."); }
+    if (!apagarAgenda) { if (!(await salvarCrono(msg))) { CRONO.itens = JSON.parse(antes); CRONO.dispensados = JSON.parse(antesDisp); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); } return; }
+    if (!TOKEN) { CRONO.itens = JSON.parse(antes); CRONO.dispensados = JSON.parse(antesDisp); desenharCronograma(); return toast("err", "Conecte o painel primeiro", "Clique em Conectar."); }
     try {
       const sha = await commit(`Painel: cronograma, ${msg} e apaga ${ligados.length} post(s) da agenda`, [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }],
         ligados.flatMap((y) => y.arquivos.filter((a) => a.path).map((a) => a.path)));
       tirarDaTela(ligados.map((y) => y.pasta));
       toast("ok", "Tirado do plano e da agenda", `${ligados.length} post(s) apagado(s)`); carregarAgenda(sha);
-    } catch (e) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); toast("err", "Não salvou", e.message); }
+    } catch (e) { CRONO.itens = JSON.parse(antes); CRONO.dispensados = JSON.parse(antesDisp); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); toast("err", "Não salvou", e.message); }
   });
 }
 /* ================================================================ catálogo do mês */

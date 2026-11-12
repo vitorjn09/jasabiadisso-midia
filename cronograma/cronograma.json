@@ -459,5 +459,95 @@
       "12:15",
       "20:15"
     ]
+  },
+  "dispensados": {
+    "2026-11-13": [
+      "carrossel",
+      "stories"
+    ],
+    "2026-11-14": [
+      "reel"
+    ],
+    "2026-11-15": [
+      "stories"
+    ],
+    "2026-11-16": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-11-17": [
+      "reel",
+      "stories"
+    ],
+    "2026-11-18": [
+      "stories"
+    ],
+    "2026-11-20": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-11-21": [
+      "reel"
+    ],
+    "2026-11-22": [
+      "reel",
+      "stories"
+    ],
+    "2026-11-23": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-11-24": [
+      "reel",
+      "stories"
+    ],
+    "2026-11-25": [
+      "stories"
+    ],
+    "2026-11-26": [
+      "reel"
+    ],
+    "2026-11-27": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-11-28": [
+      "reel"
+    ],
+    "2026-11-29": [
+      "reel",
+      "stories"
+    ],
+    "2026-11-30": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-12-01": [
+      "reel",
+      "stories"
+    ],
+    "2026-12-02": [
+      "stories"
+    ],
+    "2026-12-03": [
+      "reel"
+    ],
+    "2026-12-04": [
+      "reel",
+      "carrossel",
+      "stories"
+    ],
+    "2026-12-05": [
+      "reel"
+    ],
+    "2026-12-06": [
+      "reel",
+      "stories"
+    ]
   }
 }

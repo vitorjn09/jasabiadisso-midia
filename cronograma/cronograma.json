@@ -431,16 +431,16 @@
       "id": "4ymo6da",
       "data": "2026-11-13",
       "formato": "reel",
-      "tema": "IMAGINA SE",
+      "tema": "Imagina se: fabricar uma nota de R$ 100",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-12T14:28:47.337Z",
-      "hora": "18:32"
+      "status": "pronto",
+      "hora": "18:32",
+      "biblioteca": "imagina-se-nota-100-3d"
     }
   ],
   "horarios": {

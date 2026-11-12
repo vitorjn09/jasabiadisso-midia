@@ -354,6 +354,20 @@
       "biblioteca": "proclamacao-desfile",
       "status": "agendado",
       "tema": "Proclamação da República: o povo achou que era desfile"
+    },
+    {
+      "id": "4dtvr1b",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-12",
+      "biblioteca": "estatua-liberdade-cobre",
+      "status": "agendado",
+      "tema": "A Estátua da Liberdade era cor de cobre"
     }
   ],
   "horarios": {

@@ -340,6 +340,20 @@
       "biblioteca": "sexta-feira-13-adulto",
       "status": "agendado",
       "tema": "Sexta-feira 13: um medo bem mais novo do que parece"
+    },
+    {
+      "id": "3ga68xp",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-15",
+      "biblioteca": "proclamacao-desfile",
+      "status": "agendado",
+      "tema": "Proclamação da República: o povo achou que era desfile"
     }
   ],
   "horarios": {

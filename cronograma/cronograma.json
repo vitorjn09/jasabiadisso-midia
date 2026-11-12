@@ -368,6 +368,20 @@
       "biblioteca": "estatua-liberdade-cobre",
       "status": "agendado",
       "tema": "A Estátua da Liberdade era cor de cobre"
+    },
+    {
+      "id": "pc19bo6",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-12",
+      "biblioteca": "truques-motivacao",
+      "status": "agendado",
+      "tema": "Ninguém te contou: 5 truques que o seu cérebro faz com a sua motivação"
     }
   ],
   "horarios": {

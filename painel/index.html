@@ -1847,16 +1847,18 @@ function midiaHTML(x, preferirVideo = false, tag = true) {
   return `<div class="midia" style="display:grid;place-items:center;color:var(--faint)">${t}${ic("i-image", "i g")}</div>`;
 }
 
-async function carregarAgenda() {
+async function carregarAgenda(ref = RAMO) {
+  // depois de um commit do painel, lê pelo sha novo: assim o que foi apagado não volta por leitura atrasada
+  if (typeof ref !== "string" || !ref) ref = RAMO;
   try {
-    const itens = (await gh(`/contents/agenda?ref=${RAMO}`)) || [];
+    const itens = (await gh(`/contents/agenda?ref=${ref}`)) || [];
     const pastas = itens.filter((i) => i.type === "dir").map((i) => i.name);
     POSTS = await Promise.all(pastas.map(async (pasta) => {
       const base = `/contents/agenda/${encodeURIComponent(pasta)}`;
-      const arquivos = (await gh(`${base}?ref=${RAMO}`)) || [];
+      const arquivos = (await gh(`${base}?ref=${ref}`)) || [];
       const nomes = arquivos.map((a) => a.name);
       let post = null, estado = {};
-      try { post = JSON.parse(await gh(`${base}/post.json?ref=${RAMO}`, { raw: true })); } catch {}
+      try { post = JSON.parse(await gh(`${base}/post.json?ref=${ref}`, { raw: true })); } catch {}
       if (post?.biblioteca) { // o vídeo e a capa ficam na biblioteca
         const b = BIB.find((y) => y.nome === post.biblioteca);
         if (b) {
@@ -1865,7 +1867,7 @@ async function carregarAgenda() {
           arquivos.push(...extra); nomes.push(...extra.map((a) => a.name));
         }
       }
-      if (nomes.includes("estado.json")) { try { estado = JSON.parse(await gh(`${base}/estado.json?ref=${RAMO}`, { raw: true })); } catch {} }
+      if (nomes.includes("estado.json")) { try { estado = JSON.parse(await gh(`${base}/estado.json?ref=${ref}`, { raw: true })); } catch {} }
       return { pasta, arquivos, nomes, post, estado, erros: validar(post, nomes) };
     }));
     POSTS.sort((a, b) => String(a.post?.quando).localeCompare(String(b.post?.quando)));
@@ -2274,11 +2276,32 @@ async function salvarEdicao(x) {
 }
 async function apagarPost(x) {
   const publicado = Object.values(x.estado).some((e) => e.status === "publicado");
+  // o item do plano ligado a este post: se ele ficar sem nenhum post, sai do plano junto (senão volta para a Agenda como "Pronto")
+  const it = itemDoPost(x), sobra = it ? postsDoItem(it).filter((y) => y.pasta !== x.pasta) : [];
+  const tiraPlano = it && !sobra.length;
+  let manterNoPlano = false;
   const ok = await confirmar({ titulo: "Apagar da agenda?", icone: "i-trash", perigo: true, rotulo: "Apagar",
-    texto: `<p>A pasta <b>${esc(x.pasta)}</b> sai da agenda.${x.post?.biblioteca ? " O vídeo continua na biblioteca." : ""}</p><p>${publicado ? "O que já foi publicado continua nas redes." : "Ele não vai ser publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>` });
+    texto: `<p>A pasta <b>${esc(x.pasta)}</b> sai da agenda.${x.post?.biblioteca ? " O vídeo continua na biblioteca." : ""}</p><p>${publicado ? "O que já foi publicado continua nas redes." : "Ele não vai ser publicado pelo robô."} Dá para recuperar pelo histórico do GitHub.</p>${tiraPlano ? `<p>Ele também sai do plano (<b>${esc(it.tema || FORMATOS[it.formato])}</b>), para não voltar para a Agenda como pronto.</p><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;cursor:pointer"><input type="checkbox" id="apManter"> Deixar no plano como pronto para agendar de novo</label>` : ""}` });
   if (!ok) return;
-  try { toast("info", "Apagando…", x.pasta, 3000); await commit(`Painel: remove ${x.pasta} da agenda`, [], x.arquivos.filter((a) => a.path).map((a) => a.path)); toast("ok", "Post apagado", x.pasta); fecharGaveta(); carregarAgenda(); }
-  catch (e) { toast("err", "Não apagou", e.message); }
+  manterNoPlano = !!$("#apManter")?.checked;
+  const antesPlano = tiraPlano ? JSON.stringify(CRONO.itens) : "";
+  if (tiraPlano) {
+    if (manterNoPlano) { if (it.status === "agendado") it.status = "pronto"; }
+    else CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id);
+  }
+  const plano = tiraPlano ? [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }] : [];
+  try {
+    toast("info", "Apagando…", x.pasta, 3000);
+    const sha = await commit(`Painel: remove ${x.pasta} da agenda${tiraPlano && !manterNoPlano ? " e do plano" : ""}`, plano, x.arquivos.filter((a) => a.path).map((a) => a.path));
+    tirarDaTela([x.pasta]);
+    toast("ok", "Post apagado", tiraPlano ? (manterNoPlano ? "ficou no plano como pronto" : "saiu do plano também") : x.pasta); fecharGaveta(); carregarAgenda(sha);
+  } catch (e) { if (tiraPlano) CRONO.itens = JSON.parse(antesPlano); toast("err", "Não apagou", e.message); }
+}
+/* tira da tela na hora o que acabou de ser apagado (a leitura do GitHub logo depois do commit pode ainda trazer a pasta) */
+function tirarDaTela(pastas) {
+  const fora = new Set(pastas);
+  POSTS = POSTS.filter((y) => !fora.has(y.pasta));
+  desenharTudo(); if (VIEW === "cronograma") desenharCronograma();
 }
 function isoParaLocal(iso) { const d = new Date(iso); return isNaN(d) ? "" : new Date(d.getTime() - 3 * 36e5).toISOString().slice(0, 16); }
 
@@ -4295,11 +4318,24 @@ function editarItem(it, dataInicial) {
   $("#ciApaga")?.addEventListener("click", async () => {
     m.onclick = m.oninput = m.onchange = null;
     fecharModal();
-    const ok = await confirmar({ titulo: "Tirar do cronograma?", icone: "i-trash", perigo: true, rotulo: "Tirar", texto: `<p><b>${esc(it.tema || FORMATOS[it.formato])}</b> sai do plano. Nada é apagado da agenda nem da biblioteca.</p>` });
+    // posts da agenda ligados a este item que ainda não saíram: se ficarem, continuam sendo publicados pelo robô
+    const ligados = postsDoItem(it).filter((y) => situacao(y) !== "publicados");
+    const ok = await confirmar({ titulo: "Tirar do cronograma?", icone: "i-trash", perigo: true, rotulo: "Tirar", texto: `<p><b>${esc(it.tema || FORMATOS[it.formato])}</b> sai do plano. Nada é apagado da biblioteca.</p>${ligados.length
+      ? `<p>Ele tem ${ligados.length === 1 ? "1 post agendado" : `${ligados.length} posts agendados`} na agenda.</p><label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;cursor:pointer"><input type="checkbox" id="tpAgenda" checked> Apagar também da agenda (o robô não publica)</label>`
+      : "<p>Nada é apagado da agenda.</p>"}` });
     if (!ok) return;
+    const apagarAgenda = ligados.length && !!$("#tpAgenda")?.checked;
     const antes = JSON.stringify(CRONO.itens);
     CRONO.itens = CRONO.itens.filter((y) => y.id !== it.id); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
-    if (!(await salvarCrono(`tira "${it.tema || FORMATOS[it.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
+    const msg = `tira "${it.tema || FORMATOS[it.formato]}"`;
+    if (!apagarAgenda) { if (!(await salvarCrono(msg))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); } return; }
+    if (!TOKEN) { CRONO.itens = JSON.parse(antes); desenharCronograma(); return toast("err", "Conecte o painel primeiro", "Clique em Conectar."); }
+    try {
+      const sha = await commit(`Painel: cronograma, ${msg} e apaga ${ligados.length} post(s) da agenda`, [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }],
+        ligados.flatMap((y) => y.arquivos.filter((a) => a.path).map((a) => a.path)));
+      tirarDaTela(ligados.map((y) => y.pasta));
+      toast("ok", "Tirado do plano e da agenda", `${ligados.length} post(s) apagado(s)`); carregarAgenda(sha);
+    } catch (e) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); toast("err", "Não salvou", e.message); }
   });
 }
 /* ================================================================ catálogo do mês */

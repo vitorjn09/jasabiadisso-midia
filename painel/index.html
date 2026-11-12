@@ -3532,8 +3532,11 @@ function abrirVideo(nome, agendar = false, pre = null) {
     const pub = f.publicado || {};
     const linhas = Object.keys(NOMES_REDE).map((r) => {
       const pr = pub[r];
-      const [cls, tit, sub] = pr ? ["ok", "Publicado", F_COMPLETO.format(new Date(pr.em))] : st.s === "agendado" ? ["info", "Agendado", F_COMPLETO.format(new Date(st.quando))] : ["", "Ainda não", "Escolha o dia e a hora em Agendar."];
-      return linhaRede(r, cls, tit, sub);
+      const [cls, tit, sub] = pr ? ["ok", "Publicado", (pr.manual ? "Postado à mão · " : "") + F_COMPLETO.format(new Date(pr.em))] : st.s === "agendado" ? ["info", "Agendado", F_COMPLETO.format(new Date(st.quando))] : ["", "Ainda não", "Escolha o dia e a hora em Agendar."];
+      /* post feito por fora do robô: o Vitor marca aqui e ele vai para Publicados */
+      const on = pr ? "1" : "";
+      const mao = !pr || pr.manual ? `<div class="tt-segm" role="group" aria-label="${NOMES_REDE[r]}">${[["", "Ainda não"], ["1", "Já postei à mão"]].map(([k, n]) => `<button class="${on === k ? "on" : ""}" data-pm="${r}" data-v="${k}" aria-pressed="${on === k}">${n}</button>`).join("")}</div>` : "";
+      return linhaRede(r, cls, tit, sub, "", mao);
     }).join("");
     const tts = f.tiktok?.status || "";
     $("#gavCorpo").innerHTML = `
@@ -3550,6 +3553,7 @@ function abrirVideo(nome, agendar = false, pre = null) {
       ${st.s === "agendado" ? `<div style="margin-top:16px"><button class="btn peq" data-abrir="${esc(st.pasta)}">Ver na agenda${ic("i-right")}</button></div>` : ""}`;
     $("#gavCorpo").onclick = (e) => { if (e.target.closest("[data-imagina]")) { fecharGaveta(); pedirImaginaSe(nome); } };
     $("#ttOp").onclick = (e) => { const c = e.target.closest("[data-tt]"); if (c) marcarTikTok(b, c.dataset.tt); };
+    $$("#gavCorpo [data-pm]").forEach((c) => { c.onclick = () => marcarPublicadoMao(b, c.dataset.pm, !!c.dataset.v); });
     $("#gavPe").innerHTML = `<a class="btn fant" href="${esc(b.videoUrl)}" download>${ic("i-down")}Baixar</a><button class="btn pri" id="bAgenda">${ic("i-cal")}${st.s === "pronto" ? "Agendar" : "Agendar de novo"}</button>`;
     $("#bAgenda").onclick = () => abrirVideo(nome, true);
   }
@@ -3564,6 +3568,22 @@ async function marcarTikTok(b, status) {
     await commit(`Painel: TikTok de ${b.nome}`, [{ caminho: `biblioteca/${b.nome}/ficha.json`, base64: b64Texto(JSON.stringify(ficha, null, 2) + "\n") }]);
     b.ficha = ficha; abrirVideo(b.nome); desenharBiblioteca(); if (VIEW === "cronograma") desenharCronograma();
     toast("ok", status === "pedido" ? "Marcado para o TikTok" : status === "postado" ? "Marcado como postado no TikTok" : "TikTok desmarcado", status === "pedido" ? "Peça no chat e eu agendo no Metricool." : "");
+  } catch (e) { toast("err", "Não salvou", e.message); }
+}
+
+async function marcarPublicadoMao(b, rede, sim) {
+  if (!TOKEN) return toast("err", "Conecte o painel primeiro", "Clique em Conectar.");
+  const atual = b.ficha.publicado?.[rede];
+  if (atual && !atual.manual) return; // quem postou foi o robô: não mexe
+  if (!!atual === sim) return;
+  const ficha = { ...b.ficha, publicado: { ...(b.ficha.publicado || {}) } };
+  if (sim) ficha.publicado[rede] = { em: new Date().toISOString(), manual: true };
+  else delete ficha.publicado[rede];
+  if (!Object.keys(ficha.publicado).length) delete ficha.publicado;
+  try {
+    await commit(`Painel: ${b.nome} ${sim ? "postado à mão" : "desmarcado"} no ${NOMES_REDE[rede]}`, [{ caminho: `biblioteca/${b.nome}/ficha.json`, base64: b64Texto(JSON.stringify(ficha, null, 2) + "\n") }]);
+    b.ficha = ficha; abrirVideo(b.nome); desenharBiblioteca(); if (VIEW === "cronograma") desenharCronograma();
+    toast("ok", sim ? `Marcado como publicado no ${NOMES_REDE[rede]}` : "Desmarcado", sim ? "Ele vai para Publicados." : "");
   } catch (e) { toast("err", "Não salvou", e.message); }
 }
 

@@ -10,5 +10,22 @@
   "titulo_facebook": "5 truques que o seu cérebro faz com a sua motivação (e por que você sempre começa na segunda)",
   "titulo_youtube": "Por que você sempre começa na segunda? 5 truques do cérebro #shorts",
   "trilha": "Discover (Mixkit, Mixkit Stock Music Free License, sem crédito obrigatório)",
-  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/truques-motivacao.mp4"
+  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/truques-motivacao.mp4",
+  "publicado": {
+    "instagram": {
+      "id": "18022528595938672",
+      "em": "2026-11-12T14:36:08.288965+00:00",
+      "post": "2026-11-12-reel-truques-motivacao"
+    },
+    "facebook": {
+      "id": "122110168821520992",
+      "em": "2026-11-12T14:36:16.976387+00:00",
+      "post": "2026-11-12-reel-truques-motivacao"
+    },
+    "youtube": {
+      "id": "8YMrItY5ccs",
+      "em": "2026-11-12T14:36:20.273760+00:00",
+      "post": "2026-11-12-reel-truques-motivacao"
+    }
+  }
 }

@@ -3707,6 +3707,9 @@ function horaPadrao(data, formato, id) {
 /* horários do item: a hora própria; o item de stories usa os horários de todos os stories; os outros, o do seu lugar no dia */
 function horasDo(it) {
   if (!it) return [];
+  // se o item já virou post, vale a hora que está na agenda (é ela que o robô usa)
+  const ps = it.id ? postsDoItem(it).filter((x) => x.post?.quando) : [];
+  if (ps.length) return ps.map((x) => new Date(x.post.quando)).sort((a, b) => a - b).map((d) => F_HORA.format(d));
   if (it.hora) return [it.hora];
   if (it.formato === "stories") return ((CRONO.horarios || {}).stories || []).filter(Boolean);
   const p = horaPadrao(it.data, it.formato, it.id);
@@ -3763,6 +3766,8 @@ function statusItem(it) {
     const ps = postsDoItem(it);
     if (ps.length) return ps.every((x) => { const e = Object.values(x.estado || {}); return e.length && e.every((v) => v.status === "publicado"); }) ? "publicado" : "agendado";
   }
+  // marcado como agendado, mas nenhum post na agenda: o post foi apagado por fora, então não está agendado
+  if (it.status === "agendado" && carregou && !postsDoItem(it).length) return it.biblioteca || (it.notas || "").startsWith("producao/") ? "pronto" : "ideia";
   return ST_CRONO[it.status] ? it.status : "ideia";
 }
 function ligarNoCronograma(b, data) {
@@ -3804,7 +3809,7 @@ function desenharCronoMes() {
   const cs = cartoesDoDia(k), dt = dataDe(k);
   $("#cDiaLista").innerHTML = `<div class="cdia-cab"><div><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dt.getUTCDay()]}</small><b class="display">${dt.toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit", month: "long" })}</b></div>
       <div class="cdia-acoes">${botaoPedirDia(k).replace("btn peq pri", "btn peq")}<button class="btn pri peq" data-adddia="${k}">${ic("i-plus")}Adicionar</button></div></div>
-    ${cs.length ? `<div class="cdia-itens" data-cdia="${k}">${cs.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}</div>` : `<p class="dica-mes">Nada planejado nesse dia.</p>`}`;
+    ${cs.length || postsSoltosDoDia(k).length ? `<div class="cdia-itens" data-cdia="${k}">${cs.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}${postsSoltosDoDia(k).map(cartaoSolto).join("")}</div>` : `<p class="dica-mes">Nada planejado nesse dia.</p>`}`;
 }
 function aplicarVistaCrono() {
   const mes = CRONO_VISTA === "mes";
@@ -3830,6 +3835,7 @@ $("#cMes").addEventListener("click", (e) => {
   if (CDIA && innerWidth <= 700) depoisDoQuadro(() => $("#cDiaLista").scrollIntoView({ behavior: reduzido ? "auto" : "smooth", block: "nearest" }));
 });
 $("#cDiaLista").addEventListener("click", (e) => {
+  const so = e.target.closest("[data-solto]"); if (so) return abrirGaveta(so.dataset.solto);
   const c = e.target.closest("[data-criar]"); if (c) return pedirCriacao(CRONO.itens.find((x) => x.id === c.dataset.criar));
   const a = e.target.closest("[data-add]"); if (a) return editarItem(null, a.dataset.add);
   const it = e.target.closest("[data-item]"); if (it) editarItem(CRONO.itens.find((x) => x.id === it.dataset.item));
@@ -3862,7 +3868,7 @@ function desenharCronograma() {
     }).sort((a, b) => (a.h || "99:99").localeCompare(b.h || "99:99") || ordem.indexOf(a.it.formato) - ordem.indexOf(b.it.formato));
     return `<div class="cdia ${k === hoje ? "hoje" : ""}" data-cdia="${k}">
       <div class="cab-d"><small>${k === hoje ? "Hoje" : NOMES_SEMANA[dataDe(k).getUTCDay()]}</small><b>${dataDe(k).toLocaleDateString("pt-BR", { timeZone: TZ, day: "2-digit" })}</b></div>
-      ${cartoes.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}
+      ${cartoes.map(({ it, h, i, n }) => cartaoItem(it, h, i, n, hoje)).join("")}${postsSoltosDoDia(k).map(cartaoSolto).join("")}
       <button class="add" data-add="${k}" aria-label="Adicionar item">${ic("i-plus")}</button>
     </div>`;
   }).join("");
@@ -3872,6 +3878,7 @@ $("#cDepois").onclick = () => { SEMANA = somaDias(SEMANA, 7); desenharCronograma
 $("#cHoje").onclick = () => { SEMANA = segundaDe(chaveDia(new Date())); desenharCronograma(); };
 $("#cNovo").onclick = () => editarItem(null, chaveDia(new Date()) >= SEMANA && chaveDia(new Date()) <= somaDias(SEMANA, 6) ? chaveDia(new Date()) : SEMANA);
 $("#crono").addEventListener("click", (e) => {
+  const so = e.target.closest("[data-solto]"); if (so) return abrirGaveta(so.dataset.solto);
   const c = e.target.closest("[data-criar]"); if (c) return pedirCriacao(CRONO.itens.find((x) => x.id === c.dataset.criar));
   const a = e.target.closest("[data-add]"); if (a) return editarItem(null, a.dataset.add);
   const it = e.target.closest("[data-item]"); if (it) editarItem(CRONO.itens.find((x) => x.id === it.dataset.item));
@@ -3886,9 +3893,43 @@ $("#crono").addEventListener("drop", async (e) => {
   const it = CRONO.itens.find((x) => x.id === itemArrastado); if (!it || it.data === d.dataset.cdia) return;
   const novoDia = d.dataset.cdia;
   if (itemFixo(it) && !(await confirmarDataFixa(it.data, novoDia))) return;
-  const antes = it.data; it.data = novoDia; desenharCronograma();
-  if (!(await salvarCrono(`move "${it.tema || FORMATOS[it.formato]}" para ${it.data}`))) { it.data = antes; desenharCronograma(); }
+  const antesItem = { ...it }, antes = it.data; it.data = novoDia; desenharCronograma();
+  if (!(await salvarCronoEPosts(`move "${it.tema || FORMATOS[it.formato]}" para ${it.data}`, it, antesItem))) { it.data = antes; desenharCronograma(); }
 });
+/* posts da agenda que ainda vão sair e estão ligados ao item: mudar dia ou hora do item no plano leva eles junto */
+function postsQueAndamJunto(it) { return postsDoItem(it).filter((y) => y.post?.quando && situacao(y) !== "publicados"); }
+function quandoNovo(post, dia, hora) {
+  const q = new Date(post.quando), h = hora || F_HORA.format(q);
+  return `${dia}T${h.length === 5 ? h + ":00" : h}-03:00`;
+}
+/* grava o plano e, se o item mudou de dia ou hora, os posts dele na agenda, num commit só */
+async function salvarCronoEPosts(msg, it, antesItem) {
+  const ligados = it ? postsQueAndamJunto(it) : [];
+  const mudouDia = antesItem && antesItem.data !== it.data, mudouHora = antesItem && (antesItem.hora || "") !== (it.hora || "") && it.formato !== "stories";
+  if (!ligados.length || (!mudouDia && !mudouHora)) return salvarCrono(msg);
+  if (!TOKEN) { toast("err", "Conecte o painel primeiro", "Clique em Conectar."); return false; }
+  const arquivos = ligados.map((y) => {
+    const post = { ...y.post, quando: quandoNovo(y.post, it.data, mudouHora || it.hora ? it.hora : "") };
+    return { caminho: `agenda/${y.pasta}/post.json`, base64: b64Texto(JSON.stringify(ordenar(post), null, 2) + "\n") };
+  });
+  try {
+    const sha = await commit(`Painel: cronograma, ${msg} e leva ${ligados.length} post(s) da agenda junto`, [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }, ...arquivos]);
+    toast("ok", "Plano e agenda atualizados", `${ligados.length} post(s) foram junto`); carregarAgenda(sha); return true;
+  } catch (e) { toast("err", "Não salvou", e.message); return false; }
+}
+/* posts da agenda sem item no plano (agendados por fora): aparecem no cronograma para os dois mostrarem a mesma coisa */
+function postsSoltosDoDia(k) {
+  return carregou ? POSTS.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === k && !itemDoPost(x)) : [];
+}
+function cartaoSolto(x) {
+  const p = x.post || {}, st = situacao(x) === "publicados" ? "publicado" : "agendado", [rot, cls] = ST_CRONO[st];
+  const it = { biblioteca: p.biblioteca }, capa = capaItem(it), f = p.tipo === "story" ? "stories" : p.tipo;
+  return `<div class="citem st-${st}" data-solto="${esc(x.pasta)}" title="Está só na agenda (sem item no plano)">
+    <div class="l1"><span class="fmt">${esc(FORMATOS[f] || NOMES_TIPO[p.tipo] || p.tipo)}</span><span class="chip ${cls}">${rot}</span></div>
+    <div class="tema">${esc(tituloPost(x).filter(Boolean).join(" · "))}</div>
+    <div class="mini"><span class="hora-c">${esc(F_HORA.format(new Date(p.quando)))}</span>${(p.redes || []).map((r) => REDES_CRONO[r] ? ic(REDES_CRONO[r][1]) : "").join("")}${capa ? `<span class="thumb" style="background-image:url('${esc(capa)}')"></span>` : ""}</div>
+  </div>`;
+}
 async function salvarCrono(msg) {
   if (!TOKEN) { toast("err", "Conecte o painel primeiro", "Clique em Conectar."); return false; }
   try { await commit(`Painel: cronograma, ${msg}`, [{ caminho: "cronograma/cronograma.json", base64: b64Texto(JSON.stringify(CRONO, null, 2) + "\n") }]); toast("ok", "Cronograma salvo", msg); return true; }
@@ -4268,7 +4309,7 @@ function editarItem(it, dataInicial) {
     <div class="ei-sec"><div class="ei-tit">Quando</div>
       <div class="mv-dias" id="ciDias"></div>
       <input class="input" type="date" id="ciData" value="${esc(x.data)}" style="margin-top:8px" aria-label="Outra data">
-      <div style="margin-top:10px">${seletorHora("ciHora", x.hora || "")}</div>
+      <div style="margin-top:10px">${seletorHora("ciHora", x.hora || (!novo && x.formato !== "stories" && postsQueAndamJunto(it).length ? horasDo(it)[0] : ""))}</div>
       <div class="mv-horas" id="ciHorasSug"></div>
     </div>
     <div class="ei-sec"><div class="ei-tit">Formato</div>
@@ -4347,12 +4388,14 @@ function editarItem(it, dataInicial) {
     const bib = $("#ciBib").value; if (bib) x.biblioteca = bib; else delete x.biblioteca;
     if (!x.notas) delete x.notas;
     x.hora = $("#ciHora").value || undefined; if (!x.hora) delete x.hora;
-    const antes = JSON.stringify(CRONO.itens);
+    const antes = JSON.stringify(CRONO.itens), antesItem = novo ? null : { ...it };
+    // a hora mostrada no editor de um item que já virou post vem da agenda; só conta como mudança se for outra
+    if (!novo && x.hora && !it.hora && postsQueAndamJunto(it).length && horasDo(it)[0] === x.hora) delete x.hora;
     if (novo) CRONO.itens.push(x); else Object.assign(it, x);
     if (!novo && !x.hora) delete it.hora;
     fecharModal(); if (dataDe(data) < dataDe(SEMANA) || dataDe(data) > dataDe(somaDias(SEMANA, 6))) SEMANA = segundaDe(data);
     desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
-    if (!(await salvarCrono(`${novo ? "novo item" : "edita"} "${x.tema || FORMATOS[x.formato]}"`))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
+    if (!(await salvarCronoEPosts(`${novo ? "novo item" : "edita"} "${x.tema || FORMATOS[x.formato]}"`, novo ? null : it, antesItem))) { CRONO.itens = JSON.parse(antes); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
   };
   $("#ciApaga")?.addEventListener("click", async () => {
     m.onclick = m.oninput = m.onchange = null;

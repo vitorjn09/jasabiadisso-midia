@@ -1249,6 +1249,16 @@ button.ei-passo:active { transform: scale(.98); }
 .grupo-tit small { white-space: nowrap; }
 .grupo-tit .pedir-dia { margin-left: auto; font: 600 13px/1 Inter, system-ui, sans-serif; }
 .cdia-acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.bib-esc-lista { display: flex; flex-direction: column; margin-top: 8px; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; max-height: 46vh; overflow-y: auto; }
+.bib-esc { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 0; background: var(--surface-2); color: var(--text); text-align: left; cursor: pointer; font: inherit; width: 100%; flex: none; }
+.bib-esc + .bib-esc { border-top: 1px solid var(--border); }
+.bib-esc img { width: 42px; height: 75px; object-fit: cover; border-radius: 8px; flex: none; background: var(--surface); }
+.bib-esc > span:nth-child(2) { flex: 1; min-width: 0; }
+.bib-esc b { font-size: 14px; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.bib-esc small { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.bib-esc.agendado small, .bib-esc.publicado small { color: var(--faint); }
+.bib-esc > .i { color: var(--faint); width: 18px; height: 18px; flex: none; }
+.bib-esc:hover, .bib-esc:active { background: var(--surface); }
 .pd-lista { display: flex; flex-direction: column; margin-top: 12px; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
 .pd-item { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface-2); cursor: pointer; }
 .pd-item + .pd-item { border-top: 1px solid var(--border); }
@@ -3461,7 +3471,7 @@ addEventListener("keydown", (e) => {
   if (e.key === "Escape") fecharArte(); else if (e.key === "ArrowRight") passarArte(1); else if (e.key === "ArrowLeft") passarArte(-1);
 });
 
-function abrirVideo(nome, agendar = false) {
+function abrirVideo(nome, agendar = false, pre = null) {
   const b = BIB.find((y) => y.nome === nome); if (!b) return;
   const f = b.ficha, st = statusBib(b);
   $("#gavRot").textContent = `${NOMES_TIPO[f.tipo] || "Reel"} · biblioteca`;
@@ -3487,7 +3497,9 @@ function abrirVideo(nome, agendar = false) {
     $("#agDias").onclick = (e) => { const c = e.target.closest("[data-d]"); if (c) { $("#agData").value = c.dataset.d; marca(); } };
     $("#agData").oninput = marca;
     const itP = (CRONO.itens || []).find((y) => y.biblioteca === nome);
-    if (itP?.data && itP.data >= chaveDia(new Date())) { $("#agData").value = itP.data; marca(); const h = horasDo(itP)[0]; if (h) { $("#agHora").value = h; const [hh, mm] = h.split(":"); $$('#gavCorpo [data-hora="agHora"]').forEach((sel) => { sel.value = sel.dataset.p === "h" ? hh : mm; }); } }
+    const poeHora = (h) => { $("#agHora").value = h; const [hh, mm] = h.split(":"); $$('#gavCorpo [data-hora="agHora"]').forEach((sel) => { sel.value = sel.dataset.p === "h" ? hh : mm; }); };
+    if (pre?.data) { $("#agData").value = pre.data; marca(); if (pre.hora) poeHora(pre.hora); } // veio do Adicionar da agenda
+    else if (itP?.data && itP.data >= chaveDia(new Date())) { $("#agData").value = itP.data; marca(); const h = horasDo(itP)[0]; if (h) poeHora(h); }
     $("#agRedes").onclick = (e) => { const c = e.target.closest("[data-r]"); if (c) c.classList.toggle("ok"); };
     $("#gavPe").innerHTML = `<button class="btn fant" id="agVolta">Voltar</button><button class="btn pri" id="agOk">${ic("i-cal")}Agendar</button>`;
     $("#agVolta").onclick = () => abrirVideo(nome);
@@ -4046,6 +4058,7 @@ function abrirAdicionarDia(k, fmt = "") {
   const acoes = fmt ? `<label class="campo">${fmt === "stories" ? "Horário do 1º story (vazio usa os horários padrão)" : "Horário"}</label>${seletorHora("adHora", fmt === "stories" ? "" : sugestao)}
     <div class="add-acoes">
       <button class="add-acao pri" data-acao="pedir"><span class="af-ic">${ic("i-zap")}</span><span><b>Pedir para o Claude criar</b><small>Ele faz o ${FORMATOS[fmt].toLowerCase()} e deixa pronto para você agendar.</small></span>${ic("i-right")}</button>
+      ${fmt === "reel" ? `<button class="add-acao" data-acao="bib"><span class="af-ic">${ic("i-film")}</span><span><b>Pegar da biblioteca</b><small>Escolhe um vídeo pronto e agenda neste dia.</small></span>${ic("i-right")}</button>` : ""}
       <button class="add-acao" data-acao="agendar"><span class="af-ic">${ic("i-upload")}</span><span><b>Já tenho o arquivo</b><small>Abre o Novo post com este dia já escolhido.</small></span>${ic("i-right")}</button>
       <button class="add-acao" data-acao="vaga"><span class="af-ic">${ic("i-plan")}</span><span><b>Só reservar no plano</b><small>Cria a vaga vazia no cronograma para decidir depois.</small></span>${ic("i-right")}</button>
     </div>` : `<p class="dica" style="margin-top:12px">Escolha o formato.</p>`;
@@ -4061,6 +4074,7 @@ function abrirAdicionarDia(k, fmt = "") {
     const it = { id: novoId(), data: k, formato: fmt, tema: "", redes: redesPadrao(fmt), status: "ideia" };
     if (hora) it.hora = hora;
     if (a.dataset.acao === "pedir") { m.onclick = null; return pedirCriacao(it, true); }
+    if (a.dataset.acao === "bib") { m.onclick = null; return escolherDaBiblioteca(k, hora || sugestao, titulo); }
     if (a.dataset.acao === "agendar") {
       m.onclick = null; fecharModal(); irPara("novo");
       const tipo = fmt === "stories" ? "story" : fmt;
@@ -4072,6 +4086,30 @@ function abrirAdicionarDia(k, fmt = "") {
       m.onclick = null; fecharModal(); CRONO.itens.push(it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda();
       if (!(await salvarCrono(`reserva ${FORMATOS[fmt].toLowerCase()} em ${k}`))) { CRONO.itens = CRONO.itens.filter((x) => x !== it); desenharCronograma(); if (VIEW === "agenda") desenharAgenda(); }
     }
+  };
+}
+/* Adicionar > Pegar da biblioteca: lista os vídeos (os que ainda não saíram primeiro) e abre o Agendar já com o dia e a hora */
+async function escolherDaBiblioteca(k, hora, titulo) {
+  const m = $("#modal");
+  if (!bibCarregou) { m.innerHTML = `<div class="ic-topo">${ic("i-film", "i g")}</div><h2>Biblioteca</h2><p>Carregando os vídeos…</p>`; await carregarBiblioteca(); if (!$("#modal.on")) return; }
+  const ordem = { pronto: 0, agendado: 1, publicado: 2 };
+  const lista = BIB.filter((b) => (b.ficha.tipo || "reel") === "reel" && b.videoUrl).map((b) => ({ b, st: statusBib(b) }))
+    .sort((x, y) => ordem[x.st.s] - ordem[y.st.s]);
+  const rot = (st) => st.s === "agendado" ? `Já agendado: ${F_COMPLETO.format(new Date(st.quando))}` : st.s === "publicado" ? "Já publicado" : "Pronto, sem agendar";
+  const linha = ({ b, st }) => `<button class="bib-esc ${st.s}" data-bibesc="${esc(b.nome)}">
+      ${b.capaUrl ? `<img src="${esc(b.capaUrl)}" alt="" loading="lazy">` : `<span class="af-ic">${ic("i-film")}</span>`}
+      <span><b>${esc(b.ficha.titulo || b.nome)}</b><small>${esc(rot(st))}${b.ficha.duracao ? " · " + esc(duracao(b.ficha.duracao)) : ""}</small></span>${ic("i-right")}</button>`;
+  const prontos = lista.filter((x) => x.st.s === "pronto"), outros = lista.filter((x) => x.st.s !== "pronto");
+  m.innerHTML = `<div class="ic-topo">${ic("i-film", "i g")}</div><h2>Vídeo da biblioteca</h2>
+    <p>Para ${esc(titulo)}${hora ? `, às <b>${esc(hora)}</b>` : ""}. Depois você confere a legenda e as redes.</p>
+    ${bibErro ? `<p class="dica">Não consegui ler a biblioteca: ${esc(bibErro)}</p>` : !lista.length ? `<p class="dica">A biblioteca ainda não tem vídeos.</p>` : ""}
+    ${prontos.length ? `<div class="sec-tit" style="margin-top:14px">Prontos (${prontos.length})</div><div class="bib-esc-lista">${prontos.map(linha).join("")}</div>` : ""}
+    ${outros.length ? `<div class="sec-tit" style="margin-top:14px">Já agendados ou publicados</div><div class="bib-esc-lista">${outros.map(linha).join("")}</div>` : ""}
+    <div class="btns"><button class="btn fant" id="bibEscVolta">Voltar</button><button class="btn fant" data-fecha>Fechar</button></div>`;
+  $("#bibEscVolta").onclick = () => abrirAdicionarDia(k, "reel");
+  m.onclick = (e) => {
+    const c = e.target.closest("[data-bibesc]"); if (!c) return;
+    m.onclick = null; fecharModal(); abrirVideo(c.dataset.bibesc, true, { data: k, hora });
   };
 }
 /* pedir o dia todo de uma vez: todos os itens do dia que ainda são ideia, num pedido só */

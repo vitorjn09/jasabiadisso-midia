@@ -416,16 +416,16 @@
       "id": "18lrvm6",
       "data": "2026-11-13",
       "formato": "reel",
-      "tema": "NINGUEM TE CONTOU",
+      "tema": "Ninguém te contou: 5 truques que fazem você gastar mais sem perceber",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
-      "pedido": "2026-11-12T14:27:41.672Z",
-      "hora": "11:26"
+      "status": "pronto",
+      "hora": "11:26",
+      "biblioteca": "truques-gastar-mais"
     },
     {
       "id": "4ymo6da",

@@ -2026,9 +2026,10 @@ function planejadosDaAgenda() {
   return (CRONO.itens || []).filter((it) => it.data && (DIA_FILTRO ? it.data === DIA_FILTRO : it.data >= hoje) && !["agendado", "publicado", "pulado"].includes(statusItem(it)))
     .filter((it) => !postsDoItem(it).length)
     .flatMap((it) => { const hs = horasDo(it); return (hs.length > 1 ? hs : [hs[0] || ""]).map((h, i, todos) => ({ it, h, i, n: todos.length })); })
-    .filter((pl) => { // se o dia já tem post desse formato na agenda, o planejado já virou post: não repete
+    .filter((pl) => { // se o dia tem post desse formato SEM item do plano ligado, o planejado já virou esse post: não repete
+      // (posts já ligados a outro item, como um vídeo da biblioteca, não contam: senão um reel a mais pedido no mesmo dia some)
       const k = `${pl.it.data}|${pl.it.formato === "stories" ? "story" : pl.it.formato}`;
-      if (!jaTem.has(k)) jaTem.set(k, POSTS.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === pl.it.data && x.post.tipo === k.split("|")[1]).length);
+      if (!jaTem.has(k)) jaTem.set(k, POSTS.filter((x) => x.post?.quando && chaveDia(new Date(x.post.quando)) === pl.it.data && x.post.tipo === k.split("|")[1] && !itemDoPost(x)).length);
       const n = jaTem.get(k); if (n > 0) { jaTem.set(k, n - 1); return false; } return true;
     });
 }

@@ -2,7 +2,7 @@
   "titulo": "Ninguém te contou: 5 frases que você diz pra si mesmo e te sabotam",
   "tipo": "reel",
   "quadro": "Ninguém te contou",
-  "duracao": 63.0,
+  "duracao": 63,
   "tamanho": 11164936,
   "criado": "2026-11-11T23:35:00-03:00",
   "capa": "capa.jpg",
@@ -10,11 +10,5 @@
   "titulo_facebook": "5 frases que você diz pra si mesmo e te sabotam (e o que falar no lugar)",
   "titulo_youtube": "5 frases que te sabotam (a nº 1 você falou hoje) #shorts",
   "trilha": "Echoes (Mixkit, Mixkit Stock Music Free License, sem crédito obrigatório)",
-  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/frases-que-sabotam.mp4",
-  "publicado": {
-    "instagram": {
-      "em": "2026-11-12T17:42:00+00:00",
-      "manual": true
-    }
-  }
+  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/frases-que-sabotam.mp4"
 }

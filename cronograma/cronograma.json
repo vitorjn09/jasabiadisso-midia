@@ -413,21 +413,6 @@
       "tema": "A primeira bandeira da República parecia a dos EUA"
     },
     {
-      "id": "18lrvm6",
-      "data": "2026-11-13",
-      "formato": "reel",
-      "tema": "Ninguém te contou: 5 truques que fazem você gastar mais sem perceber",
-      "redes": [
-        "instagram",
-        "facebook",
-        "youtube",
-        "tiktok"
-      ],
-      "status": "pronto",
-      "hora": "11:26",
-      "biblioteca": "truques-gastar-mais"
-    },
-    {
       "id": "4ymo6da",
       "data": "2026-11-13",
       "formato": "reel",
@@ -463,7 +448,8 @@
   "dispensados": {
     "2026-11-13": [
       "carrossel",
-      "stories"
+      "stories",
+      "reel"
     ],
     "2026-11-14": [
       "reel"

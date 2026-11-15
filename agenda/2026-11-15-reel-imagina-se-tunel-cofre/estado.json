@@ -1,9 +1,9 @@
 {
   "facebook": {
-    "status": "erro",
-    "erro": "POST https://graph.facebook.com/v23.0/1381731631693276/video_reels -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AlJlKYpeHW1GONi8Wjq3N1C\"}}",
-    "tentativas": 2,
-    "em": "2026-11-15T13:34:11.750758+00:00"
+    "status": "falhou",
+    "erro": "POST https://graph.facebook.com/v23.0/1381731631693276/video_reels -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"A6Jgr6gQhd_nupF47XGImYd\"}}",
+    "tentativas": 3,
+    "em": "2026-11-15T14:08:29.337707+00:00"
   },
   "youtube": {
     "status": "publicado",
@@ -12,8 +12,8 @@
   },
   "instagram": {
     "status": "erro",
-    "erro": "POST https://graph.facebook.com/v23.0/17841411445655159/media -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"Afeix1Ji_RRpKHE5AlkpW_Z\"}}",
-    "tentativas": 1,
-    "em": "2026-11-15T13:34:11.643566+00:00"
+    "erro": "POST https://graph.facebook.com/v23.0/17841411445655159/media -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AkRILcC9w2Lrt6maLXFCw_I\"}}",
+    "tentativas": 2,
+    "em": "2026-11-15T14:08:29.235435+00:00"
   }
 }

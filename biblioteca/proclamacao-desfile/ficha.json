@@ -12,5 +12,12 @@
     "Imagina se você acordasse no Rio em 15 de novembro de 1889",
     "Imagina se você precisasse trocar o regime de um país num dia só"
   ],
-  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/proclamacao-desfile.mp4"
+  "video_url": "https://github.com/vitorjn09/jasabiadisso-midia/releases/download/biblioteca/proclamacao-desfile.mp4",
+  "publicado": {
+    "youtube": {
+      "id": "dfRcyUi88KE",
+      "em": "2026-11-15T14:08:32.526042+00:00",
+      "post": "2026-11-15-reel-proclamacao-desfile"
+    }
+  }
 }

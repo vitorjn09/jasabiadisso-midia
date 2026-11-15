@@ -439,6 +439,20 @@
       ],
       "status": "ideia",
       "hora": "21:01"
+    },
+    {
+      "id": "92gd44m",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-15",
+      "biblioteca": "imagina-se-tunel-cofre",
+      "status": "agendado",
+      "tema": "Imagina se: cavar um túnel até o cofre de um banco"
     }
   ],
   "horarios": {

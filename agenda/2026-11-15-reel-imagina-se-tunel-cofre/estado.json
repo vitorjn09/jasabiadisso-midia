@@ -11,9 +11,9 @@
     "em": "2026-11-15T13:30:33.537619+00:00"
   },
   "instagram": {
-    "status": "erro",
-    "erro": "POST https://graph.facebook.com/v23.0/17841411445655159/media -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AkRILcC9w2Lrt6maLXFCw_I\"}}",
-    "tentativas": 2,
-    "em": "2026-11-15T14:08:29.235435+00:00"
+    "status": "falhou",
+    "erro": "POST https://graph.facebook.com/v23.0/17841411445655159/media -> 400: {\"error\":{\"message\":\"Any of the pages_read_engagement, pages_manage_metadata,\\n        pages_read_user_content, pages_manage_ads, pages_show_list or\\n        pages_messaging permission(s) must be granted before impersonating a\\n        user's page.\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AgqUY-DV2r8zOKsjeMjS5TA\"}}",
+    "tentativas": 3,
+    "em": "2026-11-15T15:35:52.322405+00:00"
   }
 }

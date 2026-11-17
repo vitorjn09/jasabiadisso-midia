@@ -96,11 +96,38 @@ def post(caminho, **params):
     return _pedir("POST", f"{GRAPH}/{caminho}", params)
 
 
-def enviar_binario(url, arquivo, extra=None):
+_TOKEN_PAGINA = None
+
+
+def token_pagina():
+    """Token da página do Facebook. As rotas da página (posts, insights, upload de reels) pedem esse
+    token, e não o token do usuário do sistema. Ele é pedido uma vez por execução."""
+    global _TOKEN_PAGINA
+    if _TOKEN_PAGINA is None:
+        dados = _pedir("GET", f"{GRAPH}/{pagina_id()}", {"fields": "access_token", "access_token": token()})
+        if not dados.get("access_token"):
+            raise ErroApi("a Meta não devolveu o token da página (confira o META_TOKEN e a permissão da página)")
+        _TOKEN_PAGINA = dados["access_token"]
+    return _TOKEN_PAGINA
+
+
+def gpag(caminho, **params):
+    """GET numa rota da página do Facebook, com o token da página."""
+    params["access_token"] = token_pagina()
+    return _pedir("GET", f"{GRAPH}/{caminho}", params)
+
+
+def ppag(caminho, **params):
+    """POST numa rota da página do Facebook, com o token da página."""
+    params["access_token"] = token_pagina()
+    return _pedir("POST", f"{GRAPH}/{caminho}", params)
+
+
+def enviar_binario(url, arquivo, extra=None, pagina=False):
     """Envia o arquivo direto para o servidor de upload da Meta."""
     conteudo = arquivo.read_bytes()
     cab = {
-        "Authorization": f"OAuth {token()}",
+        "Authorization": f"OAuth {token_pagina() if pagina else token()}",
         "offset": "0",
         "file_size": str(len(conteudo)),
         "Content-Type": "application/octet-stream",
@@ -229,15 +256,15 @@ def ig_publicar(p, pasta):
 
 def fb_video(pagina, arquivo, borda, **finalizar):
     """Fluxo de três etapas usado por reels (video_reels) e stories (video_stories)."""
-    inicio = post(f"{pagina}/{borda}", upload_phase="start")
+    inicio = ppag(f"{pagina}/{borda}", upload_phase="start")
     video = inicio["video_id"]
-    enviar_binario(inicio.get("upload_url") or f"{RUPLOAD}/video-upload/{VERSAO}/{video}", arquivo)
-    fim = post(f"{pagina}/{borda}", upload_phase="finish", video_id=video, **finalizar)
+    enviar_binario(inicio.get("upload_url") or f"{RUPLOAD}/video-upload/{VERSAO}/{video}", arquivo, pagina=True)
+    fim = ppag(f"{pagina}/{borda}", upload_phase="finish", video_id=video, **finalizar)
     return fim.get("post_id") or video
 
 
 def fb_foto_sem_publicar(pagina, arquivo):
-    return post(f"{pagina}/photos", url=url_publica(arquivo), published="false")["id"]
+    return ppag(f"{pagina}/photos", url=url_publica(arquivo), published="false")["id"]
 
 
 def fb_publicar(p, pasta):
@@ -256,11 +283,11 @@ def fb_publicar(p, pasta):
         if e_video(m):
             return fb_video(pagina, m, "video_stories")
         foto = fb_foto_sem_publicar(pagina, m)
-        return post(f"{pagina}/photo_stories", photo_id=foto).get("post_id", foto)
+        return ppag(f"{pagina}/photo_stories", photo_id=foto).get("post_id", foto)
     # imagem ou carrossel: fotos sem publicar, depois um post no feed com todas
     fotos = [fb_foto_sem_publicar(pagina, m) for m in midias]
     anexos = {f"attached_media[{i}]": json.dumps({"media_fbid": f}) for i, f in enumerate(fotos)}
-    return post(f"{pagina}/feed", message=legenda, **anexos)["id"]
+    return ppag(f"{pagina}/feed", message=legenda, **anexos)["id"]
 
 
 # ---------------------------------------------------------------- YouTube

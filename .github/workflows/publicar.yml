@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "publicar, verificar ou conexao"
+        description: "publicar, verificar, conexao ou diagnostico"
         type: choice
-        options: [publicar, verificar, conexao]
+        options: [publicar, verificar, conexao, diagnostico]
         default: publicar
       reenviar:
         description: "Opcional, só com modo publicar: pasta:rede para tentar de novo (ex.: 2026-11-06-reel-venus:youtube). Só zera redes com falhou, erro ou atrasado."
@@ -50,6 +50,7 @@ jobs:
             case "$MODO" in
               verificar) python publicador/publicar.py --verificar ;;
               conexao)   python publicador/publicar.py --conexao ;;
+              diagnostico) python publicador/publicar.py --diagnostico ;;
               *)         python publicador/publicar.py ;;
             esac
           } 2>&1 | tee saida.txt

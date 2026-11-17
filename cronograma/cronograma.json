@@ -458,16 +458,17 @@
       "id": "wtk7lua",
       "data": "2026-11-17",
       "formato": "reel",
-      "tema": "",
+      "tema": "Você já sabia: a capa da The Economist que \"avisa\" 2027",
       "redes": [
         "instagram",
         "facebook",
         "youtube",
         "tiktok"
       ],
-      "status": "pedido",
+      "status": "agendado",
       "hora": "18:14",
-      "pedido": "2026-11-17T12:19:56.266Z"
+      "pedido": "2026-11-17T12:19:56.266Z",
+      "biblioteca": "economist-2027"
     }
   ],
   "horarios": {

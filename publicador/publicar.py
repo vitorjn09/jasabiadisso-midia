@@ -15,6 +15,7 @@ Uso:
 Variáveis de ambiente (segredos do repositório):
   META_TOKEN      token de página (longa duração) com permissão de publicar
   FB_PAGE_ID      id da página do Facebook
+  FB_PAGE_TOKEN   opcional: token da página do app publicado, usado em tudo que é do Facebook
   IG_USER_ID      id da conta do Instagram (opcional; é descoberto pela página)
   GRAPH_VERSION   versão da API (padrão v23.0)
   YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN   acesso ao canal do YouTube
@@ -104,6 +105,10 @@ def token_pagina():
     """Token da página do Facebook. As rotas da página (posts, insights, upload de reels) pedem esse
     token, e não o token do usuário do sistema. Ele é pedido uma vez por execução."""
     global _TOKEN_PAGINA
+    if _TOKEN_PAGINA is None and os.environ.get("FB_PAGE_TOKEN"):
+        # Token da página gerado no app "jasabiadisso-novo" (publicado, sem portfólio). Os posts feitos
+        # pelo app antigo (não publicado) só aparecem para quem tem função no app, então o Facebook usa este.
+        _TOKEN_PAGINA = os.environ["FB_PAGE_TOKEN"]
     if _TOKEN_PAGINA is None:
         dados = _pedir("GET", f"{GRAPH}/{pagina_id()}", {"fields": "access_token", "access_token": token()})
         if not dados.get("access_token"):
@@ -580,6 +585,14 @@ def diagnostico_facebook():
                                      ensure_ascii=False))
     except ErroApi as e:
         print("debug_token:", e)
+    print("== Token da página:", "FB_PAGE_TOKEN" if os.environ.get("FB_PAGE_TOKEN") else "derivado do META_TOKEN")
+    if os.environ.get("FB_PAGE_TOKEN"):
+        try:
+            d2 = get("debug_token", input_token=os.environ["FB_PAGE_TOKEN"]).get("data", {})
+            print(json.dumps({k: d2.get(k) for k in ("application", "app_id", "type", "is_valid", "expires_at", "scopes")},
+                             ensure_ascii=False))
+        except ErroApi as e:
+            print("debug FB_PAGE_TOKEN:", e)
     print("== Página")
     print(json.dumps(_tentar(pag, ["name", "is_published", "verification_status", "category", "followers_count",
                                    "fan_count", "has_transitioned_to_new_page_experience", "is_eligible_for_branded_content",

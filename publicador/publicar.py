@@ -48,6 +48,27 @@ EXT_IMAGEM = {".jpg", ".jpeg", ".png"}
 ATRASO_MAXIMO = dt.timedelta(hours=12)
 
 
+# Segredos lidos do ambiente. Um segredo colado com Enter no fim (ex.: "EAAG...\n") quebra o
+# cabeçalho "Authorization: OAuth ..." do upload do Instagram ("Invalid header value"). Por isso
+# todos são limpos de espaços e quebras de linha assim que o robô começa.
+SEGREDOS = ("META_TOKEN", "FB_PAGE_TOKEN", "FB_PAGE_ID", "IG_USER_ID",
+            "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN", "ANALISES_SENHA")
+for _nome in SEGREDOS:
+    if _nome in os.environ:
+        os.environ[_nome] = os.environ[_nome].strip()
+
+
+def ocultar(texto):
+    """Troca o valor de qualquer segredo por *** antes de gravar ou imprimir uma mensagem de erro.
+    O estado.json vai para o repositório público, então nenhum token pode aparecer nele."""
+    texto = str(texto)
+    for nome in SEGREDOS:
+        valor = os.environ.get(nome, "")
+        if len(valor) >= 8:
+            texto = texto.replace(valor, "***")
+    return texto
+
+
 class ErroApi(Exception):
     pass
 
@@ -204,7 +225,7 @@ def ig_video(conta, arquivo, **params):
         if "ProcessingFailedError" not in str(e):
             raise
         url = url_do_video(arquivo)
-        print(f"  envio direto falhou ({e}); tentando pelo link público")
+        print(f"  envio direto falhou ({ocultar(e)}); tentando pelo link público")
         return post(f"{conta}/media", video_url=url, **params)["id"]
 
 
@@ -511,12 +532,13 @@ def publicar_pendentes():
                 print(f"[{nome}] {rede}: publicado ({ident})")
             except Exception as e:  # qualquer falha fica registrada e o resto segue
                 tentativas = atual.get("tentativas", 0) + 1
-                estado[rede] = {"status": "erro", "erro": str(e)[:1000],
+                erro = ocultar(e)
+                estado[rede] = {"status": "erro", "erro": erro[:1000],
                                 "tentativas": tentativas, "em": agora().isoformat()}
                 # Depois de 3 falhas para de tentar, para não repetir post pela metade.
                 if tentativas >= 3:
                     estado[rede]["status"] = "falhou"
-                print(f"[{nome}] {rede}: ERRO {e}")
+                print(f"[{nome}] {rede}: ERRO {erro}")
                 falhas += 1
             gravar_estado(pasta, estado)
     return falhas
@@ -567,7 +589,7 @@ def _tentar(caminho, campos, pagina=True):
             try:
                 out.update(f(caminho, fields=c))
             except ErroApi as e:
-                out[c] = f"(erro: {str(e)[-120:]})"
+                out[c] = f"(erro: {ocultar(e)[-120:]})"
         return out
 
 
@@ -612,7 +634,7 @@ def diagnostico_facebook():
                     vals = m.get("values") or [{}]
                     met[m["name"]] = vals[-1].get("value")
             except ErroApi as e:
-                met = {"erro": str(e)[-150:]}
+                met = {"erro": ocultar(e)[-150:]}
             st = v.get("status") or {}
             print(json.dumps({
                 "id": v.get("id"), "quando": v.get("created_time"), "texto": (v.get("description") or "")[:40],

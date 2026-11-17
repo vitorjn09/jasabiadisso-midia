@@ -27,7 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # Pega a ponta ATUAL do ramo, e não o commit do momento em que a execução foi pedida.
+      # Duas execuções na fila (relógio + reenvio manual) liam o mesmo estado.json antigo e a
+      # segunda postava de novo o que a primeira já tinha publicado (Economist no Insta, 17/11).
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-python@v5
         with:

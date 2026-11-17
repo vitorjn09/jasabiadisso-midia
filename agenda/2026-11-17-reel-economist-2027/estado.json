@@ -1,0 +1,18 @@
+{
+  "instagram": {
+    "status": "erro",
+    "erro": "Invalid header value b'OAuth EAAQKnHiibNABTICg3e7zDdJHZAkl0oAZA09rxZBH12BvyNPGjAW6qedLGegiZCUQCqXIQx6D4htmA8LDewtTd4PtKx7t3EbPEwvKHw7naOOlzItlgCLzZAs7l4y0arS4RbeKfnA2wPkNF1ioJmT08jSdIS4mvQLHjA77JbxmRHZCVSmV97ZCPFZB3yNfC3Kt\\n'",
+    "tentativas": 1,
+    "em": "2026-11-17T21:23:36.859074+00:00"
+  },
+  "facebook": {
+    "status": "publicado",
+    "id": "122111742873520992",
+    "em": "2026-11-17T21:23:50.280442+00:00"
+  },
+  "youtube": {
+    "status": "publicado",
+    "id": "k2YFjQDGn3s",
+    "em": "2026-11-17T21:23:55.138831+00:00"
+  }
+}

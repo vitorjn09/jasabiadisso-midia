@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from publicar import RAIZ, ErroApi, _pedir, get, ig_id, pagina_id, yt_token  # noqa: E402
+from publicar import RAIZ, ErroApi, _pedir, get, gpag, ig_id, pagina_id, yt_token  # noqa: E402
 
 DADOS = RAIZ / "dados"
 CIFRADO = DADOS / "analises.cifrado.json"
@@ -202,7 +202,7 @@ def facebook():
     erros = []; saida = {"erros": erros}
     try:
         pag = pagina_id()
-        info = get(pag, fields="name,followers_count,fan_count")
+        info = gpag(pag, fields="name,followers_count,fan_count")
         saida["conta"] = {"nome": info.get("name"), "seguidores": numero(info.get("followers_count")),
                           "curtidas": numero(info.get("fan_count"))}
     except ErroApi as e:
@@ -212,7 +212,7 @@ def facebook():
     for m in ["page_post_engagements", "page_views_total", "page_daily_follows_unique", "page_video_views",
               "page_media_view"]:
         try:
-            r = get(f"{pag}/insights", metric=m, period="days_28")
+            r = gpag(f"{pag}/insights", metric=m, period="days_28")
             vals = r.get("data", [{}])[0].get("values", [])
             if vals:
                 d28[m] = numero(vals[-1].get("value"))
@@ -226,7 +226,7 @@ def facebook():
 def fb_posts(pag, erros):
     posts = []
     try:
-        r = get(f"{pag}/posts", limit=100, fields="id,message,created_time,permalink_url,full_picture,shares,"
+        r = gpag(f"{pag}/posts", limit=100, fields="id,message,created_time,permalink_url,full_picture,shares,"
                                                   "reactions.summary(total_count).limit(0),comments.summary(total_count).limit(0)")
     except ErroApi as e:
         erros.append(f"facebook posts: {limpar(e)}")
@@ -238,7 +238,7 @@ def fb_posts(pag, erros):
         compart = numero((m.get("shares") or {}).get("count")) or 0
         views = None
         try:
-            ins = get(f"{m['id']}/insights", metric="post_media_view")
+            ins = gpag(f"{m['id']}/insights", metric="post_media_view")
             vals = (ins.get("data") or [{}])[0].get("values", [])
             views = numero(vals[-1].get("value")) if vals else None
         except (ErroApi, IndexError) as e:
@@ -263,7 +263,7 @@ def fb_posts(pag, erros):
 
 
 def fb_comentarios(post_id, pag):
-    r = get(f"{post_id}/comments", fields="message,created_time,like_count,comment_count,from{id}",
+    r = gpag(f"{post_id}/comments", fields="message,created_time,like_count,comment_count,from{id}",
             filter="toplevel", order="reverse_chronological", limit=50)
     lista = []
     for c in paginar(r, COMENT_POR_POST):

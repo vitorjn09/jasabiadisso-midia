@@ -10,10 +10,12 @@ Uso:
   python publicador/publicar.py --verificar  só confere os posts, não publica
   python publicador/publicar.py --conexao    testa o token e mostra as contas
   python publicador/publicar.py --preparar   converte PNG em JPG (Instagram só aceita JPG)
+  python publicador/publicar.py --diagnostico  só lê: alcance e estado dos reels do Facebook
 
 Variáveis de ambiente (segredos do repositório):
   META_TOKEN      token de página (longa duração) com permissão de publicar
   FB_PAGE_ID      id da página do Facebook
+  FB_PAGE_TOKEN   opcional: token da página do app publicado, usado em tudo que é do Facebook
   IG_USER_ID      id da conta do Instagram (opcional; é descoberto pela página)
   GRAPH_VERSION   versão da API (padrão v23.0)
   YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN   acesso ao canal do YouTube
@@ -103,6 +105,10 @@ def token_pagina():
     """Token da página do Facebook. As rotas da página (posts, insights, upload de reels) pedem esse
     token, e não o token do usuário do sistema. Ele é pedido uma vez por execução."""
     global _TOKEN_PAGINA
+    if _TOKEN_PAGINA is None and os.environ.get("FB_PAGE_TOKEN"):
+        # Token da página gerado no app "jasabiadisso-novo" (publicado, sem portfólio). Os posts feitos
+        # pelo app antigo (não publicado) só aparecem para quem tem função no app, então o Facebook usa este.
+        _TOKEN_PAGINA = os.environ["FB_PAGE_TOKEN"]
     if _TOKEN_PAGINA is None:
         dados = _pedir("GET", f"{GRAPH}/{pagina_id()}", {"fields": "access_token", "access_token": token()})
         if not dados.get("access_token"):
@@ -550,6 +556,83 @@ def conexao():
         print("Nenhuma conta do Instagram ligada à página")
 
 
+def _tentar(caminho, campos, pagina=True):
+    """GET tolerante: se algum campo não existir, tenta de novo campo a campo."""
+    f = gpag if pagina else get
+    try:
+        return f(caminho, fields=",".join(campos))
+    except ErroApi:
+        out = {}
+        for c in campos:
+            try:
+                out.update(f(caminho, fields=c))
+            except ErroApi as e:
+                out[c] = f"(erro: {str(e)[-120:]})"
+        return out
+
+
+def diagnostico_facebook():
+    """Só leitura: mostra por que os reels do Facebook podem estar sem alcance."""
+    pag = pagina_id()
+    print("== Token")
+    try:
+        d = get("debug_token", input_token=token()).get("data", {})
+        print(json.dumps({k: d.get(k) for k in ("app_id", "application", "type", "is_valid", "expires_at", "scopes",
+                                                 "granular_scopes")}, ensure_ascii=False))
+        app = d.get("app_id")
+        if app:
+            print("app:", json.dumps(_tentar(app, ["name", "category", "link", "privacy_policy_url"], pagina=False),
+                                     ensure_ascii=False))
+    except ErroApi as e:
+        print("debug_token:", e)
+    print("== Token da página:", "FB_PAGE_TOKEN" if os.environ.get("FB_PAGE_TOKEN") else "derivado do META_TOKEN")
+    if os.environ.get("FB_PAGE_TOKEN"):
+        try:
+            d2 = get("debug_token", input_token=os.environ["FB_PAGE_TOKEN"]).get("data", {})
+            print(json.dumps({k: d2.get(k) for k in ("application", "app_id", "type", "is_valid", "expires_at", "scopes")},
+                             ensure_ascii=False))
+        except ErroApi as e:
+            print("debug FB_PAGE_TOKEN:", e)
+    print("== Página")
+    print(json.dumps(_tentar(pag, ["name", "is_published", "verification_status", "category", "followers_count",
+                                   "fan_count", "has_transitioned_to_new_page_experience", "is_eligible_for_branded_content",
+                                   "country_page_likes"]), ensure_ascii=False))
+    for borda in ("video_reels", "videos"):
+        print(f"== {borda}")
+        try:
+            r = _tentar(f"{pag}/{borda}", ["id", "created_time", "description", "published", "status", "privacy",
+                                           "length", "post_id", "permalink_url", "is_crosspost_video",
+                                           "is_instagram_eligible", "application"])
+        except ErroApi as e:
+            print(e); continue
+        for v in (r.get("data") or [])[:25]:
+            met = {}
+            try:
+                for m in gpag(f"{v['id']}/video_insights").get("data", []):
+                    vals = m.get("values") or [{}]
+                    met[m["name"]] = vals[-1].get("value")
+            except ErroApi as e:
+                met = {"erro": str(e)[-150:]}
+            st = v.get("status") or {}
+            print(json.dumps({
+                "id": v.get("id"), "quando": v.get("created_time"), "texto": (v.get("description") or "")[:40],
+                "published": v.get("published"), "privacy": v.get("privacy"),
+                "status": st.get("video_status") if isinstance(st, dict) else st,
+                "publicacao": (st.get("publishing_phase") or {}).get("status") if isinstance(st, dict) else None,
+                "app": v.get("application"), "link": v.get("permalink_url"),
+                "insights": {k: met[k] for k in list(met)[:14]},
+            }, ensure_ascii=False))
+    print("== posts da página")
+    try:
+        r = _tentar(f"{pag}/posts", ["id", "created_time", "status_type", "is_published", "is_hidden", "privacy",
+                                     "application", "is_eligible_for_promotion", "message"])
+        for m in (r.get("data") or [])[:25]:
+            m["message"] = (m.get("message") or "")[:40]
+            print(json.dumps(m, ensure_ascii=False))
+    except ErroApi as e:
+        print(e)
+
+
 def preparar():
     from PIL import Image
     for pasta, p, _ in ler_posts():
@@ -583,6 +666,7 @@ def main():
     g.add_argument("--verificar", action="store_true")
     g.add_argument("--conexao", action="store_true")
     g.add_argument("--preparar", action="store_true")
+    g.add_argument("--diagnostico", action="store_true")
     a = ap.parse_args()
     if a.verificar:
         verificar()
@@ -590,6 +674,8 @@ def main():
         conexao()
     elif a.preparar:
         preparar()
+    elif a.diagnostico:
+        diagnostico_facebook()
     else:
         if os.environ.get("REENVIAR", "").strip():
             reenviar(os.environ["REENVIAR"].strip())

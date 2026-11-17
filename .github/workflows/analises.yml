@@ -57,6 +57,7 @@ jobs:
           git add dados
           if ! git diff --cached --quiet; then
             git commit -m "Análises: atualiza métricas do perfil"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
+            # Cada leitura regrava o mesmo arquivo cifrado. Se outra execução gravou antes, fica com a leitura nova.
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
             git push
           fi

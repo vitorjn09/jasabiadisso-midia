@@ -90,6 +90,7 @@ Regra completa: `informações/modelo/modelo-visual.md` (checklist obrigatório)
 - Estilo aprovado (animatic-depois-v2): câmera na mão, fundo que reage, lupa, pessoas recortadas, pouso com mola, borrão de movimento, som por toque. Recorte de papel só como complemento opcional. (Vitor, 17/11/2026)
 - Variar os tipos de animação; Imagina se com cerca de 47% 3D, 38% telas 2D e 15% fotos, nunca mais de 4 s seguidos no mesmo tipo. Capa do Imagina se com foto real na moldura dourada. Nada de listras ou letras piscando (`render-sem-pisca`). (Vitor)
 - Capa = primeiro quadro do vídeo, já montado em t=0 (`regra-capa.md`). (Vitor, 24/10/2026)
+- Testes de estilo (transições de shader como cubo, onda e papel queimando; estilos premium; animações elaboradas com Zdog, gráfico vivo e voo 3D) foram reprovados. Os vídeos seguem o padrão normal v2, com a legenda amarela palavra por palavra e as transições de sempre: corte seco, chicote, ponte e zoom de ênfase. Os testes ficam em `produção/teste-cardapio` e `produção/teste-elaborado`. (Vitor, 18/11/2026)
 
 ## 8. Trilha e som
 
@@ -149,7 +150,6 @@ Abra o arquivo só quando a tarefa precisar dele.
 
 ## 13. Pendências que dependem do Vitor
 
-- Cardápio de estilos variados (pelo menos 4 linguagens por vídeo, 3 tipos de texto animado, 4 transições), com teste de 15 s.
 - Lote 1 dos roteiros v2.
 - Merge dos PRs #48 a #57 (o #55 é o que ativa o app novo no Facebook).
 - Cartões de melhoria das skills `kits-videos` e `linguagem-tv-cinema` (revisor externo, pré-visualização, cortes pela batida, zona segura de 310 px).

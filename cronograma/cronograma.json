@@ -469,6 +469,20 @@
       "hora": "18:14",
       "pedido": "2026-11-17T12:19:56.266Z",
       "biblioteca": "economist-2027"
+    },
+    {
+      "id": "z44w99v",
+      "formato": "reel",
+      "redes": [
+        "instagram",
+        "facebook",
+        "youtube",
+        "tiktok"
+      ],
+      "data": "2026-11-18",
+      "biblioteca": "gta6-13-anos",
+      "status": "agendado",
+      "tema": "13 anos esperando o GTA 6"
     }
   ],
   "horarios": {

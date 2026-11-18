@@ -53,3 +53,24 @@ alguma, a rede aparece com o aviso no fim da aba e o resto continua.
   para a Release, leva a ficha e a capa para a `main` e apaga o ramo.
 - `cronograma/cronograma.json`: o plano de conteúdo, editado pela aba Cronograma do painel.
 - `relogio.yml`: faz o robô publicar na hora certa, sem depender do cron do GitHub.
+
+## Fundos de IA (Gemini, com ElevenLabs de reserva)
+
+`fundos-ia/gerar_fundo.py` gera um cenário realista 9:16 pela API de imagens
+do Gemini ("Nano Banana", modelo padrão `gemini-nano-banana-2.1`, 2K). O
+prompt segue o molde de fotógrafo de `informações/modelo/modelo-visual.md`
+e o script acrescenta as restrições fixas (sem texto, sem rosto, sem logo).
+
+- Rodar: aba Actions > Gerar fundo de IA > Run workflow (nome, prompt, pasta).
+  A imagem e uma ficha `.json` (modelo, custo estimado, prompt) vão para o
+  ramo `fundos-gerados`, em `fundos-ia/<pasta>/<nome>.jpg`. Se o arquivo já
+  existe lá, nada é gerado de novo (cache). Depois a imagem é copiada para
+  `informações/lib/fundos-ia/<pasta>/` e anotada no LEIA.md.
+- Seletor: `--provedor gemini` (padrão) ou `--provedor elevenlabs` (reserva,
+  feito pelo conector do ElevenLabs no chat; o script só mostra o passo a
+  passo). Também dá para trocar pela variável `FUNDOS_PROVEDOR`.
+- Segredo: `GEMINI_API_KEY`, criado no Google AI Studio (aistudio.google.com >
+  Get API key). A geração de imagens pela API não tem cota grátis: o projeto
+  do Google precisa estar com faturamento ativo.
+- Crédito na tela: "Cenário: reconstituição gerada com IA (Gemini)" e a
+  etiqueta "RECONSTITUIÇÃO (IA)".

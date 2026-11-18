@@ -1,0 +1,108 @@
+name: Gerar fundo de IA
+
+# Gera um cenário realista 9:16 pela API de imagens do Gemini (Nano Banana) e
+# guarda no ramo "fundos-gerados", em fundos-ia/<pasta>/<nome>.jpg + .json.
+# Precisa do secret GEMINI_API_KEY. Se o arquivo já existe no ramo, não gera
+# de novo (cache). ElevenLabs continua como reserva, pelo conector no chat.
+
+on:
+  workflow_dispatch:
+    inputs:
+      nome:
+        description: "Nome do arquivo, sem extensão (ex.: campo-santana-1889)"
+        required: true
+      prompt:
+        description: "Cena no molde de fotógrafo, em inglês (modelo-visual.md, seção 1)"
+        required: true
+      pasta:
+        description: "Subpasta de fundos-ia"
+        default: "realista"
+      modelo:
+        description: "Modelo de imagem do Gemini"
+        default: "gemini-nano-banana-2.1"
+      tamanho:
+        description: "Resolução"
+        type: choice
+        options: ["2K", "1K", "4K"]
+        default: "2K"
+      forcar:
+        description: "Gerar de novo mesmo se já existir"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fundos-ia
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Pillow
+        run: pip install --quiet pillow
+
+      - name: Trazer o cache (ramo fundos-gerados)
+        run: |
+          set -euo pipefail
+          mkdir -p saida-fundos
+          if git ls-remote --exit-code --heads origin fundos-gerados >/dev/null; then
+            git fetch --depth 1 origin fundos-gerados
+            git archive FETCH_HEAD fundos-ia 2>/dev/null | tar -x -C /tmp || true
+            if [ -d /tmp/fundos-ia ]; then cp -r /tmp/fundos-ia/. saida-fundos/; fi
+          fi
+
+      - name: Gerar
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NOME: ${{ inputs.nome }}
+          PROMPT: ${{ inputs.prompt }}
+          PASTA: ${{ inputs.pasta }}
+          MODELO: ${{ inputs.modelo }}
+          TAMANHO: ${{ inputs.tamanho }}
+          FORCAR: ${{ inputs.forcar }}
+        run: |
+          set -euo pipefail
+          extra=""
+          [ "$FORCAR" = "true" ] && extra="--forcar"
+          python3 fundos-ia/gerar_fundo.py --provedor gemini --nome "$NOME" --pasta "$PASTA" \
+            --prompt "$PROMPT" --modelo "$MODELO" --tamanho "$TAMANHO" --saida saida-fundos $extra
+
+      - name: Guardar no ramo fundos-gerados
+        env:
+          NOME: ${{ inputs.nome }}
+          PASTA: ${{ inputs.pasta }}
+        run: |
+          set -euo pipefail
+          git config user.name "publicador"
+          git config user.email "publicador@users.noreply.github.com"
+          cp -r saida-fundos /tmp/saida
+          if git ls-remote --exit-code --heads origin fundos-gerados >/dev/null; then
+            git fetch origin fundos-gerados
+            git checkout -f -B fundos-gerados FETCH_HEAD
+          else
+            git checkout -f --orphan fundos-gerados
+            git rm -rq --cached . || true
+            find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+            printf '# Fundos de IA gerados pelo workflow "Gerar fundo de IA"\n' > README.md
+            git add README.md
+          fi
+          mkdir -p fundos-ia
+          cp -r /tmp/saida/. fundos-ia/
+          git add fundos-ia
+          if git diff --cached --quiet; then
+            echo "Nada novo (já estava no cache)."
+          else
+            git commit -qm "Fundo de IA: $PASTA/$NOME"
+            git push origin fundos-gerados
+            echo "Guardado em fundos-gerados:fundos-ia/$PASTA/$NOME.jpg"
+          fi
